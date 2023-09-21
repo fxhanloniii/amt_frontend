@@ -12,13 +12,19 @@ import Search from './screens/Search/Search';
 import Item from './screens/Item/Item';
 import LogIn from './screens/LogIn/LogIn';
 
+// Component Imports
+import Header from './components/Header';
+import Footer from './components/Footer';
+
+
 const Stack = createStackNavigator();
 
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Header />
+      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="LogIn" component={LogIn} />
         <Stack.Screen name="SignUp" component={SignUp} />
@@ -26,16 +32,8 @@ export default function App() {
         <Stack.Screen name="Search" component={Search} />
         <Stack.Screen name="Item" component={Item} />
       </Stack.Navigator>
+      <Footer />
       <StatusBar style="auto" />
     </NavigationContainer>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+};
