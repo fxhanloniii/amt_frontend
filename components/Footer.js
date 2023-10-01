@@ -1,20 +1,54 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React from 'react'
+import { useNavigation } from '@react-navigation/native';
 
-export default function Footer() {
+export default function Footer({ isSignedIn }) {
+
+  const navigation = useNavigation();
+
   return (
     <View style={styles.footerContainer}>
-      <Text>Footer</Text>
+      {[
+        { label: "Shop", icon: "S", route: "Home"},
+        { label: "Sell", icon: "Se"},
+        { label: "Inbox", icon: "I"},
+        { label: isSignedIn ? "Profile" : "Log In", icon: "P", route: isSignedIn ? "Profile" : "LogIn"},
+      ].map((item, index) => (
+        <TouchableOpacity 
+          key={index} 
+          style={styles.buttonContainer}
+          onPress={() => navigation.navigate(item.route)}
+        >
+          <View style={styles.circleButton}>
+            <Text>{item.icon}</Text>
+          </View>
+          <Text>{item.label}</Text>
+        </TouchableOpacity>
+      ))}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
     footerContainer: {
-        height: 50, 
-        backgroundColor: '#f4511e',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        paddingVertical: 10,
+      },
+      buttonContainer: {
+        alignItems: 'center',
+        
+      },
+      circleButton: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: '#e0e0e0',
         justifyContent: 'center',
         alignItems: 'center',
-        width: '100%', 
-      },    
+        marginBottom: 5,
+        backgroundColor: '#384b56',
+      }    
 })

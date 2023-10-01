@@ -23,6 +23,7 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
+      <View style={styles.container}>
       <Header />
       <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={Home} />
@@ -33,7 +34,17 @@ export default function App() {
         <Stack.Screen name="Item" component={Item} />
       </Stack.Navigator>
       <Footer />
+      </View>
       <StatusBar style="auto" />
     </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,  
+  },
+});
