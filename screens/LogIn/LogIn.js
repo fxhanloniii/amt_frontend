@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from 'react-native';
+import { useAuth } from '../../AuthContext/AuthContext';
 import { loginUser } from '../../api/auth';  
 
 export default function LogIn({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    const { setAuthToken } = useAuth();
+
     const handleLogin = async () => {
         const response = await loginUser(email, password);
-        if (response.key) {  // If response contains a token (key), then login is successful
+        if (response.success) {  // If response contains a token (key), then login is successful
+            setAuthToken(response.token);
             // Navigate to Home or any other screen after successful login
             navigation.navigate('Home');
         } else {

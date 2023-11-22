@@ -23,47 +23,66 @@ export const registerUser = async (username, email, password, confirmPassword) =
     // console.log('Registration response:', response);
 
     if (response.status === 204) {
-        // Registration successful (No Content)
+        // Registration successful 
         console.log('Registration successful.');
-        // You can perform further actions here, e.g., redirect the user to a login page.
+        
     } else {
         // Registration failed or encountered an error
         const errorData = await response.json().catch(() => ({})); // Handle potential JSON parse error
-        // console.error('Error during sign up:', errorData);
-        // Handle and display the error to the user, e.g., show a toast message.
+        
+    }
+};
+
+// function to log in a user and retrieve the user token
+export const loginUser = async (email, password) => {
+    try {
+        const response = await fetch(`${BASE_URL}/dj-rest-auth/login/`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({email, password}),
+        });
+
+        if (response.status === 200) {
+            const data = await response.json();
+            return { success: true, token: data.key }; // User Token
+        } else {
+            return { success: false, token: null }; // Login failed
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        return { success: false, token: null };
+    }
+};
+
+// Function to log out a user using their token
+
+export const logoutUser = async (token) => {
+    try {
+        const response = await fetch(`${BASE_URL}/dj-rest-auth/logout`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${token}`,
+            },
+        });
+
+        if (response.status === 200) {
+            return true; // Logout Successful
+        } else {
+            return false; // Logout Failed
+        }
+    } catch (error) {
+        console.error('Logout error:', error);
+        return false;
     }
 };
 
 
 
-// Function to login a user
-export const loginUser = async (email, password) => {
-    const response = await fetch(`${BASE_URL}/dj-rest-auth/login/`, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            email,
-            password,
-        }),
-    });
-    return response.json();
-};
-
-// Function to logout a user
-export const logoutUser = async (token) => {
-    const response = await fetch(`${BASE_URL}/dj-rest-auth/logout/`, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Token ${token}`,
-        },
-    });
-    return response.json();
-};
 
 // Function to request a password reset
 export const requestPasswordReset = async (email) => {

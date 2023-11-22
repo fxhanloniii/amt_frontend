@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, FlatList, Image, TextInput } from 'react-native'
 import React from 'react'
+import { TouchableOpacity } from 'react-native-web';
 
 
 const mockData = {
@@ -99,12 +100,13 @@ export default function CategoryItems({ route }) {
         keyExtractor={(item, index) => `${item.name}-${index}`}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
-            <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
-            <View style={styles.itemDetails}>
-            <Text style={styles.itemPrice}>{item.price}</Text>
-              <Text style={styles.itemName}>{item.name}</Text>
-              
-            </View>
+            
+              <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+              <View style={styles.itemDetails}>
+              <Text style={styles.itemPrice}>{item.price}</Text>
+                <Text style={styles.itemName}>{item.name}</Text>
+              </View>
+            
           </View>
         )}
         numColumns={2}  // 2 items per row

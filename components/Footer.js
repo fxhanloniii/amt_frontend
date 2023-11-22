@@ -5,12 +5,13 @@ import { useNavigation } from '@react-navigation/native';
 export default function Footer({ isSignedIn }) {
 
   const navigation = useNavigation();
+  console.log('Is signed in:', isSignedIn);
 
   return (
     <View style={styles.footerContainer}>
       {[
         { label: "Shop", icon: "S", route: "Home"},
-        { label: "Sell", icon: "Se"},
+        { label: "Sell", icon: "Se", route: "Info"},
         { label: "Inbox", icon: "I"},
         { label: isSignedIn ? "Profile" : "Log In", icon: "P", route: isSignedIn ? "Profile" : "LogIn"},
       ].map((item, index) => (
