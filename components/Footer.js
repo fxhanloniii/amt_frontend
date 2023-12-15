@@ -1,18 +1,23 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React from 'react'
+import {useEffect, React} from 'react'
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../AuthContext/AuthContext';
 
-export default function Footer({ isSignedIn }) {
-
+export default function Footer() {
+  const { user, signOut, token, isSignedIn } = useAuth();
   const navigation = useNavigation();
   console.log('Is signed in:', isSignedIn);
 
+  useEffect(() => {
+    console.log('Auth state changed. isSignedIn:', isSignedIn);
+  }, [isSignedIn]);
+  
   return (
     <View style={styles.footerContainer}>
       {[
         { label: "Shop", icon: "S", route: "Home"},
         { label: "Sell", icon: "Se", route: "Info"},
-        { label: "Inbox", icon: "I"},
+        { label: "Inbox", icon: "I", route: "Inbox"},
         { label: isSignedIn ? "Profile" : "Log In", icon: "P", route: isSignedIn ? "Profile" : "LogIn"},
       ].map((item, index) => (
         <TouchableOpacity 

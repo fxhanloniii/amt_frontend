@@ -34,6 +34,7 @@ export const registerUser = async (username, email, password, confirmPassword) =
 };
 
 // function to log in a user and retrieve the user token
+// Function to log in a user and retrieve the user token
 export const loginUser = async (email, password) => {
     try {
         const response = await fetch(`${BASE_URL}/dj-rest-auth/login/`, {
@@ -47,21 +48,27 @@ export const loginUser = async (email, password) => {
 
         if (response.status === 200) {
             const data = await response.json();
-            return { success: true, token: data.key }; // User Token
+            console.log(data.key)
+            return { success: true, token: data.key };
         } else {
-            return { success: false, token: null }; // Login failed
+            // Log for debugging
+            console.log('Login failed with status:', response.status);
+            const errorData = await response.json();
+            return { success: false, token: null, error: errorData };
         }
     } catch (error) {
         console.error('Login error:', error);
-        return { success: false, token: null };
+        return { success: false, token: null, error: error.message };
     }
 };
+
 
 // Function to log out a user using their token
 
 export const logoutUser = async (token) => {
+    console.log("Logging out with token:", token);
     try {
-        const response = await fetch(`${BASE_URL}/dj-rest-auth/logout`, {
+        const response = await fetch(`${BASE_URL}/dj-rest-auth/logout/`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -71,9 +78,10 @@ export const logoutUser = async (token) => {
         });
 
         if (response.status === 200) {
-            return true; // Logout Successful
+            return { success: true }; // Logout Successful
         } else {
-            return false; // Logout Failed
+            console.error('Logout response:', response); // Log the response
+            return { success: false };
         }
     } catch (error) {
         console.error('Logout error:', error);

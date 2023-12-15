@@ -16,6 +16,8 @@ import Info from './screens/SellScreens/Info';
 import PhotoPage from './screens/SellScreens/Photo';
 import Review from './screens/SellScreens/Review';
 import Profile from './screens/Profile/Profile';
+import Inbox from './screens/Inbox/Inbox';
+import Message from './screens/Message/Message';
 // Component Imports
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -42,6 +44,8 @@ const App = () => {
           <Stack.Screen name="PhotoPage" component={PhotoPage} />
           <Stack.Screen name="Review" component={Review} />
           <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="Inbox" component={Inbox} />
+          <Stack.Screen name="Message" component={Message} />
         </Stack.Navigator>
         <Footer isSignedIn={isSignedIn}/>
       </View>

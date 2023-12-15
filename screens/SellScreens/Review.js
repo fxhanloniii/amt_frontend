@@ -1,44 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, ScrollView, Button, StyleSheet } from 'react-native';
+import { useAuth } from '../../AuthContext/AuthContext';
 
 const Review = ({ route, navigation }) => {
-  const { selectedImages,
+  // Destructure the necessary parameters from the route
+  const {
+    selectedImages,
     category,
     title,
     description,
     price,
     isForSale,
-    isPriceNegotiable } = route.params;
+    isPriceNegotiable,
+  } = route.params;
 
   const [location, setLocation] = useState('');
   const [isPublished, setIsPublished] = useState(false);
+  const { token } = useAuth();
 
+  useEffect(() => {
+    
+  }, []);
 
   const createItem = async (itemData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/items/', {
+      // Make a POST request to create the item
+      const response = await fetch('http://localhost:8000/items/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${userToken}`
+          'Authorization': `Token ${token}`,
         },
         body: JSON.stringify(itemData),
       });
+
       const data = await response.json();
-      return data;
-      
+
       if (response.status === 201) {
-        console.log('item created successfully');
+        console.log('Item created successfully');
       } else {
-        console.error('item creation failed');
+        console.error('Item creation failed');
       }
+
+      return data;
     } catch (error) {
-      console.error('Error creating item:', error)
+      console.error('Error creating item:', error);
+      throw error; // Propagate the error for handling in the calling function
     }
   };
-  
+
   // Function to handle the publish button press
-  const handlePublish = () => {
+  const handlePublish = async () => {
     const itemData = {
       location,
       selectedImages,
@@ -47,11 +59,26 @@ const Review = ({ route, navigation }) => {
       description,
       price,
       isForSale,
-      isPriceNegotiable
+      isPriceNegotiable,
+    };
 
+    try {
+      // Create the item and get the response
+      const data = await createItem(itemData);
+
+      // Check if the item was created successfully
+      if (data && data.id) {
+        console.log('Item created successfully');
+
+        // Navigate to the Item page with the newly created item's ID
+        navigation.navigate('Item', { itemId: data.id });
+        setIsPublished(true);
+      } else {
+        console.error('Item creation failed');
+      }
+    } catch (error) {
+      console.error('Error creating item:', error);
     }
-    createItem(itemData);
-    setIsPublished(true);
   };
 
   return (
@@ -91,7 +118,7 @@ const Review = ({ route, navigation }) => {
             style={styles.viewButton}
             onPress={() => {
               // Navigate to the items page
-              navigation.navigate('ItemsPage');
+              navigation.navigate('Item', { itemId: data.id });
             }}
           >
             <Text>Check it out HERE</Text>
