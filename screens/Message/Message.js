@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, FlatList, TextInput, Button } from 'react-native';
 import io from 'socket.io-client';
 
@@ -6,39 +6,43 @@ const Message = ({ route }) => {
     const { conversationId } = route.params;
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const webSocket = useRef(null);
 
     useEffect(() => {
         // connect to websocket server
-        const socket = io('BACKEND-URL');
+        webSocket.current = new WebSocket(`ws://127.0.0.1:8000/ws/conversations/${conversationId}/`);
 
-        // join specific conversation room
-        socket.emit('joinRoom', conversationId);
+        webSocket.current.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            setMessages(prevMessages => [...prevMessages, data.message]);
+        };
 
-        // listen for incoming messages or events
-        socket.on('newMessage', (message) => {
-            // handle new messages and update state
-            setMessages((prevMessages) => [...prevMessages, message]);
-        });
+        webSocket.current.onclose = () => {
+            console.log('WebSocket closed');
+        };
 
-        // clean up the socket connection on component unmount
         return () => {
-            socket.emit('leaveRoom', conversationId);
-            socket.disconnect();
+            if (webSocket.current) {
+                webSocket.current.close();
+            }
         };
     }, [conversationId]);
 
     const sendMessage = () => {
-        // send the new message to the backend
-        // emit the message event to the server
-        // update the local optimistically
+        if (webSocket.current && newMessage.trim()) {
+            webSocket.current.send(JSON.stringify({ message: newMessage }));
+            setNewMessage('');
+        }
     };
 
-    const renderItem = ({ item }) => (
+    const renderItem = ({ item}) => <Text>{item}</Text>
+
+    return (
         <View>
             <FlatList
                 data={messages}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item, index) => index.toString()}
             />
             <TextInput
                 value={newMessage}
