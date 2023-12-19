@@ -17,8 +17,8 @@ export const AuthProvider = ({ children }) => {
       const authToken = await SecureStore.getItemAsync('usertoken');
       if (authToken) {
         setToken(authToken);
-        setIsSignedIn(true);
         await fetchUserData(authToken);
+        setIsSignedIn(true);
       }
     } catch (error) {
       console.error('Error loading user token:', error);

@@ -4,6 +4,7 @@ import { useAuth } from '../../AuthContext/AuthContext';
 
 const Item = ({ route }) => {
   const [item, setItem] = useState(null);
+  const [inputMessage, setInputMessage] = useState('');
   const { user, token } = useAuth();
   
   useEffect(() => {
@@ -25,6 +26,10 @@ const Item = ({ route }) => {
 
     fetchItemData();
   }, [route.params.itemId]);
+
+  const handleMessageSeller = async () => {
+    // send message to backend to create a new conversation
+  }
 
   if (!item) {
     return (
@@ -60,7 +65,7 @@ const Item = ({ route }) => {
           placeholder="Still available?"
           editable={true} // Set to true when you want to allow user input
         />
-        <TouchableOpacity style={styles.messageButton}>
+        <TouchableOpacity style={styles.messageButton} onPress={handleMessageSeller}>
           <Text style={styles.messageButtonText}>Message Seller</Text>
         </TouchableOpacity>
       </View>
