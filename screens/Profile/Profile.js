@@ -26,6 +26,10 @@ const Profile = ({ navigation }) => {
     }
   }, [user, token]);
 
+  const navigateToSettings = () => {
+    navigation.navigate('UserSetting', { userProfile });
+  };
+
   const fetchUserItems = async () => {
     try {
       console.log('fetching user listings')
@@ -41,6 +45,7 @@ const Profile = ({ navigation }) => {
 
       if (response.ok) {
         const userItemsData = await response.json();
+        console.log(userItemsData)
         setUserListings(userItemsData);
         setLoading(false);
       } else {
@@ -57,7 +62,7 @@ const Profile = ({ navigation }) => {
       const response = await fetch(`http://127.0.0.1:8000/profiles/${user.pk}/`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${user.token}`,
+          'Authorization': `Token ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -138,7 +143,8 @@ const Profile = ({ navigation }) => {
   };
 
   const renderListingItem = ({ item }) => {
-  
+    console.log('Listing item:', item );
+    
     return (
       <TouchableOpacity key={item?.id} onPress={() => handleItemPress(item.id)}>
         <View style={styles.listingItemContainer}>
@@ -164,6 +170,7 @@ const Profile = ({ navigation }) => {
   };
 
   const handleItemPress = (itemId) => {
+    console.log(itemId)
     navigation.navigate('Item', { itemId });
   };
 
@@ -183,10 +190,9 @@ const Profile = ({ navigation }) => {
         <View style={styles.userInfoContainer}>
           <Text style={styles.userUsername}>@{user?.username}</Text>
         </View>
-        {/* Temp Logout Button */}
-        <TouchableOpacity onPress={handleLogout}>
-            <Text style={styles.logoutButton}>Logout</Text>
-          </TouchableOpacity>
+        <TouchableOpacity onPress={navigateToSettings} style={styles.settingsButton}>
+          <Text style={styles.settingsButtonText}>Settings</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Divider */}
@@ -202,9 +208,13 @@ const Profile = ({ navigation }) => {
             </View>
           </TouchableOpacity>
         ) : (
-          <View style={styles.itemList}>
-            {userlistings.slice(0, 6).map(renderListingItem)}
-          </View>
+          <FlatList
+            data={userlistings.slice(0, 6)}  // Or remove slice(0, 6) to show all items
+            renderItem={renderListingItem}
+            keyExtractor={(item) => item?.id?.toString()}
+            numColumns={3}
+            key={'three-columns'}
+          />
         )}
         {renderSeeMoreButton('userlistings')}
       </View>
@@ -278,7 +288,7 @@ const styles = StyleSheet.create({
   itemList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'evenly',
   },
   listingItemContainer: {
     flex: 1,

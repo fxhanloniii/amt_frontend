@@ -4,7 +4,7 @@
 const BASE_URL = 'http://127.0.0.1:8000'
 
 // Function to register a user
-export const registerUser = async (username, email, password, confirmPassword) => {
+export const registerUser = async (username, email, password, confirmPassword, firstName, lastName) => {
     console.log(`${BASE_URL}/dj-rest-auth/registration/`);
     const response = await fetch(`${BASE_URL}/dj-rest-auth/registration/`, {
         method: 'POST',
@@ -17,6 +17,8 @@ export const registerUser = async (username, email, password, confirmPassword) =
             email,
             password1: password,
             password2: confirmPassword,
+            first_name: firstName,
+            last_name: lastName,
         }),
     });
     
@@ -25,7 +27,7 @@ export const registerUser = async (username, email, password, confirmPassword) =
     if (response.status === 204) {
         // Registration successful 
         console.log('Registration successful.');
-        
+        return true
     } else {
         // Registration failed or encountered an error
         const errorData = await response.json().catch(() => ({})); // Handle potential JSON parse error

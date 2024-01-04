@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
 
-const Item = ({ route }) => {
+const Item = ({ route, navigation }) => {
   const [item, setItem] = useState(null);
   const [inputMessage, setInputMessage] = useState('');
   const { user, token } = useAuth();
@@ -28,8 +28,26 @@ const Item = ({ route }) => {
   }, [route.params.itemId]);
 
   const handleMessageSeller = async () => {
-    // send message to backend to create a new conversation
-  }
+    const response = await fetch(`http://127.0.0.1:8000/start-conversation/${item.id}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify({
+            initialMessage: inputMessage, // Include the initial message in the request
+        }),
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        // Navigate to the message screen with the new conversation ID
+        navigation.navigate('Message', { conversationId: data.conversation_id });
+    } else {
+        // Handle errors, e.g., display a message to the user
+    }
+};
+
 
   if (!item) {
     return (
@@ -78,6 +96,7 @@ const Item = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    backgroundColor: '#f2efe9',
   },
   imageContainer: {
     width: '100%',

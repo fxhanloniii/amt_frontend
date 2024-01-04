@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, ScrollView, Button, StyleSheet } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
+import * as Location from 'expo-location';
 
 const Review = ({ route, navigation }) => {
   // Destructure the necessary parameters from the route
@@ -16,10 +17,30 @@ const Review = ({ route, navigation }) => {
 
   const [location, setLocation] = useState('');
   const [isPublished, setIsPublished] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+
   const { token } = useAuth();
 
   useEffect(() => {
-    
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+        return;
+      }
+  
+      let currentLocation = await Location.getCurrentPositionAsync({});
+      setUserLocation(currentLocation);
+  
+      let address = await Location.reverseGeocodeAsync({
+        latitude: currentLocation.coords.latitude,
+        longitude: currentLocation.coords.longitude,
+      });
+  
+      if (address.length > 0) {
+        setLocation(`${address[0].city}, ${address[0].region}, ${address[0].country}`);
+      }
+    })();
   }, []);
 
   const createItem = async (itemData) => {
@@ -104,13 +125,15 @@ const Review = ({ route, navigation }) => {
         value={location}
         onChangeText={(text) => setLocation(text)}
       />
-
-      <Button
-        title="Publish"
-        onPress={handlePublish}
-        disabled={isPublished}
-      />
-
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity 
+          style={styles.nextButton} 
+          onPress={handlePublish} 
+          disabled={isPublished}
+        >
+          <Text style={styles.nextButtonText}>Publish</Text>
+        </TouchableOpacity>
+      </View>      
       {isPublished && (
         <View style={styles.publishedMessage}>
           <Text>Your Post has been published.</Text>
@@ -135,6 +158,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 16,
     justifyContent: 'center',
+    backgroundColor: '#f2efe9',
   },
   imageContainer: {
     alignItems: 'center',
@@ -156,6 +180,7 @@ const styles = StyleSheet.create({
     padding: 8,
     marginBottom: 16,
     fontSize: 16,
+    backgroundColor: '#fcfbfa',
   },
   publishedMessage: {
     alignItems: 'center',
@@ -163,6 +188,23 @@ const styles = StyleSheet.create({
   },
   viewButton: {
     marginTop: 10,
+  },
+  buttonContainer: {
+    justifyContent: 'center', 
+    alignItems: 'center',     
+    width: '100%',            
+  },
+  nextButton: {
+    backgroundColor: '#293e48', 
+    borderRadius: 50,          
+    padding: 10,               
+    alignItems: 'center',      
+    marginTop: 10,             
+    width: '90%',              
+  },
+  nextButtonText: {
+    color: 'white',            
+    fontSize: 18,              
   },
 });
 

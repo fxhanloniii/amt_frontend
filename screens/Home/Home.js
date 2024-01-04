@@ -1,43 +1,56 @@
-import { StyleSheet, Text, View, TextInput, ScrollView, Button, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
-
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity } from 'react-native';
+<link rel="stylesheet" href="https://use.typekit.net/ftp2quu.css"></link>
 
 export default function Home({ navigation }) {
   const [viewAll, setViewAll] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
+  // Full list of categories
+  const allCategories = [
+    'Appliances', 'Bath & Faucets', 'Cleaning', 'Concrete & Brick', 
+    'Doors & Windows', 'Drywall', 'Electrical', 'Sliding', 
+    'Flooring & Rugs', 'Garden & Patio', 'Hardware', 'Heating & Air', 
+    'Kitchen', 'Lighting & Fans', 'Lumber', 'Misc.', 'Paint', 
+    'Plumbing', 'Roofing', 'Storage', 'Tiles & Masonry', 'Tools'
+  ];
 
+  const handleSearch = () => {
+    navigation.navigate('Category', { searchQuery });
+  };
+
+  // Function to render a category button
   const renderCategory = (category) => (
     <TouchableOpacity 
       key={category} 
       style={styles.categoryButton} 
       onPress={() => navigation.navigate('Category', { categoryName: category })}
     >
-
       <Text style={styles.categoryButtonText}>{category}</Text>
     </TouchableOpacity>
   );
-
+ 
   return (
     <View style={styles.container}>
       <TextInput 
         style={styles.searchBar}
-        placeholder="What does your project need?" // do we change this?
+        placeholder="What does your project need?"
+        onChangeText={text => setSearchQuery(text)}
+        onSubmitEditing={handleSearch}
       />
       <View style={styles.categoryLocationContainer}>
-      <Text style={styles.titleTopCatergories}>Top Categories</Text>
-      <Text style={styles.locationInput}>Location</Text>
+        <Text style={styles.titleTopCatergories}>Top Categories</Text>
+        <Text style={styles.locationInput}>Location</Text>
       </View>
       <ScrollView contentContainerStyle={styles.categoryContainer}>
-        {['Appliances', 'Concrete & Brick', 'Electrical', 'Hardware', 'Lumber', 'Paint', 'Tile & Masonry', 'Tools'].map(renderCategory)}
+        {allCategories.slice(0, viewAll ? allCategories.length : 8).map(renderCategory)}
         
-        {viewAll && ['Category 9', 'Category 10'].map(renderCategory)}
-
         <TouchableOpacity style={styles.viewAllButton} onPress={() => setViewAll(!viewAll)}>
-          <Text style={styles.viewAllButtonText}>View All Categories</Text>
+          <Text style={styles.viewAllButtonText}>{viewAll ? 'View Less' : 'View All Categories'}</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -80,7 +93,7 @@ const styles = StyleSheet.create({
     margin: 5,
     width: '90%',  // Use 90% of the parent width
     alignSelf: 'center',  // This will center the button in the ScrollView
-    height: 35,
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
     borderColor: '#293e49',
@@ -89,7 +102,7 @@ const styles = StyleSheet.create({
 },
   categoryButtonText: {
     color: '#293e49',
-    fontWeight: 'bold',
+    
   },
   viewAllButton: {
     backgroundColor: '#293e49',

@@ -8,6 +8,8 @@ export default function SignUp({ navigation }) {
     const [password, setPassword] = useState('');
     const [isPasswordVisible, setPasswordVisibility] = useState(false);
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
 
     const handleSignUp = async () => {
       if (password !== confirmPassword) {
@@ -15,7 +17,7 @@ export default function SignUp({ navigation }) {
         return; // Stop execution here if passwords don't match
     }
         try {
-            const response = await registerUser(username, email, password, confirmPassword);
+            const response = await registerUser(username, email, password, confirmPassword, firstName, lastName);
             // console.log(response);
             if (response) {
                 // User registered successfully, navigate to the login page or home page
@@ -35,6 +37,18 @@ export default function SignUp({ navigation }) {
                 placeholder="Username"
                 onChangeText={text => setUsername(text)}
                 value={username}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="First Name"
+                onChangeText={text => setFirstName(text)}
+                value={firstName}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Last Name"
+                onChangeText={text => setLastName(text)}
+                value={lastName}
             />
             <TextInput
                 style={styles.input}
@@ -72,6 +86,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         paddingHorizontal: 20,
+        backgroundColor: '#f2efe9',
     },
     input: {
         height: 40,
@@ -79,5 +94,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         marginBottom: 10,
         padding: 10,
+        backgroundColor: '#fcfbfa',
     },
 });

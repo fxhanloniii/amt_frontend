@@ -1,7 +1,11 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native'
 import {useEffect, React} from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext/AuthContext';
+import ShopIcon from '../assets/images/shopicon.png';
+import SellIcon from '../assets/images/sellicon.png';
+import ProfileIcon from '../assets/images/profileicon.png';
+import InboxIcon from '../assets/images/inboxicon.png';
 
 export default function Footer() {
   const { user, signOut, token, isSignedIn } = useAuth();
@@ -11,14 +15,14 @@ export default function Footer() {
   useEffect(() => {
     console.log('Auth state changed. isSignedIn:', isSignedIn);
   }, [isSignedIn]);
-  
+
   return (
     <View style={styles.footerContainer}>
       {[
-        { label: "Shop", icon: "S", route: "Home"},
-        { label: "Sell", icon: "Se", route: "Info"},
-        { label: "Inbox", icon: "I", route: "Inbox"},
-        { label: isSignedIn ? "Profile" : "Log In", icon: "P", route: isSignedIn ? "Profile" : "LogIn"},
+        { label: "Shop", icon: ShopIcon, route: "Home" },
+        { label: "Sell", icon: SellIcon, route: "Info" },
+        { label: "Inbox", icon: InboxIcon, route: "Inbox" },
+        { label: "Profile", icon: ProfileIcon, route: isSignedIn ? "Profile" : "LogIn"},
       ].map((item, index) => (
         <TouchableOpacity 
           key={index} 
@@ -26,7 +30,7 @@ export default function Footer() {
           onPress={() => navigation.navigate(item.route)}
         >
           <View style={styles.circleButton}>
-            <Text>{item.icon}</Text>
+            <Image source={item.icon} style={styles.iconStyle}/>
           </View>
           <Text>{item.label}</Text>
         </TouchableOpacity>
@@ -47,7 +51,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         
       },
-      circleButton: {
+      iconStyle: {
         width: 50,
         height: 50,
         borderRadius: 25,
@@ -56,5 +60,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 5,
         backgroundColor: '#384b56',
+        resizeMode: 'contain',
       }    
 })

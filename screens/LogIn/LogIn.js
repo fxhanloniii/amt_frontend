@@ -47,11 +47,13 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         padding: 16,
+        backgroundColor: '#f2efe9',
     },
     input: {
         padding: 10,
         borderWidth: 1,
         marginBottom: 10,
+        backgroundColor: 'white', 
     },
     signUpText: {
         marginTop: 10,

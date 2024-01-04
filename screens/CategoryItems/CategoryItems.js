@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, FlatList, Image, TextInput, TouchableOpacity, T
 import { useAuth } from '../../AuthContext/AuthContext';
 
 const CategoryItems = ({ route, navigation }) => {
-  const { categoryName, endpoint } = route.params;
+  const { categoryName, endpoint, searchQuery } = route.params;
   const [items, setItems] = useState([]);
   const { user, token } = useAuth();
 
@@ -12,8 +12,9 @@ const CategoryItems = ({ route, navigation }) => {
     const fetchItems = async () => {
       try {
         let apiUrl = '';
-
-        if (endpoint) {
+        if (searchQuery) {
+          apiUrl = `http://127.0.0.1:8000/items/?search=${encodeURIComponent(searchQuery)}`;
+        } else if (endpoint) {
           // If endpoint is provided, use it
           apiUrl = endpoint;
         } else if (categoryName) {

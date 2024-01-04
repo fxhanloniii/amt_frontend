@@ -5,6 +5,9 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { AuthProvider, useAuth } from './AuthContext/AuthContext'; // Import AuthProvider
 
+// font imports
+
+
 // Screen Imports
 import Home from './screens/Home/Home';
 import SignUp from './screens/SignUp/SignUp';
@@ -18,6 +21,7 @@ import Review from './screens/SellScreens/Review';
 import Profile from './screens/Profile/Profile';
 import Inbox from './screens/Inbox/Inbox';
 import Message from './screens/Message/Message';
+import UserSetting from './screens/UserSetting/UserSetting';
 // Component Imports
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -46,6 +50,7 @@ const App = () => {
           <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="Inbox" component={Inbox} />
           <Stack.Screen name="Message" component={Message} />
+          <Stack.Screen name="UserSetting" component={UserSetting} />
         </Stack.Navigator>
         <Footer isSignedIn={isSignedIn}/>
       </View>
