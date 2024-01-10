@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
-
+import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 import { useAuth } from '../../AuthContext/AuthContext';
 
 const Inbox = ({ navigation }) => {
@@ -27,28 +27,40 @@ const Inbox = ({ navigation }) => {
         fetchConversations();
     }, []);
 
+    const truncateText = (text, maxLength) => {
+        if (text && text.length > maxLength) {
+            return text.substring(0, maxLength) + '...';
+        }
+        return text;
+    };
     
 
     const renderItem = ({ item }) => {
 
         const itemDetails = item.item_details;
+        const otherUserDetails = item.other_user_details;
         const lastMessage = item.last_message;
-        const sellerDetails = item.seller_details;
+        const lastMessageText = lastMessage ? truncateText(lastMessage.text, 25) : 'No messages yet';
+
+        const defaultProfileImage = noProfilePhoto;
+        const itemImageAvailable = itemDetails.images && itemDetails.images.length > 0;
+        const itemImage = itemImageAvailable ? { uri: itemDetails.images[0].image } : null;
+
+        
         return (
-        <TouchableOpacity onPress={() => navigation.navigate('Message', { conversationId: item.id })}>
+            <TouchableOpacity onPress={() => navigation.navigate('Message', { conversationId: item.id, itemDetails: item.item_details })}>
             <View style={styles.itemContainer}>
                 <Image
-                    source={{ uri: item.sellerImage }} // Replace with actual image URL
+                    source={{ uri: otherUserDetails.profile_picture_url || defaultProfileImage }}
                     style={styles.sellerImage}
                 />
                 <View style={styles.messageContainer}>
-                    <Text style={styles.username}>{item.sellerUsername}</Text>
-                    <Text>{item.lastMessage}</Text>
+                    <Text style={styles.username}>{otherUserDetails.first_name || 'User'}</Text>
+                    <Text>{lastMessageText}</Text>
                 </View>
-                <Image
-                    source={{ uri: item.itemImage }} // Replace with actual image URL
-                    style={styles.itemImage}
-                />
+                <View style={itemImageAvailable ? styles.itemImage : styles.defaultItemImage}>
+                    {itemImage && <Image source={itemImage} style={styles.fullSizeImage} />}
+                </View>
             </View>
         </TouchableOpacity>
         );
@@ -116,5 +128,16 @@ const styles = StyleSheet.create({
     itemImage: {
         width: 50,
         height: 50,
+    },
+    defaultItemImage: {
+        width: 50,
+        height: 50,
+        backgroundColor: '#cccccc', // Grey background
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    fullSizeImage: {
+        width: '100%',
+        height: '100%',
     },
 });

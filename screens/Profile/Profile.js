@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
+import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 
 const Profile = ({ navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();
@@ -9,9 +10,10 @@ const Profile = ({ navigation }) => {
   const [userlistings, setUserListings] = useState([]);
   const [userFavorites, setUserFavorites] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(noProfilePhoto);
 
   useEffect(() => {
-    console.log('User changed:', user);
+    console.log(profilePicture);
     setUserListings([]);
     setUserFavorites([]);
     setLoading(true);
@@ -32,9 +34,7 @@ const Profile = ({ navigation }) => {
 
   const fetchUserItems = async () => {
     try {
-      console.log('fetching user listings')
       setUserListings([]);
-      console.log(user.pk)
       const response = await fetch(`http://127.0.0.1:8000/items/?seller=${user.pk}`, {
         method: 'GET',
         headers: {
@@ -59,7 +59,7 @@ const Profile = ({ navigation }) => {
   const fetchUserProfile = async () => {
     try {
       console.log('userid:', user.pk);
-      const response = await fetch(`http://127.0.0.1:8000/profiles/${user.pk}/`, {
+      const response = await fetch(`http://127.0.0.1:8000/profiles/user/${user.pk}/`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${token}`,
@@ -71,7 +71,11 @@ const Profile = ({ navigation }) => {
         const userProfileData = await response.json();
         setUserProfile(userProfileData);
 
-        // check if the fetched profile is for the current user
+        if (userProfileData.profile_picture_url) {
+          setProfilePicture({ uri: userProfileData.profile_picture_url });
+        } else {
+          setProfilePicture(noProfilePhoto);
+        }
         setIsCurrentUserProfile(userProfileData.user === user.id);
       } else {
         console.error('Failed to fetch user profile');
@@ -89,28 +93,7 @@ const Profile = ({ navigation }) => {
     navigation.navigate('LogIn'); // Navigate to your login screen or any other appropriate screen
   };
 
-  const updateUserProfile = async (newProfileData) => {
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/profiles/${user.id}/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Token ${user.token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newProfileData),
-      });
-
-      if (response.ok) {
-        console.log('User profile updated successfully');
-        // Add pop up here
-        fetchUserProfile();
-      } else {
-        console.error('Failed to update user profile');
-      }
-    } catch (error) {
-      console.error('Error updating user profile:', error);
-    }
-  };
+  
 
   const handleSeeMore = (category) => {
     let endpoint;
@@ -133,7 +116,7 @@ const Profile = ({ navigation }) => {
       return (
         <TouchableOpacity onPress={() => handleSeeMore(category)}>
           <View style={styles.seeMoreButton}>
-            <Text>See More</Text>
+            <Text style={styles.seeMoreText}>See More</Text>
           </View>
         </TouchableOpacity>
       );
@@ -149,7 +132,7 @@ const Profile = ({ navigation }) => {
       <TouchableOpacity key={item?.id} onPress={() => handleItemPress(item.id)}>
         <View style={styles.listingItemContainer}>
           <Image style={styles.itemImage}  /> 
-          <Text>{item?.title}</Text>
+          {/* <Text>{item?.title}</Text> */}
         </View>
       </TouchableOpacity>
     );
@@ -186,7 +169,7 @@ const Profile = ({ navigation }) => {
     <ScrollView style={styles.container}>
       {/* Profile Header */}
       <View style={styles.headerContainer}>
-        <Image style={styles.profileImage} source={{ uri: null }} />
+        <Image style={styles.profileImage} source={profilePicture} />
         <View style={styles.userInfoContainer}>
           <Text style={styles.userUsername}>@{user?.username}</Text>
         </View>
@@ -204,7 +187,7 @@ const Profile = ({ navigation }) => {
         {userlistings.length === 0 ? (
           <TouchableOpacity onPress={() => navigation.navigate('Info')}>
             <View style={styles.emptyStateContainer}>
-              <Text>Let's start selling!</Text>
+              <Text style={styles.emptyText}>Let's start selling!</Text>
             </View>
           </TouchableOpacity>
         ) : (
@@ -227,7 +210,7 @@ const Profile = ({ navigation }) => {
         <Text style={styles.sectionTitle}>Favorites</Text>
         {userFavorites.length === 0 ? (
           <View style={styles.emptyStateContainer}>
-            <Text>Save your favorites</Text>
+            <Text style={styles.emptyText}>Save your favorites</Text>
           </View>
         ) : (
           <View style={styles.itemList}>
@@ -252,8 +235,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   profileImage: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     borderRadius: 50,
     marginRight: 16,
     backgroundColor: 'gray',
@@ -262,28 +245,33 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   userUsername: {
-    fontSize: 16,
+    fontSize: 12,
     color: 'gray',
   },
   divider: {
     height: 1,
     backgroundColor: 'gray',
-    marginVertical: 16,
+    marginVertical: 10,
   },
   sectionContainer: {
-    marginBottom: 16,
+    marginBottom: 5,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
   },
   emptyStateContainer: {
     width: '100%',
     height: 100,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: '#fcfbfa',
     justifyContent: 'center',
     alignItems: 'center',
+    borderColor: '#293e49',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#364a54',
   },
   itemList: {
     flexDirection: 'row',
@@ -292,28 +280,31 @@ const styles = StyleSheet.create({
   },
   listingItemContainer: {
     flex: 1,
-    margin: 8,
+    margin: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   favoriteItemContainer: {
     flex: 1,
-    margin: 8,
+    margin: 2,
     alignItems: 'center',
   },
   itemImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-    marginBottom: 4,
+    width: 110,
+    height: 110,
+    marginBottom: 2,
     backgroundColor: 'grey',
   },
   seeMoreButton: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: '#293e48',
     marginVertical: 10,
+  },
+  seeMoreText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
 

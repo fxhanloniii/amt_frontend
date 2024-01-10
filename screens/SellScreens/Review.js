@@ -72,33 +72,52 @@ const Review = ({ route, navigation }) => {
 
   // Function to handle the publish button press
   const handlePublish = async () => {
-    const itemData = {
-      location,
-      selectedImages,
-      category,
-      title,
-      description,
-      price,
-      isForSale,
-      isPriceNegotiable,
-    };
-
     try {
-      // Create the item and get the response
-      const data = await createItem(itemData);
-
-      // Check if the item was created successfully
-      if (data && data.id) {
+      setIsLoading(true); // Show loading indicator if you implement it
+  
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('location', location);
+      formData.append('price', price);
+      formData.append('isForSale', isForSale);
+      formData.append('isPriceNegotiable', isPriceNegotiable);
+      formData.append('category', category);
+  
+      // Append each selected image to the FormData
+      selectedImages.forEach((imageUri, index) => {
+        const imageName = `image_${index}`;
+        formData.append(imageName, {
+          uri: imageUri,
+          type: 'image/jpeg', // Modify this based on your image type
+          name: `${imageName}.jpg`, // Modify the extension as needed
+        });
+      });
+  
+      const response = await fetch('http://localhost:8000/upload-item-data-and-images/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${token}`,
+        },
+        body: formData,
+      });
+  
+      const data = await response.json();
+  
+      if (response.status === 201) {
         console.log('Item created successfully');
-
-        // Navigate to the Item page with the newly created item's ID
-        navigation.navigate('Item', { itemId: data.id });
         setIsPublished(true);
+        // Navigate to the Item page with the newly created item's ID
+        navigation.navigate('Item', { itemId: data.item_id });
       } else {
         console.error('Item creation failed');
+        setError('Item creation failed. Please try again.');
       }
     } catch (error) {
       console.error('Error creating item:', error);
+      setError('An error occurred. Please try again later.');
+    } finally {
+      setIsLoading(false); // Hide loading indicator if you implement it
     }
   };
 

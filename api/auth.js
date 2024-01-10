@@ -6,6 +6,7 @@ const BASE_URL = 'http://127.0.0.1:8000'
 // Function to register a user
 export const registerUser = async (username, email, password, confirmPassword, firstName, lastName) => {
     console.log(`${BASE_URL}/dj-rest-auth/registration/`);
+    console.log(username, email, password, confirmPassword, firstName, lastName)
     const response = await fetch(`${BASE_URL}/dj-rest-auth/registration/`, {
         method: 'POST',
         headers: {
@@ -20,6 +21,7 @@ export const registerUser = async (username, email, password, confirmPassword, f
             first_name: firstName,
             last_name: lastName,
         }),
+        
     });
     
     // console.log('Registration response:', response);

@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, FlatList, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
+import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 
 const Message = ({ route }) => {
-    const { conversationId } = route.params;
+    const { conversationId, itemDetails } = route.params;
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const webSocket = useRef(null);
@@ -68,15 +69,44 @@ const Message = ({ route }) => {
         };
     };
 
-    const renderItem = ({ item }) => (
-        <View>
-            <Text>From: {item.sender}</Text>
-            <Text>Message: {item.text}</Text>
-        </View>
-    );
+    const renderItem = ({ item }) => {
+        const isCurrentUser = item.sender === user.username;
+        return (
+            <View style={[styles.messageBubble, isCurrentUser ? styles.rightAlign : styles.leftAlign]}>
+                {!isCurrentUser && (
+                    <Image
+                        source={{ uri: item.senderProfileImage || noProfilePhoto }}
+                        style={styles.profileImage}
+                    />
+                )}
+                <View>
+                    <Text style={styles.senderName}>{item.sender}</Text>
+                    <Text>{item.text}</Text>
+                </View>
+            </View>
+        );
+    };
 
     return (
         <View style={styles.container}>
+            {/* Item Details Section */}
+            {itemDetails && (
+                <View style={styles.itemDetails}>
+                    <Image
+                        source={{ uri: itemDetails.image_url || 'path_to_grey_square_image' }}
+                        style={styles.itemImage}
+                    />
+                    <View>
+                        <Text>{itemDetails.title}</Text>
+                        <Text>Seller: {itemDetails.seller.first_name}</Text>
+                        <Text>${itemDetails.price}</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('ItemScreen', { itemId: itemDetails.id })}>
+                            <Text style={styles.viewListingButton}>View Full Listing</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+            <View style={styles.divider} />
             <FlatList
                 data={messages}
                 renderItem={renderItem}
@@ -100,6 +130,48 @@ const styles = StyleSheet.create({
       paddingHorizontal: 5,
       paddingBottom: 16,
       backgroundColor: '#f2efe9',
+      marginTop: 10,
+    },
+    itemDetails: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: '#fff',
+    },
+    itemImage: {
+        width: 100,
+        height: 100,
+        backgroundColor: 'grey',
+    },
+    profileImage: {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+    },
+    messageBubble: {
+        flexDirection: 'row',
+        marginVertical: 5,
+        padding: 10,
+        backgroundColor: '#f0f0f0',
+        borderRadius: 10,
+    },
+    rightAlign: {
+        alignSelf: 'flex-end',
+    },
+    leftAlign: {
+        alignSelf: 'flex-start',
+    },
+    senderName: {
+        fontWeight: 'bold',
+    },
+    viewListingButton: {
+        color: 'blue',
+        textDecorationLine: 'underline',
+    },
+    divider: {
+        height: 1,
+        backgroundColor: '#ccc',
+        marginVertical: 10,
     },
 
 });

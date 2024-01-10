@@ -4,7 +4,7 @@ import { useAuth } from '../../AuthContext/AuthContext';
 
 const Item = ({ route, navigation }) => {
   const [item, setItem] = useState(null);
-  const [inputMessage, setInputMessage] = useState('');
+  const [inputMessage, setInputMessage] = useState('Still Available?');
   const { user, token } = useAuth();
   
   useEffect(() => {
@@ -28,6 +28,12 @@ const Item = ({ route, navigation }) => {
   }, [route.params.itemId]);
 
   const handleMessageSeller = async () => {
+
+    if (!inputMessage.trim()) {
+      console.error('Input message is empty');
+      return;
+    }
+
     const response = await fetch(`http://127.0.0.1:8000/start-conversation/${item.id}/`, {
         method: 'POST',
         headers: {
@@ -35,16 +41,18 @@ const Item = ({ route, navigation }) => {
             Authorization: `Token ${token}`,
         },
         body: JSON.stringify({
-            initialMessage: inputMessage, // Include the initial message in the request
+            initialMessage: inputMessage, 
+      
         }),
+        
     });
 
     if (response.ok) {
         const data = await response.json();
-        // Navigate to the message screen with the new conversation ID
+        console.log(data)
         navigation.navigate('Message', { conversationId: data.conversation_id });
     } else {
-        // Handle errors, e.g., display a message to the user
+        console.error('Failed to start conversation');
     }
 };
 
@@ -69,7 +77,7 @@ const Item = ({ route, navigation }) => {
       <Text style={styles.title}>{item.title}</Text>
 
       {/* Price */}
-      <Text style={styles.price}>Price: ${item.price}</Text>
+      <Text style={styles.price}>${item.price}</Text>
 
       {/* Description */}
       <Text style={styles.description}>Description:</Text>
@@ -81,7 +89,9 @@ const Item = ({ route, navigation }) => {
         <TextInput
           style={styles.messageInput}
           placeholder="Still available?"
-          editable={true} // Set to true when you want to allow user input
+          editable={true}
+          value={inputMessage}
+          onChangeText={setInputMessage}
         />
         <TouchableOpacity style={styles.messageButton} onPress={handleMessageSeller}>
           <Text style={styles.messageButtonText}>Message Seller</Text>
@@ -100,7 +110,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: '100%',
-    aspectRatio: 1, // Maintains a square aspect ratio
+    aspectRatio: 1, 
     borderWidth: 1,
     borderColor: 'black', 
     marginBottom: 16,
@@ -112,11 +122,12 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 8,
   },
   description: {
     fontSize: 16,
-    marginBottom: 16,
+    marginBottom: 10,
   },
   messageBox: {
     borderWidth: 1,

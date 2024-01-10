@@ -14,11 +14,13 @@ export default function PhotoPage({ route, navigation }) {
         allowsMultipleSelection: true,
         aspect: [4, 3],
         quality: 1,
+        maxSelected: 10,
       });
   
       if (!result.canceled) {
         // Add the selected image to the array of selectedImages
-        setSelectedImages([...selectedImages, result.assets[0].uri]);
+        const selectedUris = result.selected.map((image) => image.uri);
+        setSelectedImages([...selectedImages, ...selectedUris]);
       }
     };
   
@@ -64,7 +66,14 @@ export default function PhotoPage({ route, navigation }) {
         <TouchableOpacity onPress={takePhoto} style={styles.photoButton}>
           <Text>Take a Photo</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={pickImage} style={styles.photoButton}>
+        <TouchableOpacity
+          onPress={pickImage}
+          style={[
+            styles.photoButton,
+            selectedImages.length >= 10 && { opacity: 0.5, backgroundColor: 'gray' }, // Disable button
+          ]}
+          disabled={selectedImages.length >= 10} // Disable button functionality
+        >
           <Text>Select a Photo</Text>
         </TouchableOpacity>
       </View>
