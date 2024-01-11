@@ -18,7 +18,8 @@ export const AuthProvider = ({ children }) => {
       if (authToken) {
         setToken(authToken);
         await fetchUserData(authToken);
-        setIsSignedIn(true);
+      } else {
+        setIsSignedIn(false);
       }
     } catch (error) {
       console.error('Error loading user token:', error);
@@ -37,8 +38,7 @@ export const AuthProvider = ({ children }) => {
       if (userResponse.ok) {
         const userData = await userResponse.json();
         setUser(userData);
-        console.log(userData);
-      } else {
+              } else {
         console.error('Failed to fetch user data');
       }
     } catch (error) {
@@ -64,8 +64,7 @@ export const AuthProvider = ({ children }) => {
         if (response.success) {
             setIsSignedIn(true);
             setAuthToken(response.token); // Change this line to response.key
-            console.log('isSignedIn after login:', isSignedIn);
-            fetchUserData(response.token);
+                        fetchUserData(response.token);
         } else {
             // Handle login failure, e.g., show an error message
             console.error('Login failed:', response.error); // Log the error message
@@ -83,8 +82,7 @@ export const AuthProvider = ({ children }) => {
       console.log("Response received", response); // New log
       if (response.success) {
         setIsSignedIn(false);
-        console.log("Logged out, isSignedIn:", false);
-        await SecureStore.deleteItemAsync('usertoken');
+                await SecureStore.deleteItemAsync('usertoken');
         setUser(null);
         setToken(null);
       } else {

@@ -12,8 +12,8 @@ const UserSettings = ({ route, navigation }) => {
   const [bio, setBio] = useState(userProfile?.bio || '');
   const [city, setCity] = useState(userProfile?.city || '');
   const [state, setState] = useState(userProfile?.state || '');
-  const [firstName, setFirstName] = useState(userProfile?.user?.first_name || '');
-  const [lastName, setLastName] = useState(userProfile?.user?.last_name || '');
+  const [firstName, setFirstName] = useState(user?.first_name || '');
+  const [lastName, setLastName] = useState(user?.last_name || '');
 
   
   useEffect(() => {
@@ -61,8 +61,7 @@ const UserSettings = ({ route, navigation }) => {
         const data = await response.json();
         setProfilePicture({ uri: data.image_url });
         updateUserProfileImage(data.image_url); 
-        console.log('Image uploaded successfully', data.image_url);
-      }
+              }
     } catch (error) {
       console.error('Error uploading image:', error);
     }
@@ -102,8 +101,7 @@ const UserSettings = ({ route, navigation }) => {
       });
 
       if (response.ok) {
-        console.log('User profile updated successfully');
-        Alert.alert("Profile Updated", "Your profile has been updated successfully.");
+                Alert.alert("Profile Updated", "Your profile has been updated successfully.");
         const updatedData = await response.json();
         setUserProfile(updatedData);
       } else {
@@ -118,8 +116,7 @@ const UserSettings = ({ route, navigation }) => {
 
   const fetchUserProfile = async () => {
     try {
-      console.log('userid:', user.pk);
-      const response = await fetch(`http://127.0.0.1:8000/profiles/user/${user.pk}/`, {
+            const response = await fetch(`http://127.0.0.1:8000/profiles/user/${user.pk}/`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${token}`,
@@ -132,7 +129,7 @@ const UserSettings = ({ route, navigation }) => {
         setUserProfile(data);
         if (data.profile_picture_url) {
             setProfilePicture({ uri: data.profile_picture_url });
-            console.log('Profile picture set to:', data.profile_picture_url);
+            
         } else {
             setProfilePicture(noProfilePhoto);
         }
@@ -153,18 +150,7 @@ const UserSettings = ({ route, navigation }) => {
       <TouchableOpacity onPress={pickProfilePicture}>
         <Image source={profilePicture} style={styles.profileImage} key={profilePicture} />
       </TouchableOpacity>
-      <TextInput
-        style={styles.input}
-        value={firstName}
-        onChangeText={setFirstName}
-        placeholder="First Name"
-      />
-      <TextInput
-        style={styles.input}
-        value={lastName}
-        onChangeText={setLastName}
-        placeholder="Last Name"
-      />
+        <Text style={styles.displayName}>{firstName} {lastName}</Text>
       <TextInput
         style={styles.input}
         value={bio}
@@ -212,6 +198,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 20,
     backgroundColor: 'gray',
+  },
+  displayName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    marginBottom: 20,
   },
   input: {
     borderWidth: 1,

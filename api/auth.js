@@ -5,8 +5,7 @@ const BASE_URL = 'http://127.0.0.1:8000'
 
 // Function to register a user
 export const registerUser = async (username, email, password, confirmPassword, firstName, lastName) => {
-    console.log(`${BASE_URL}/dj-rest-auth/registration/`);
-    console.log(username, email, password, confirmPassword, firstName, lastName)
+        console.log(username, email, password, confirmPassword, firstName, lastName)
     const response = await fetch(`${BASE_URL}/dj-rest-auth/registration/`, {
         method: 'POST',
         headers: {
@@ -24,12 +23,10 @@ export const registerUser = async (username, email, password, confirmPassword, f
         
     });
     
-    // console.log('Registration response:', response);
-
+    // 
     if (response.status === 204) {
         // Registration successful 
-        console.log('Registration successful.');
-        return true
+                return true
     } else {
         // Registration failed or encountered an error
         const errorData = await response.json().catch(() => ({})); // Handle potential JSON parse error
@@ -56,8 +53,7 @@ export const loginUser = async (email, password) => {
             return { success: true, token: data.key };
         } else {
             // Log for debugging
-            console.log('Login failed with status:', response.status);
-            const errorData = await response.json();
+                        const errorData = await response.json();
             return { success: false, token: null, error: errorData };
         }
     } catch (error) {
@@ -70,8 +66,7 @@ export const loginUser = async (email, password) => {
 // Function to log out a user using their token
 
 export const logoutUser = async (token) => {
-    console.log("Logging out with token:", token);
-    try {
+        try {
         const response = await fetch(`${BASE_URL}/dj-rest-auth/logout/`, {
             method: 'POST',
             headers: {

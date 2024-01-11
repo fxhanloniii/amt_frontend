@@ -18,7 +18,7 @@ export default function SignUp({ navigation }) {
     }
         try {
             const response = await registerUser(username, email, password, confirmPassword, firstName, lastName);
-            // console.log(response);
+            
             if (response) {
                 // User registered successfully, navigate to the login page or home page
                 navigation.navigate('LogIn');

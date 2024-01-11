@@ -10,11 +10,9 @@ import InboxIcon from '../assets/images/inboxicon.png';
 export default function Footer() {
   const { user, signOut, token, isSignedIn } = useAuth();
   const navigation = useNavigation();
-  console.log('Is signed in:', isSignedIn);
-
+  
   useEffect(() => {
-    console.log('Auth state changed. isSignedIn:', isSignedIn);
-  }, [isSignedIn]);
+      }, [isSignedIn]);
 
   return (
     <View style={styles.footerContainer}>
@@ -32,7 +30,7 @@ export default function Footer() {
           <View style={styles.circleButton}>
             <Image source={item.icon} style={styles.iconStyle}/>
           </View>
-          <Text>{item.label}</Text>
+          <Text style={styles.iconText}>{item.label}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -52,8 +50,8 @@ const styles = StyleSheet.create({
         
       },
       iconStyle: {
-        width: 50,
-        height: 50,
+        width: 40,
+        height: 40,
         borderRadius: 25,
         backgroundColor: '#e0e0e0',
         justifyContent: 'center',
@@ -61,5 +59,9 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         backgroundColor: '#384b56',
         resizeMode: 'contain',
-      }    
+      } ,
+      iconText: {
+        fontSize: 12,
+        color: '#364a54',
+      },   
 })

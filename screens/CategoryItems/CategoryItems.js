@@ -3,9 +3,12 @@ import { StyleSheet, Text, View, FlatList, Image, TextInput, TouchableOpacity, T
 import { useAuth } from '../../AuthContext/AuthContext';
 
 const CategoryItems = ({ route, navigation }) => {
-  const { categoryName, endpoint, searchQuery } = route.params;
+  const { categoryName, endpoint, location } = route.params;
   const [items, setItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
   const { user, token } = useAuth();
+  const { searchQuery: initialSearchQuery } = route.params;
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
 
   console.log(items)
   useEffect(() => {
@@ -25,6 +28,11 @@ const CategoryItems = ({ route, navigation }) => {
           return;
         }
 
+        // Add location to the URL if it's provided
+        if (location) {
+          apiUrl += `&location=${encodeURIComponent(location)}`;
+        }
+
         const response = await fetch(apiUrl, {
           method: 'GET',
           headers: {
@@ -36,6 +44,7 @@ const CategoryItems = ({ route, navigation }) => {
         if (response.ok) {
           const itemsData = await response.json();
           setItems(itemsData);
+          
         } else {
           console.error('Failed to fetch items');
         }
@@ -43,24 +52,37 @@ const CategoryItems = ({ route, navigation }) => {
         console.error('Error fetching items:', error);
       }
     };
-
     fetchItems();
-  }, [categoryName, endpoint]);
+  }, [categoryName, endpoint, searchQuery, location, token]);
 
   const handleItemPress = (itemId) => {
     
     navigation.navigate('Item', { itemId });
   };
 
+  const handleSearchQueryChange = (text) => {
+    setSearchQuery(text);
+  };
+
+  const handleSearch = () => {
+    navigation.navigate('CategoryItems', {
+      searchQuery,
+      location,
+    });
+  };
+
   return (
     <View style={styles.container}>
       <TextInput
-        style={styles.searchBar}
-        placeholder="What does your project need?"
-      />
+      style={styles.searchBar}
+      placeholder="What does your project need?"
+      value={searchQuery}
+      onChangeText={handleSearchQueryChange}
+      onSubmitEditing={handleSearch}
+    />
       <View style={styles.categoryLocationContainer}>
         <Text style={styles.titleCategory}>{categoryName}</Text>
-        <Text style={styles.locationInput}>Location</Text>
+        <Text style={styles.locationInput}>{location}</Text>
       </View>
       <View style={styles.horizontalLine} />
       <FlatList
@@ -69,10 +91,10 @@ const CategoryItems = ({ route, navigation }) => {
         renderItem={({ item }) => (
           <TouchableWithoutFeedback onPress={() => handleItemPress(item.id)}>
             <View style={styles.itemContainer}>
-              <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+              <Image source={{ uri: item.images[0]?.image }} style={styles.itemImage} />
               <View style={styles.itemDetails}>
                 <Text style={styles.itemPrice}>{item.price}</Text>
-                <Text style={styles.itemName}>{item.name}</Text>
+                <Text style={styles.itemName}>{item.title}</Text>
               </View>
             </View>
           </TouchableWithoutFeedback>

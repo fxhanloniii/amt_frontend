@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
+import settingsIcon from '../../assets/images/settingsicon.png';
 
 const Profile = ({ navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();
@@ -13,18 +14,15 @@ const Profile = ({ navigation }) => {
   const [profilePicture, setProfilePicture] = useState(noProfilePhoto);
 
   useEffect(() => {
-    console.log(profilePicture);
-    setUserListings([]);
+        setUserListings([]);
     setUserFavorites([]);
     setLoading(true);
 
     if (user && token) {
-      console.log('Fetching data for user:', user.pk);
-      fetchUserItems();
+            fetchUserItems();
       fetchUserProfile();
     } else {
-      console.log('No user or token, skipping fetch');
-      setLoading(false);
+            setLoading(false);
     }
   }, [user, token]);
 
@@ -58,8 +56,7 @@ const Profile = ({ navigation }) => {
 
   const fetchUserProfile = async () => {
     try {
-      console.log('userid:', user.pk);
-      const response = await fetch(`http://127.0.0.1:8000/profiles/user/${user.pk}/`, {
+            const response = await fetch(`http://127.0.0.1:8000/profiles/user/${user.pk}/`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${token}`,
@@ -73,7 +70,7 @@ const Profile = ({ navigation }) => {
 
         if (userProfileData.profile_picture_url) {
           setProfilePicture({ uri: userProfileData.profile_picture_url });
-        } else {
+                  } else {
           setProfilePicture(noProfilePhoto);
         }
         setIsCurrentUserProfile(userProfileData.user === user.id);
@@ -126,25 +123,43 @@ const Profile = ({ navigation }) => {
   };
 
   const renderListingItem = ({ item }) => {
-    console.log('Listing item:', item );
-    
-    return (
-      <TouchableOpacity key={item?.id} onPress={() => handleItemPress(item.id)}>
-        <View style={styles.listingItemContainer}>
-          <Image style={styles.itemImage}  /> 
-          {/* <Text>{item?.title}</Text> */}
-        </View>
-      </TouchableOpacity>
-    );
+    // Check if item is defined and item.images is an array with at least one image
+    if (item && Array.isArray(item.images) && item.images.length > 0) {
+      console.log(item.images)
+      const imageUrl = item.images[0].image;
+      console.log(imageUrl)
+      const baseUrl = imageUrl.split('?')[0];
+       // Get the image URL from item.images[0].image
+      console.log(baseUrl)
+
+    // Set the item image using the image URL
+      const itemImage = { uri: baseUrl };
+      return (
+        <TouchableOpacity key={item.id} onPress={() => handleItemPress(item.id)}>
+          <View style={styles.listingItemContainer}>
+            <Image style={styles.itemImage} source={itemImage} />
+          </View>
+        </TouchableOpacity>
+      );
+    } else {
+      // Handle the case where item is undefined or there are no images
+      return (
+        <TouchableOpacity key={item?.id} onPress={() => handleItemPress(item?.id)}>
+          <View style={styles.listingItemContainer}>
+            {/* You can show a placeholder image or text here */}
+            <Text>No Image</Text>
+          </View>
+        </TouchableOpacity>
+      );
+    }
   };
 
   const renderFavoriteItem = ({ item }) => {
-    console.log('Favorite item:', item);
-    return (
+        return (
         <View style={styles.favoriteItemContainer}>
         <TouchableOpacity key={item?.id} onPress={() => handleItemPress(item.id)}>
           <View style={styles.favoriteItemInnerContainer}>
-            <Image style={styles.itemImage} source={{ uri: item?.image }} />
+            <Image style={styles.itemImage} source={{ uri: item?.images[1].image }} />
             <Text>{item?.title}</Text>
           </View>
         </TouchableOpacity>
@@ -171,11 +186,12 @@ const Profile = ({ navigation }) => {
       <View style={styles.headerContainer}>
         <Image style={styles.profileImage} source={profilePicture} />
         <View style={styles.userInfoContainer}>
+          <Text style={styles.firstName}>{user?.first_name} </Text>
           <Text style={styles.userUsername}>@{user?.username}</Text>
         </View>
         <TouchableOpacity onPress={navigateToSettings} style={styles.settingsButton}>
-          <Text style={styles.settingsButtonText}>Settings</Text>
-        </TouchableOpacity>
+            <Image source={settingsIcon} style={styles.settingsButtonImage} />
+          </TouchableOpacity>
       </View>
 
       {/* Divider */}
@@ -191,6 +207,7 @@ const Profile = ({ navigation }) => {
             </View>
           </TouchableOpacity>
         ) : (
+          <View>
           <FlatList
             data={userlistings.slice(0, 6)}  // Or remove slice(0, 6) to show all items
             renderItem={renderListingItem}
@@ -198,6 +215,7 @@ const Profile = ({ navigation }) => {
             numColumns={3}
             key={'three-columns'}
           />
+          </View>
         )}
         {renderSeeMoreButton('userlistings')}
       </View>
@@ -219,6 +237,7 @@ const Profile = ({ navigation }) => {
         )}
         {renderSeeMoreButton('userfavorites')}
       </View>
+      
     </ScrollView>
   );
 };
@@ -243,6 +262,10 @@ const styles = StyleSheet.create({
   },
   userInfoContainer: {
     flex: 1,
+  },
+  firstName: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   userUsername: {
     fontSize: 12,
@@ -301,10 +324,22 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: '#293e48',
     marginVertical: 10,
+    borderRadius: 50,
   },
   seeMoreText: {
     color: 'white',
     fontSize: 16,
+  },
+  settingsButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    padding: 10, 
+  },
+  settingsButtonImage: {
+    width: 20, 
+    height: 20, 
+    resizeMode: 'contain',
   },
 });
 

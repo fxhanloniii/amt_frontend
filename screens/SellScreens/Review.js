@@ -4,7 +4,7 @@ import { useAuth } from '../../AuthContext/AuthContext';
 import * as Location from 'expo-location';
 
 const Review = ({ route, navigation }) => {
-  // Destructure the necessary parameters from the route
+  
   const {
     selectedImages,
     category,
@@ -18,15 +18,15 @@ const Review = ({ route, navigation }) => {
   const [location, setLocation] = useState('');
   const [isPublished, setIsPublished] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
-
+  const [isLoading, setIsLoading] = useState(false);
   const { token } = useAuth();
+  const [error, setError] = useState('');
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        console.log('Permission to access location was denied');
-        return;
+                return;
       }
   
       let currentLocation = await Location.getCurrentPositionAsync({});
@@ -43,54 +43,29 @@ const Review = ({ route, navigation }) => {
     })();
   }, []);
 
-  const createItem = async (itemData) => {
-    try {
-      // Make a POST request to create the item
-      const response = await fetch('http://localhost:8000/items/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Token ${token}`,
-        },
-        body: JSON.stringify(itemData),
-      });
-
-      const data = await response.json();
-
-      if (response.status === 201) {
-        console.log('Item created successfully');
-      } else {
-        console.error('Item creation failed');
-      }
-
-      return data;
-    } catch (error) {
-      console.error('Error creating item:', error);
-      throw error; // Propagate the error for handling in the calling function
-    }
-  };
 
   // Function to handle the publish button press
   const handlePublish = async () => {
     try {
-      setIsLoading(true); // Show loading indicator if you implement it
+      setIsLoading(true); 
+      setError('');
   
       const formData = new FormData();
       formData.append('title', title);
       formData.append('description', description);
       formData.append('location', location);
       formData.append('price', price);
+
       formData.append('isForSale', isForSale);
       formData.append('isPriceNegotiable', isPriceNegotiable);
       formData.append('category', category);
   
       // Append each selected image to the FormData
       selectedImages.forEach((imageUri, index) => {
-        const imageName = `image_${index}`;
-        formData.append(imageName, {
+        formData.append('images', {
           uri: imageUri,
           type: 'image/jpeg', // Modify this based on your image type
-          name: `${imageName}.jpg`, // Modify the extension as needed
+          name: `image_${index}.jpg`, // Modify the extension as needed
         });
       });
   
@@ -105,19 +80,18 @@ const Review = ({ route, navigation }) => {
       const data = await response.json();
   
       if (response.status === 201) {
-        console.log('Item created successfully');
-        setIsPublished(true);
+                setIsPublished(true);
         // Navigate to the Item page with the newly created item's ID
         navigation.navigate('Item', { itemId: data.item_id });
       } else {
-        console.error('Item creation failed');
+        console.error('Item creation failed', error);
         setError('Item creation failed. Please try again.');
       }
     } catch (error) {
       console.error('Error creating item:', error);
       setError('An error occurred. Please try again later.');
     } finally {
-      setIsLoading(false); // Hide loading indicator if you implement it
+      setIsLoading(false); 
     }
   };
 
@@ -135,7 +109,7 @@ const Review = ({ route, navigation }) => {
           ))}
         </ScrollView>
       </View>
-
+      
       <Text style={styles.header}>Additional Information:</Text>
       <Text style={styles.label}>Location:</Text>
       <TextInput
@@ -224,6 +198,11 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: 'white',            
     fontSize: 18,              
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 10,
   },
 });
 

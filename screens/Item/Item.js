@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Image, Modal } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
+import Swiper from 'react-native-swiper';
+import SettingsIcon from '../../assets/images/settingsicon.png';
 
 const Item = ({ route, navigation }) => {
   const [item, setItem] = useState(null);
   const [inputMessage, setInputMessage] = useState('Still Available?');
   const { user, token } = useAuth();
-  
+  const [itemImages, setItemImages] = useState([]);
+  const [isDeleteItemModalOpen, setDeleteItemModalOpen] = useState(false);
+
   useEffect(() => {
     const fetchItemData = async () => {
       try {
@@ -16,6 +20,10 @@ const Item = ({ route, navigation }) => {
         if (response.ok) {
           const itemData = await response.json();
           setItem(itemData);
+          // Extract and set image URLs
+          const imageUrls = itemData.images.map(img => img.image);
+          setItemImages(imageUrls);
+          console.log(itemImages)
         } else {
           console.error('Failed to fetch item data');
         }
@@ -50,12 +58,41 @@ const Item = ({ route, navigation }) => {
     if (response.ok) {
         const data = await response.json();
         console.log(data)
-        navigation.navigate('Message', { conversationId: data.conversation_id });
+        navigation.navigate('Message', { 
+          conversationId: data.conversation_id,
+          itemDetails: item,
+         });
     } else {
         console.error('Failed to start conversation');
     }
 };
 
+const openDeleteItemModal = () => {
+  setDeleteItemModalOpen(true);
+};
+
+const closeDeleteItemModal = () => {
+  setDeleteItemModalOpen(false);
+};
+
+const handleDeleteItem = async () => {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/items/${item.id}/`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      navigation.navigate('Home');
+    } else {
+      console.error('Failed to delete item');
+    }
+  } catch (error) {
+    console.error('Error deleting item:', error);
+  }
+};
 
   if (!item) {
     return (
@@ -69,9 +106,51 @@ const Item = ({ route, navigation }) => {
 
   return (
     <ScrollView style={styles.scrollView}>
+      <TouchableOpacity style={styles.settingsButton} onPress={openDeleteItemModal}>
+        <Image source={SettingsIcon} style={styles.settingsIcon} />
+      </TouchableOpacity>
+      <Modal visible={isDeleteItemModalOpen} animationType="slide">
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Delete Item</Text>
+          <Text style={styles.confirmationText}>
+            Are you sure you want to delete this item?
+          </Text>
+          <TouchableOpacity
+            style={styles.deleteItemButton}
+            onPress={() => {
+              // Perform the delete item function here
+              // After deleting, close the modal
+              handleDeleteItem();
+              closeDeleteItemModal();
+            }}
+          >
+            <Text style={styles.deleteItemButtonText}>Delete Item</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={closeDeleteItemModal}
+          >
+            <Text style={styles.cancelButtonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     <View style={styles.container}>
       {/* Image Placeholder */}
-      <View style={styles.imageContainer}></View>
+      <View style={styles.imageContainer}>
+        {/* Swiper for Images */}
+        {itemImages.length > 0 && (
+        <Swiper style={styles.wrapper} showsButtons={true} autoplay={true} nextButton={<Text style={styles.buttonText}>›</Text>}
+        prevButton={<Text style={styles.buttonText}>‹</Text>}
+        dotColor="gray"
+        activeDotColor="#364a54">
+            {itemImages.map((imageUrl, index) => (
+                <View key={index} style={styles.slide}>
+                    <Image source={{uri: imageUrl}} style={styles.image} />
+                </View>
+            ))}
+        </Swiper>
+      )}
+      </View>
 
       {/* Item Title */}
       <Text style={styles.title}>{item.title}</Text>
@@ -80,7 +159,7 @@ const Item = ({ route, navigation }) => {
       <Text style={styles.price}>${item.price}</Text>
 
       {/* Description */}
-      <Text style={styles.description}>Description:</Text>
+      <Text style={styles.descriptionTitle}>Description:</Text>
       <Text style={styles.description}>{item.description}</Text>
 
       {/* Message Box (Conditionally render based on ownership) */}
@@ -89,6 +168,7 @@ const Item = ({ route, navigation }) => {
         <TextInput
           style={styles.messageInput}
           placeholder="Still available?"
+          placeholderTextColor="#364a54"
           editable={true}
           value={inputMessage}
           onChangeText={setInputMessage}
@@ -112,46 +192,139 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 1, 
     borderWidth: 1,
-    borderColor: 'black', 
-    marginBottom: 16,
+    marginBottom: 5,
+    borderWidth: 0, 
+    borderColor: 'transparent',
+  },
+  wrapper: {
+    height: 300, 
+  },
+  slide: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#364a54', 
+    fontSize: 24, 
+    
+  },
+  image: {
+    width: '100%', 
+    height: '100%', 
+    resizeMode: 'contain', 
+    borderWidth: 0, 
+    borderColor: 'transparent',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 2,
+    color: '#364a54',
   },
   price: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 12,
+    color: '#364a54',
+  },
+  descriptionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 2,
+    color: '#364a54',
   },
   description: {
     fontSize: 16,
     marginBottom: 10,
+    color: '#364a54',
   },
   messageBox: {
     borderWidth: 1,
-    borderColor: 'black', 
-    padding: 16,
+    borderRadius: 4,
+    borderColor: 'gray', 
+    padding: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    height: 100,
+    backgroundColor: '#fcfbfa',
+    position: 'relative',
   },
   messageInput: {
     flex: 1,
     marginRight: 8,
     padding: 8,
-    borderWidth: 1,
-    borderColor: 'black', 
+    marginBottom: 50,
   },
   messageButton: {
-    backgroundColor: 'blue', 
+    backgroundColor: '#364a54', 
     padding: 8,
     borderRadius: 4,
+    position: 'absolute',
+    right: 10,
+    bottom: 10,
   },
   messageButtonText: {
     color: 'white', 
     textAlign: 'center',
+  },
+  settingsButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    zIndex: 1,
+  },
+  settingsIcon: {
+    width: 24,
+    height: 24,
+  },
+  modalContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#f2efe9',
+    paddingTop: 50,
+    paddingHorizontal: 20, 
+  },
+  modalTitle: {
+    fontSize: 24, 
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#364a54', 
+  },
+  confirmationText: {
+    fontSize: 16, 
+    marginBottom: 20, 
+    color: '#364a54', 
+  },
+  deleteItemButton: {
+    backgroundColor: '#f44336', // Use red color for delete button
+    padding: 16,
+    borderRadius: 4,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  deleteItemButtonText: {
+    color: 'white', // Button text color
+    fontWeight: 'bold',
+    fontSize: 16, // Font size for button text
+  },
+  cancelButton: {
+    backgroundColor: '#ccc',
+    padding: 16,
+    borderRadius: 4,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    color: 'black',
+    fontWeight: 'bold',
+    fontSize: 16, // Font size for cancel button text
   },
 });
 

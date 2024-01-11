@@ -3,13 +3,13 @@ import { View, Text, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, 
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 
-const Message = ({ route }) => {
+const Message = ({ route, navigation }) => {
     const { conversationId, itemDetails } = route.params;
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const webSocket = useRef(null);
     const { token, user } = useAuth();
-
+    console.log(itemDetails)
     useEffect(() => {
 
         const fetchMessages = async () => {
@@ -24,6 +24,8 @@ const Message = ({ route }) => {
                 console.error('Failed to fetch messages');
             }
         };
+
+        
         
         fetchMessages();
 
@@ -36,8 +38,7 @@ const Message = ({ route }) => {
         };
 
         webSocket.current.onclose = () => {
-            console.log('WebSocket closed');
-        };
+                    };
 
         return () => {
             if (webSocket.current) {
@@ -70,18 +71,26 @@ const Message = ({ route }) => {
     };
 
     const renderItem = ({ item }) => {
-        const isCurrentUser = item.sender === user.username;
+                const isCurrentUser = item.sender === user.username;
+        const profileImage = item.sender_profile ? item.sender_profile.profile_picture_url : noProfilePhoto;
+        const senderName = item.sender_profile ? item.sender_profile.first_name : item.sender;
+        
         return (
-            <View style={[styles.messageBubble, isCurrentUser ? styles.rightAlign : styles.leftAlign]}>
-                {!isCurrentUser && (
+            <View style={[styles.messageBubble, isCurrentUser ? styles.currentUserBubble : styles.otherUserBubble]}>
+                
                     <Image
-                        source={{ uri: item.senderProfileImage || noProfilePhoto }}
+                        source={{ uri: profileImage || noProfilePhoto }}
                         style={styles.profileImage}
                     />
-                )}
+                
                 <View>
-                    <Text style={styles.senderName}>{item.sender}</Text>
-                    <Text>{item.text}</Text>
+                <View style={styles.messageContent}>
+                <Text style={[
+                        styles.senderName,
+                        isCurrentUser ? styles.currentUserText : styles.otherUserText
+                    ]}>{senderName}</Text>
+                    <Text style={isCurrentUser ? styles.currentUserText : styles.otherUserText}>{item.text}</Text>
+                </View>
                 </View>
             </View>
         );
@@ -91,20 +100,31 @@ const Message = ({ route }) => {
         <View style={styles.container}>
             {/* Item Details Section */}
             {itemDetails && (
-                <View style={styles.itemDetails}>
-                    <Image
-                        source={{ uri: itemDetails.image_url || 'path_to_grey_square_image' }}
-                        style={styles.itemImage}
-                    />
-                    <View>
-                        <Text>{itemDetails.title}</Text>
-                        <Text>Seller: {itemDetails.seller.first_name}</Text>
-                        <Text>${itemDetails.price}</Text>
-                        <TouchableOpacity onPress={() => navigation.navigate('ItemScreen', { itemId: itemDetails.id })}>
-                            <Text style={styles.viewListingButton}>View Full Listing</Text>
-                        </TouchableOpacity>
-                    </View>
+            <View style={styles.itemDetails}>
+                <Image
+                source={{ uri: itemDetails.images[0].image }}
+                style={styles.itemImage}
+                />
+                <View style={styles.itemDetailsContainer}> 
+                <View style={styles.itemDetailText}>
+                <View style={styles.detailRow}>
+                    <Text style={styles.detailLabel}>Title:</Text>
+                    <Text>{itemDetails.title}</Text>
                 </View>
+                <View style={styles.detailRow}>
+                    <Text style={styles.detailLabel}>Seller:</Text>
+                    <Text>{itemDetails.seller_profile.first_name}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                    <Text style={styles.detailLabel}>Price:</Text>
+                    <Text>${itemDetails.price}</Text>
+                </View>
+                <TouchableOpacity onPress={() => navigation.navigate('Item', { itemId: itemDetails.id })}>
+                    <Text style={styles.viewListingButton}>View Full Listing</Text>
+                </TouchableOpacity>
+                </View>
+                </View>
+            </View>
             )}
             <View style={styles.divider} />
             <FlatList
@@ -112,12 +132,17 @@ const Message = ({ route }) => {
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
             />
-            <TextInput
-                value={newMessage}
-                onChangeText={setNewMessage}
-                placeholder="Type your message..."
-            />
-            <Button title="Send" onPress={sendMessage} />
+            <View style={styles.messageBoxContainer}>
+                <TextInput
+                    style={styles.messageInput}
+                    value={newMessage}
+                    onChangeText={setNewMessage}
+                    placeholder="Type your message..."
+                />
+                <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+                    <Text style={styles.sendButtonText}>Send</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
@@ -130,23 +155,46 @@ const styles = StyleSheet.create({
       paddingHorizontal: 5,
       paddingBottom: 16,
       backgroundColor: '#f2efe9',
-      marginTop: 10,
     },
     itemDetails: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
-        backgroundColor: '#fff',
+        backgroundColor: '#f2efe9',
+        height: 200,
+    },
+    itemDetailsContainer: {
+        marginTop: 20,
+    },
+    itemDetailText: {
+        flex: 1,
+        paddingHorizontal: 10,
+        justifyContent: 'space-between',
+        
     },
     itemImage: {
-        width: 100,
-        height: 100,
+        width: 150,
+        height: 150,
         backgroundColor: 'grey',
+        borderRadius: 5,
     },
+    itemDetailText: {
+        flex: 1,
+        paddingHorizontal: 10,
+      },
+      detailRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 5, 
+      },
+      detailLabel: {
+        fontWeight: 'bold',
+        marginRight: 5, 
+      },
     profileImage: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
+        width: 50,
+        height: 50,
+        borderRadius: 50,
     },
     messageBubble: {
         flexDirection: 'row',
@@ -154,24 +202,73 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: '#f0f0f0',
         borderRadius: 10,
+        width: '70%',
     },
-    rightAlign: {
+    currentUserBubble: {
         alignSelf: 'flex-end',
+        backgroundColor: '#364a54',
     },
-    leftAlign: {
+
+    otherUserBubble: {
         alignSelf: 'flex-start',
+        backgroundColor: 'white',
     },
+
+    currentUserText: {
+        color: 'white',
+    },
+
+    otherUserText: {
+        color: '#364a54',
+    },
+
     senderName: {
         fontWeight: 'bold',
     },
-    viewListingButton: {
-        color: 'blue',
-        textDecorationLine: 'underline',
+    messageContent: {
+        marginLeft: 8, 
     },
+    viewListingButton: {
+        backgroundColor: '#364a54', 
+        color: 'white',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        textAlign: 'center',
+        borderRadius: 10,
+        overflow: 'hidden',
+        marginTop: 10, 
+      },
     divider: {
         height: 1,
         backgroundColor: '#ccc',
-        marginVertical: 10,
+        marginVertical: 5,
+    },
+    messageBoxContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderTopWidth: 1,
+        borderColor: '#ccc',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+    },
+    messageInput: {
+        flex: 1,
+        backgroundColor: 'white',
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        padding: 8,
+        marginRight: 8,
+    },
+    sendButton: {
+        backgroundColor: '#364a54',
+        borderRadius: 5,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+    },
+    sendButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
     },
 
 });

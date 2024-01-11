@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "amt_frontend",
-    "slug": "amt_frontend",
+    "slug": "rubble",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "56fe34f0-cee5-41b0-8c63-ecf656dc2778"
+      }
+    },
+    "owner": "fxhiii"
   }
 }

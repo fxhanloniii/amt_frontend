@@ -11,16 +11,15 @@ export default function PhotoPage({ route, navigation }) {
     const pickImage = async () => {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsMultipleSelection: true,
-        aspect: [4, 3],
+        aspect: [1, 1],
         quality: 1,
-        maxSelected: 10,
+        allowsEditing: true,
+        
       });
   
       if (!result.canceled) {
         // Add the selected image to the array of selectedImages
-        const selectedUris = result.selected.map((image) => image.uri);
-        setSelectedImages([...selectedImages, ...selectedUris]);
+        setSelectedImages([...selectedImages, result.uri]);
       }
     };
   
@@ -29,7 +28,7 @@ export default function PhotoPage({ route, navigation }) {
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [4, 3],
+        aspect: [1, 1],
         quality: 1,
       });
   
@@ -67,14 +66,14 @@ export default function PhotoPage({ route, navigation }) {
           <Text>Take a Photo</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={pickImage}
-          style={[
-            styles.photoButton,
-            selectedImages.length >= 10 && { opacity: 0.5, backgroundColor: 'gray' }, // Disable button
-          ]}
-          disabled={selectedImages.length >= 10} // Disable button functionality
-        >
-          <Text>Select a Photo</Text>
+              onPress={pickImage}
+              style={[
+                  styles.photoButton,
+                  selectedImages.length >= 10 && { opacity: 0.5, backgroundColor: 'gray' }, // Adjust as per your limit
+              ]}
+              disabled={selectedImages.length >= 10} // Disable button if limit is reached
+          >
+              <Text>{selectedImages.length > 0 ? "Add Another Photo" : "Select a Photo"}</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.photoGrid}>
