@@ -3,6 +3,9 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Image,
 import { useAuth } from '../../AuthContext/AuthContext';
 import Swiper from 'react-native-swiper';
 import SettingsIcon from '../../assets/images/settingsicon.png';
+import HeartIcon from '../../assets/images/heart.png';
+import HeartFilledIcon from '../../assets/images/heart2.png';
+
 
 const Item = ({ route, navigation }) => {
   const [item, setItem] = useState(null);
@@ -10,6 +13,10 @@ const Item = ({ route, navigation }) => {
   const { user, token } = useAuth();
   const [itemImages, setItemImages] = useState([]);
   const [isDeleteItemModalOpen, setDeleteItemModalOpen] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [favoriteIcon, setFavoriteIcon] = useState(HeartIcon);
+
+  
 
   useEffect(() => {
     const fetchItemData = async () => {
@@ -33,6 +40,22 @@ const Item = ({ route, navigation }) => {
     };
 
     fetchItemData();
+
+    const checkIfFavorited = async () => {
+      const response = await fetch(`http://127.0.0.1:8000/favorites/check/${route.params.itemId}/`, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsFavorited(data.isFavorited);
+        setFavoriteIcon(data.isFavorited ? HeartFilledIcon : HeartIcon);
+      }
+    };
+
+    checkIfFavorited();
   }, [route.params.itemId]);
 
   const handleMessageSeller = async () => {
@@ -75,24 +98,25 @@ const closeDeleteItemModal = () => {
   setDeleteItemModalOpen(false);
 };
 
-const handleDeleteItem = async () => {
+const handleFavoriteToggle = async () => {
   try {
-    const response = await fetch(`http://127.0.0.1:8000/items/${item.id}/`, {
-      method: 'DELETE',
+    const response = await fetch(`http://127.0.0.1:8000/favorites/toggle/${item.id}/`, {
+      method: 'POST',
       headers: {
         Authorization: `Token ${token}`,
       },
     });
 
     if (response.ok) {
-      navigation.navigate('Home');
-    } else {
-      console.error('Failed to delete item');
+      setIsFavorited(!isFavorited);
+      setFavoriteIcon(!isFavorited ? HeartFilledIcon : HeartIcon);
     }
   } catch (error) {
-    console.error('Error deleting item:', error);
+    console.error('Error handling favorite:', error);
   }
 };
+
+
 
   if (!item) {
     return (
@@ -106,9 +130,16 @@ const handleDeleteItem = async () => {
 
   return (
     <ScrollView style={styles.scrollView}>
-      <TouchableOpacity style={styles.settingsButton} onPress={openDeleteItemModal}>
-        <Image source={SettingsIcon} style={styles.settingsIcon} />
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={handleFavoriteToggle} style={styles.favoriteButton}>
+          <Image source={favoriteIcon} style={styles.favoriteIcon} />
+        </TouchableOpacity>
+        {isCurrentUserOwner && (
+          <TouchableOpacity style={styles.settingsButton} onPress={openDeleteItemModal}>
+              <Image source={SettingsIcon} style={styles.settingsIcon} />
+          </TouchableOpacity>
+        )}
+      </View>
       <Modal visible={isDeleteItemModalOpen} animationType="slide">
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Delete Item</Text>
@@ -196,6 +227,29 @@ const styles = StyleSheet.create({
     borderWidth: 0, 
     borderColor: 'transparent',
   },
+  buttonContainer: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  favoriteButton: {
+    marginRight: 8, 
+  },
+  favoriteIcon: {
+    width: 24,
+    height: 24,
+    zIndex: 1,
+  },
+  settingsButton: {
+    zIndex: 1,
+  },
+  settingsIcon: {
+    width: 24,
+    height: 24,
+  },
   wrapper: {
     height: 300, 
   },
@@ -269,16 +323,7 @@ const styles = StyleSheet.create({
     color: 'white', 
     textAlign: 'center',
   },
-  settingsButton: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    zIndex: 1,
-  },
-  settingsIcon: {
-    width: 24,
-    height: 24,
-  },
+  
   modalContent: {
     flex: 1,
     justifyContent: 'center',
@@ -324,7 +369,7 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: 'black',
     fontWeight: 'bold',
-    fontSize: 16, // Font size for cancel button text
+    fontSize: 16, 
   },
 });
 

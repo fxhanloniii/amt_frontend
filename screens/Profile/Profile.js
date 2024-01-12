@@ -14,13 +14,14 @@ const Profile = ({ navigation }) => {
   const [profilePicture, setProfilePicture] = useState(noProfilePhoto);
 
   useEffect(() => {
-        setUserListings([]);
+    setUserListings([]);
     setUserFavorites([]);
     setLoading(true);
 
     if (user && token) {
-            fetchUserItems();
+      fetchUserItems();
       fetchUserProfile();
+      fetchUserFavorites();
     } else {
             setLoading(false);
     }
@@ -82,6 +83,35 @@ const Profile = ({ navigation }) => {
     }
   };
 
+  const fetchUserFavorites = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/favorites/?user=${user.pk}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Token ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        
+        const favoritesData = await response.json();
+        
+        console.log("favoritesData:", favoritesData); 
+        if (Array.isArray(favoritesData)) {  // Check if the response is an array
+          setUserFavorites(favoritesData);
+        } else {
+          console.error('Favorites data is not an array:', favoritesData);
+        }
+        setLoading(false);
+      } else {
+        console.error('Failed to fetch user favorites');
+      }
+    } catch (error) {
+      console.error('Error fetching user favorites:', error);
+    }
+  };
+
   const handleLogout = async () => {
     await signOut();
     setUserProfile(null);
@@ -125,14 +155,14 @@ const Profile = ({ navigation }) => {
   const renderListingItem = ({ item }) => {
     // Check if item is defined and item.images is an array with at least one image
     if (item && Array.isArray(item.images) && item.images.length > 0) {
-      console.log(item.images)
+      
       const imageUrl = item.images[0].image;
-      console.log(imageUrl)
+      
       const baseUrl = imageUrl.split('?')[0];
-       // Get the image URL from item.images[0].image
-      console.log(baseUrl)
+       
+      
 
-    // Set the item image using the image URL
+    
       const itemImage = { uri: baseUrl };
       return (
         <TouchableOpacity key={item.id} onPress={() => handleItemPress(item.id)}>
@@ -155,6 +185,7 @@ const Profile = ({ navigation }) => {
   };
 
   const renderFavoriteItem = ({ item }) => {
+    if (item && Array.isArray(item.images) && item.images.length > 0) {
         return (
         <View style={styles.favoriteItemContainer}>
         <TouchableOpacity key={item?.id} onPress={() => handleItemPress(item.id)}>
@@ -165,6 +196,9 @@ const Profile = ({ navigation }) => {
         </TouchableOpacity>
       </View>
     );
+        } else {
+          return null;
+        }
   };
 
   const handleItemPress = (itemId) => {
