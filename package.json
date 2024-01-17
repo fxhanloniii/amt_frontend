@@ -27,7 +27,8 @@
     "react-native-swiper": "^1.6.0",
     "react-native-web": "~0.19.6",
     "expo-splash-screen": "~0.20.5",
-    "react-native-screens": "~3.22.0"
+    "react-native-screens": "~3.22.0",
+    "expo-updates": "~0.18.19"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

@@ -17,7 +17,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.rubbleapp.rubble",
-      "buildNumber": "2"
+      "buildNumber": "2",
+      "version": "1.0.1"
     },
     "android": {
       "adaptiveIcon": {
@@ -34,6 +35,10 @@
         "projectId": "56fe34f0-cee5-41b0-8c63-ecf656dc2778"
       }
     },
-    "owner": "fxhiii"
+    "owner": "fxhiii",
+    "runtimeVersion": "1.0.1",
+    "updates": {
+      "url": "https://u.expo.dev/56fe34f0-cee5-41b0-8c63-ecf656dc2778"
+    }
   }
 }
