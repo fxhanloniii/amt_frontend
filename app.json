@@ -2,7 +2,7 @@
   "expo": {
     "name": "amt_frontend",
     "slug": "rubble",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/Beta_logo.png",
     "userInterfaceStyle": "light",
@@ -16,7 +16,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.rubbleapp.rubble"
+      "bundleIdentifier": "com.rubbleapp.rubble",
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
