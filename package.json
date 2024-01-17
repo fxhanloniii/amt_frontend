@@ -1,11 +1,10 @@
 {
   "name": "amt_frontend",
-  "version": "1.0.0",
-  "main": "node_modules/expo/AppEntry.js",
+  "version": "1.0.1",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
@@ -14,6 +13,7 @@
     "@react-navigation/stack": "^6.3.17",
     "axios": "^1.5.0",
     "expo": "~49.0.8",
+    "expo-cli": "^6.3.10",
     "expo-font": "^11.6.0",
     "expo-image-picker": "~14.3.2",
     "expo-location": "~16.1.0",
@@ -21,11 +21,13 @@
     "expo-status-bar": "~1.6.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.72.4",
+    "react-native": "0.72.6",
     "react-native-dotenv": "^3.4.9",
     "react-native-picker-select": "^9.0.0",
     "react-native-swiper": "^1.6.0",
-    "react-native-web": "~0.19.6"
+    "react-native-web": "~0.19.6",
+    "expo-splash-screen": "~0.20.5",
+    "react-native-screens": "~3.22.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

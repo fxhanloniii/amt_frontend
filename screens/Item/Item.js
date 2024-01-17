@@ -215,6 +215,9 @@ const handleFavoriteToggle = async () => {
 };
 
 const styles = StyleSheet.create({
+  scrollView:{
+    backgroundColor: '#f2efe9',
+  },
   container: {
     padding: 16,
     backgroundColor: '#f2efe9',
