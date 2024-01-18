@@ -2,7 +2,7 @@
   "expo": {
     "name": "amt_frontend",
     "slug": "rubble",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/Beta_logo.png",
     "userInterfaceStyle": "light",
@@ -17,8 +17,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.rubbleapp.rubble",
-      "buildNumber": "2",
-      "version": "1.0.1"
+      "buildNumber": "3",
+      "version": "1.0.2"
     },
     "android": {
       "adaptiveIcon": {
@@ -36,7 +36,7 @@
       }
     },
     "owner": "fxhiii",
-    "runtimeVersion": "1.0.1",
+    "runtimeVersion": "1.0.2",
     "updates": {
       "url": "https://u.expo.dev/56fe34f0-cee5-41b0-8c63-ecf656dc2778"
     }
