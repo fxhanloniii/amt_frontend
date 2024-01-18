@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { AuthProvider, useAuth } from './AuthContext/AuthContext'; 
-
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Screen Imports
 import Home from './screens/Home/Home';
@@ -66,9 +66,11 @@ const styles = StyleSheet.create({
 
 const AppWithAuthProvider = () => {
   return (
-    <AuthProvider> 
-      <App />
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider> 
+        <App />
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 };
 
