@@ -9,6 +9,9 @@ const Message = ({ route, navigation }) => {
     const [newMessage, setNewMessage] = useState('');
     const webSocket = useRef(null);
     const { token, user } = useAuth();
+    const [profilePicture, setProfilePicture] = useState(noProfilePhoto);
+    const [userProfile, setUserProfile] = useState(null);
+    const [isCurrentUserProfile, setIsCurrentUserProfile] = useState(false);
     console.log(itemDetails)
     useEffect(() => {
 
@@ -18,7 +21,7 @@ const Message = ({ route, navigation }) => {
             });
             if (response.ok) {
                 const data = await response.json();
-                setMessages(data); // Assuming your backend returns an array of messages
+                setMessages(data); 
                 console.log(data)
             } else {
                 console.error('Failed to fetch messages');
@@ -28,7 +31,7 @@ const Message = ({ route, navigation }) => {
         
         
         fetchMessages();
-
+        fetchUserProfile();
         // connect to websocket server 
         webSocket.current = new WebSocket(`ws://127.0.0.1:8001/ws/chat/${conversationId}/`);
 
@@ -47,17 +50,74 @@ const Message = ({ route, navigation }) => {
         };
     }, [conversationId]);
 
-    const sendMessage = () => {
+    const fetchUserProfile = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/profiles/user/${user.pk}/`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Token ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+    
+          if (response.ok) {
+            const userProfileData = await response.json();
+            setUserProfile(userProfileData);
+    
+            if (userProfileData.profile_picture_url) {
+              setProfilePicture({ uri: userProfileData.profile_picture_url });
+                      } else {
+              setProfilePicture(noProfilePhoto);
+            }
+            setIsCurrentUserProfile(userProfileData.user === user.id);
+          } else {
+            console.error('Failed to fetch user profile');
+          }
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+        }
+      };
+
+    const sendMessage = async () => {
         if (webSocket.current && newMessage.trim()) {
             // Send message to WebSocket
             webSocket.current.send(JSON.stringify({ message: newMessage }));
-
-            // Update state with the new message including sender info
-            setMessages(prevMessages => [...prevMessages, {
-                text: newMessage, 
-                sender: user.username  
-            }]);
-            setNewMessage('');
+    
+            const messageData = {
+                conversation: conversationId,
+                sender: user.id, // Adjust based on your user object
+                text: newMessage,
+            };
+    
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/save-message/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Token ${token}`,
+                    },
+                    body: JSON.stringify(messageData),
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to save message');
+                }
+    
+                // Update state with the new message including sender info
+                setMessages(prevMessages => [...prevMessages, {
+                    text: newMessage, 
+                    sender: user.pk,
+                    sender_profile: { 
+                        first_name: user.first_name,
+                        profile_picture_url: userProfile ? userProfile.profile_picture_url : noProfilePhoto
+                    }
+                }]);
+                setNewMessage('');
+                console.log(user)
+    
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
         }
 
         webSocket.current.onmessage = (e) => {
@@ -71,7 +131,8 @@ const Message = ({ route, navigation }) => {
     };
 
     const renderItem = ({ item }) => {
-                const isCurrentUser = item.sender === user.username;
+
+        const isCurrentUser = item.sender === user.pk;
         const profileImage = item.sender_profile ? item.sender_profile.profile_picture_url : noProfilePhoto;
         const senderName = item.sender_profile ? item.sender_profile.first_name : item.sender;
         

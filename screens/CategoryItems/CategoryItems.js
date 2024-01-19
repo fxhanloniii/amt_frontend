@@ -65,7 +65,7 @@ const CategoryItems = ({ route, navigation }) => {
   };
 
   const handleSearch = () => {
-    navigation.navigate('CategoryItems', {
+    navigation.navigate('Category', {
       searchQuery,
       location,
     });

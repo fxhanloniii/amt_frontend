@@ -241,14 +241,8 @@ const Profile = ({ navigation }) => {
             </View>
           </TouchableOpacity>
         ) : (
-          <View>
-          <FlatList
-            data={userlistings.slice(0, 6)}  // Or remove slice(0, 6) to show all items
-            renderItem={renderListingItem}
-            keyExtractor={(item) => item?.id?.toString()}
-            numColumns={3}
-            key={'three-columns'}
-          />
+          <View style={styles.itemList}>
+            {userlistings.slice(0, 6).map((item) => renderListingItem({ item }))}
           </View>
         )}
         {renderSeeMoreButton('userlistings')}
