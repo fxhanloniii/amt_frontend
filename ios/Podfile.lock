@@ -60,6 +60,10 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.72.6)
   - fmt (6.2.1)
   - glog (0.3.5)
+  - Picker (4.3.7):
+    - Picker/Core (= 4.3.7)
+  - Picker/Core (4.3.7):
+    - React
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -472,6 +476,7 @@ DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - Picker (from `../node_modules/react-native-picker`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -564,6 +569,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  Picker:
+    :path: "../node_modules/react-native-picker"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -663,6 +670,7 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 966f29e4e697de53a3b366355e8f57375c856ad9
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  Picker: 37554355aef82a532ea95b71b6eeba66bc86182b
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 28469809442eb4eb5528462705f7d852948c8a74
   RCTTypeSafety: e9c6c409fca2cc584e5b086862d562540cb38d29
