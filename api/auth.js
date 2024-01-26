@@ -1,7 +1,7 @@
 
 // Backend API for authentication
 
-const BASE_URL = 'http://13.57.40.111:8000'
+const BASE_URL = 'http://13.57.40.111:8000';
 
 // Function to register a user
 export const registerUser = async (username, email, password, confirmPassword, firstName, lastName) => {

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView }
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 import settingsIcon from '../../assets/images/settingsicon.png';
-const BASE_URL = 'http://13.57.40.111:8000'
+const BASE_URL = 'http://13.57.40.111:8000';
 
 const Profile = ({ navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();

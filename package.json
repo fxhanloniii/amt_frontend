@@ -1,6 +1,6 @@
 {
-  "name": "amt_frontend",
-  "version": "1.0.2",
+  "name": "rubble",
+  "version": "1.0.3",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",

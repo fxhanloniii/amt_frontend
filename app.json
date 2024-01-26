@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "amt_frontend",
-    "slug": "rubble",
-    "version": "1.0.2",
+    "name": "Rubble",
+    "slug": "Rubble",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/Beta_logo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/images/Beta_logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,8 +17,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.rubbleapp.rubble",
-      "buildNumber": "3",
-      "version": "1.0.2"
+      "buildNumber": "4",
+      "version": "1.0.3"
     },
     "android": {
       "adaptiveIcon": {
