@@ -116,7 +116,28 @@ const handleFavoriteToggle = async () => {
   }
 };
 
+const handleDeleteItem = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/items/${item.id}/`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    });
 
+    if (response.ok) {
+      // Item deleted successfully
+      console.log("Item deleted");
+      // Navigate back or refresh items
+      navigation.goBack(); // or navigation.navigate to another screen
+    } else {
+      // Handle error
+      console.error('Failed to delete item');
+    }
+  } catch (error) {
+    console.error('Error deleting item:', error);
+  }
+};
 
   if (!item) {
     return (
