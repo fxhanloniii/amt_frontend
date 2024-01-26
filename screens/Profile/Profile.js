@@ -184,13 +184,20 @@ const Profile = ({ navigation }) => {
         <View>
         <TouchableOpacity key={item?.id} onPress={() => handleItemPress(item.id)}>
           <View style={styles.listingItemContainer}>
-            <Image style={styles.itemImage} source={{ uri: item?.images[1].image }} />
+            <Image style={styles.itemImage} source={{ uri: item?.images[0].image }} />
           </View>
         </TouchableOpacity>
       </View>
     );
         } else {
-          return null;
+          return (
+            <TouchableOpacity key={item?.id} onPress={() => handleItemPress(item?.id)}>
+              <View style={styles.favoriteItemContainer}>
+                {/* You can show a placeholder image or text here */}
+                <Text>No Image</Text>
+              </View>
+            </TouchableOpacity>
+          );
         }
   };
 
