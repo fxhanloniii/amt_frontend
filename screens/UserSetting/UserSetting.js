@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Image, Scro
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
-
+const BASE_URL = 'http://13.57.40.111:8000';
 
 const UserSettings = ({ route, navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();
@@ -22,7 +22,7 @@ const UserSettings = ({ route, navigation }) => {
 
   const handleLogout = async () => {
     await signOut();
-    navigation.navigate('LogIn'); // Navigate to your login screen or any other appropriate screen
+    navigation.navigate('LogIn'); 
   };
 
   // Function to pick a profile picture
@@ -48,7 +48,7 @@ const UserSettings = ({ route, navigation }) => {
     });
   
     try {
-      const response = await fetch('http://127.0.0.1:8000/upload-image/', {
+      const response = await fetch(`${BASE_URL}/upload-image/`, {
         method: 'POST',
         headers: {
           'Authorization': `Token ${token}`,
@@ -91,7 +91,7 @@ const UserSettings = ({ route, navigation }) => {
   const updateUserProfile = async (newProfileData) => {
     try {
         console.log(user.pk)
-      const response = await fetch(`http://127.0.0.1:8000/profiles/user/${user.pk}/`, {
+      const response = await fetch(`${BASE_URL}/profiles/user/${user.pk}/`, {
         method: 'PUT',
         headers: {
           'Authorization': `Token ${token}`,
@@ -116,7 +116,7 @@ const UserSettings = ({ route, navigation }) => {
 
   const fetchUserProfile = async () => {
     try {
-            const response = await fetch(`http://127.0.0.1:8000/profiles/user/${user.pk}/`, {
+            const response = await fetch(`${BASE_URL}/profiles/user/${user.pk}/`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${token}`,

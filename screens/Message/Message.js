@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
+const BASE_URL = 'http://13.57.40.111:8000'
 
 const Message = ({ route, navigation }) => {
     const { conversationId, itemDetails } = route.params;
@@ -16,7 +17,7 @@ const Message = ({ route, navigation }) => {
     useEffect(() => {
 
         const fetchMessages = async () => {
-            const response = await fetch(`http://127.0.0.1:8000/conversations/${conversationId}/messages/`, {
+            const response = await fetch(`${BASE_URL}/conversations/${conversationId}/messages/`, {
                 headers: { Authorization: `Token ${token}` }
             });
             if (response.ok) {
@@ -33,7 +34,7 @@ const Message = ({ route, navigation }) => {
         fetchMessages();
         fetchUserProfile();
         // connect to websocket server 
-        webSocket.current = new WebSocket(`ws://127.0.0.1:8001/ws/chat/${conversationId}/`);
+        webSocket.current = new WebSocket(`ws://13.57.40.111:8001/ws/chat/${conversationId}/`);
 
         webSocket.current.onmessage = (e) => {
             const data = JSON.parse(e.data);
@@ -52,7 +53,7 @@ const Message = ({ route, navigation }) => {
 
     const fetchUserProfile = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/profiles/user/${user.pk}/`, {
+            const response = await fetch(`${BASE_URL}/profiles/user/${user.pk}/`, {
             method: 'GET',
             headers: {
               'Authorization': `Token ${token}`,
@@ -90,7 +91,7 @@ const Message = ({ route, navigation }) => {
             };
     
             try {
-                const response = await fetch(`http://127.0.0.1:8000/save-message/`, {
+                const response = await fetch(`${BASE_URL}/save-message/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

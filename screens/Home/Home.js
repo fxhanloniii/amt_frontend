@@ -23,7 +23,7 @@ import Roofing from '../../assets/images/Roofing.png';
 import Storage from '../../assets/images/Storage.png';
 import TilesMasonry from '../../assets/images/Tiles_Masonry.png';
 import Tools from '../../assets/images/Tools.png';
-
+const BASE_URL = 'http://13.57.40.111:8000'
 <link rel="stylesheet" href="https://use.typekit.net/ftp2quu.css"></link>
 
 export default function Home({ navigation }) {

@@ -5,7 +5,7 @@ import Swiper from 'react-native-swiper';
 import SettingsIcon from '../../assets/images/settingsicon.png';
 import HeartIcon from '../../assets/images/heart.png';
 import HeartFilledIcon from '../../assets/images/heart2.png';
-
+const BASE_URL = 'http://13.57.40.111:8000'
 
 const Item = ({ route, navigation }) => {
   const [item, setItem] = useState(null);
@@ -22,7 +22,7 @@ const Item = ({ route, navigation }) => {
     const fetchItemData = async () => {
       try {
         const itemId = route.params.itemId;
-        const response = await fetch(`http://127.0.0.1:8000/items/${itemId}/`);
+        const response = await fetch(`${BASE_URL}/items/${itemId}/`);
 
         if (response.ok) {
           const itemData = await response.json();
@@ -42,7 +42,7 @@ const Item = ({ route, navigation }) => {
     fetchItemData();
 
     const checkIfFavorited = async () => {
-      const response = await fetch(`http://127.0.0.1:8000/favorites/check/${route.params.itemId}/`, {
+      const response = await fetch(`${BASE_URL}/favorites/check/${route.params.itemId}/`, {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -65,7 +65,7 @@ const Item = ({ route, navigation }) => {
       return;
     }
 
-    const response = await fetch(`http://127.0.0.1:8000/start-conversation/${item.id}/`, {
+    const response = await fetch(`${BASE_URL}/start-conversation/${item.id}/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ const closeDeleteItemModal = () => {
 
 const handleFavoriteToggle = async () => {
   try {
-    const response = await fetch(`http://127.0.0.1:8000/favorites/toggle/${item.id}/`, {
+    const response = await fetch(`${BASE_URL}/favorites/toggle/${item.id}/`, {
       method: 'POST',
       headers: {
         Authorization: `Token ${token}`,

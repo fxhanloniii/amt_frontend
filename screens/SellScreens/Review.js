@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, ScrollView, Button, StyleSheet } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
 import * as Location from 'expo-location';
+const BASE_URL = 'http://13.57.40.111:8000';
 
 const Review = ({ route, navigation }) => {
   
@@ -69,7 +70,7 @@ const Review = ({ route, navigation }) => {
         });
       });
   
-      const response = await fetch('http://localhost:8000/upload-item-data-and-images/', {
+      const response = await fetch(`${BASE_URL}/upload-item-data-and-images/`, {
         method: 'POST',
         headers: {
           'Authorization': `Token ${token}`,

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView }
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 import settingsIcon from '../../assets/images/settingsicon.png';
+const BASE_URL = 'http://13.57.40.111:8000'
 
 const Profile = ({ navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();
@@ -34,7 +35,7 @@ const Profile = ({ navigation }) => {
   const fetchUserItems = async () => {
     try {
       setUserListings([]);
-      const response = await fetch(`http://127.0.0.1:8000/items/?seller=${user.pk}`, {
+      const response = await fetch(`${BASE_URL}/items/?seller=${user.pk}`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${token}`,
@@ -57,7 +58,7 @@ const Profile = ({ navigation }) => {
 
   const fetchUserProfile = async () => {
     try {
-            const response = await fetch(`http://127.0.0.1:8000/profiles/user/${user.pk}/`, {
+            const response = await fetch(`${BASE_URL}/profiles/user/${user.pk}/`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${token}`,
@@ -85,7 +86,7 @@ const Profile = ({ navigation }) => {
 
   const fetchUserFavorites = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/favorites/?user=${user.pk}`, {
+      const response = await fetch(`${BASE_URL}/favorites/?user=${user.pk}`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${token}`,
@@ -112,13 +113,7 @@ const Profile = ({ navigation }) => {
     }
   };
 
-  const handleLogout = async () => {
-    await signOut();
-    setUserProfile(null);
-    setUserListings([]);
-    setUserFavorites([]);
-    navigation.navigate('LogIn'); // Navigate to your login screen or any other appropriate screen
-  };
+  
 
   
 
@@ -126,12 +121,11 @@ const Profile = ({ navigation }) => {
     let endpoint;
   
     if (category === 'userlistings') {
-      endpoint = `http://127.0.0.1:8000/items/?seller=${user.pk}`;
+      endpoint = `${BASE_URL}/items/?seller=${user.pk}`;
     } else if (category === 'userfavorites') {
-      endpoint = `http://127.0.0.1:8000/favorites/?user=${user.pk}`;
+      endpoint = `${BASE_URL}/favorites/?user=${user.pk}`;
     }
   
-    // Navigate to the CategoryItems page with the appropriate endpoint
     navigation.navigate('Category', { categoryType: category, endpoint });
   };
 
@@ -187,11 +181,10 @@ const Profile = ({ navigation }) => {
   const renderFavoriteItem = ({ item }) => {
     if (item && Array.isArray(item.images) && item.images.length > 0) {
         return (
-        <View style={styles.favoriteItemContainer}>
+        <View>
         <TouchableOpacity key={item?.id} onPress={() => handleItemPress(item.id)}>
-          <View style={styles.favoriteItemInnerContainer}>
+          <View style={styles.listingItemContainer}>
             <Image style={styles.itemImage} source={{ uri: item?.images[1].image }} />
-            <Text>{item?.title}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -339,6 +332,7 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 2,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   itemImage: {
     width: 110,
@@ -372,3 +366,5 @@ const styles = StyleSheet.create({
 });
 
 export default Profile;
+
+

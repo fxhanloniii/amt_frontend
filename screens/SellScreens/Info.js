@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import PhotoPage from './Photo.js';
-import RNPickerSelect from 'react-native-picker-select';
+import { Picker } from '@react-native-picker/picker';
 
 const InfoInputScreen = ({ navigation }) => {
   // Define state variables for user inputs
@@ -60,12 +60,15 @@ const handleNextPress = () => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}>
         <Text style={styles.header}>Sell an Item</Text>
-      <RNPickerSelect
-        onValueChange={(value) => setCategory(value)}
-        items={categories.map((cat) => ({ label: cat, value: cat }))}
-        style={pickerSelectStyles}
-        placeholder={{ label: "Select Category", value: null }}
-      />
+        <Picker
+          selectedValue={category}
+          onValueChange={(itemValue, itemIndex) =>
+            setCategory(itemValue)
+          }>
+          {categories.map((cat) => (
+            <Picker.Item label={cat} value={cat} key={cat} />
+          ))}
+        </Picker>
 
         <Text style={styles.label}>Title:</Text>
         <TextInput

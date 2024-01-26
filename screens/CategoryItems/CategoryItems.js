@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Image, TextInput, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
+const BASE_URL = 'http://13.57.40.111:8000'
 
 const CategoryItems = ({ route, navigation }) => {
   const { categoryName, endpoint, location } = route.params;
@@ -16,13 +17,13 @@ const CategoryItems = ({ route, navigation }) => {
       try {
         let apiUrl = '';
         if (searchQuery) {
-          apiUrl = `http://127.0.0.1:8000/items/?search=${encodeURIComponent(searchQuery)}`;
+          apiUrl = `${BASE_URL}/items/?search=${encodeURIComponent(searchQuery)}`;
         } else if (endpoint) {
           // If endpoint is provided, use it
           apiUrl = endpoint;
         } else if (categoryName) {
           // If category name is provided, use it
-          apiUrl = `http://127.0.0.1:8000/items/?category=${encodeURIComponent(categoryName)}`;
+          apiUrl = `${BASE_URL}/items/?category=${encodeURIComponent(categoryName)}`;
         } else {
           console.error('No endpoint or category name provided');
           return;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 import { useAuth } from '../../AuthContext/AuthContext';
+const BASE_URL = 'http://13.57.40.111:8000'
 
 const Inbox = ({ navigation }) => {
     const [conversations, setConversations] = useState([]);
@@ -11,7 +12,7 @@ const Inbox = ({ navigation }) => {
 
     useEffect(() => {
         const fetchConversations = async () => {
-            const response = await fetch('http://127.0.0.1:8000/conversations/', {
+            const response = await fetch(`${BASE_URL}/conversations/`, {
                 headers: { Authorization: `Token ${token}` }
             });
 

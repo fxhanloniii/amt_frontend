@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { logoutUser, loginUser } from '../api/auth';
 const AuthContext = createContext();
+const BASE_URL = 'http://13.57.40.111:8000'
 
 export const useAuth = () => {
   return useContext(AuthContext);
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserData = async (authToken) => {
     try {
-      const userResponse = await fetch('http://127.0.0.1:8000/dj-rest-auth/user/', {
+      const userResponse = await fetch(`${BASE_URL}/dj-rest-auth/user/`, {
         method: 'GET',
         headers: {
           'Authorization': `Token ${authToken}`,
