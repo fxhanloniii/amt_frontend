@@ -18,7 +18,9 @@ export const AuthProvider = ({ children }) => {
       const authToken = await SecureStore.getItemAsync('usertoken');
       if (authToken) {
         setToken(authToken);
+        console.log("Retrieved token:", authToken);
         await fetchUserData(authToken);
+        setIsSignedIn(true);
       } else {
         setIsSignedIn(false);
       }
