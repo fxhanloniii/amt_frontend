@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
     titleTopCatergories: {
       fontSize: 18, 
       fontWeight: 'bold',
+      
   },
   locationText: {
     color: '#9e3f19'
