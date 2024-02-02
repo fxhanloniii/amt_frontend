@@ -2,7 +2,7 @@
   "expo": {
     "name": "Rubble",
     "slug": "rubble",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/appicon1.png",
     "userInterfaceStyle": "light",
@@ -17,8 +17,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.rubbleapp.rubble",
-      "buildNumber": "6",
-      "version": "1.0.5"
+      "buildNumber": "7",
+      "version": "1.0.6"
     },
     "android": {
       "adaptiveIcon": {
@@ -36,7 +36,7 @@
       }
     },
     "owner": "fxhiii",
-    "runtimeVersion": "1.0.5",
+    "runtimeVersion": "1.0.6",
     "updates": {
       "url": "https://u.expo.dev/56fe34f0-cee5-41b0-8c63-ecf656dc2778"
     }
