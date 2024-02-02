@@ -247,8 +247,9 @@ categoryIcon: {
     color: '#293e49',
     textAlign: 'center',
     paddingRight: 30,
-    
+    fontFamily: "RigSans-Bold", 
   },
+
   viewAllButton: {
     backgroundColor: '#293e49',
     paddingVertical: 5,  

@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { AuthProvider, useAuth } from './AuthContext/AuthContext'; 
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
+import * as Font from 'expo-font';
+<link rel="stylesheet" href="https://use.typekit.net/ftp2quu.css"></link>
 // Screen Imports
 import Home from './screens/Home/Home';
 import SignUp from './screens/SignUp/SignUp';
@@ -24,11 +25,26 @@ import UserSetting from './screens/UserSetting/UserSetting';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
+// Function to load fonts
+async function loadFonts() {
+  await Font.loadAsync({
+    'RigSans-Bold': require('./assets/fonts/rigsans-bold.ttf'),
+    'BasicSans-Regular': require('./assets/fonts/basicsans-regular.ttf'),
+    'BasicSans-RegularIt': require('./assets/fonts/basicsans-regularit.ttf'),
+  });
+}
+
+
+
 const Stack = createStackNavigator();
 
 const App = () => {
-
+  const [fontsLoaded, setFontsLoaded] = useState(false);
   const { isSignedIn } = useAuth();
+
+  useEffect(() => {
+    loadFonts().then(() => setFontsLoaded(true)).catch(err => console.log('Error loading fonts:', err));
+  }, []);
 
   return (
     <NavigationContainer>
