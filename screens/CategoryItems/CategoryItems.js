@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Image, TextInput, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
-const BASE_URL = 'http://13.57.40.111:8000';
+const BASE_URL = 'http://3.101.60.200:8000';
 
 const CategoryItems = ({ route, navigation }) => {
   const { categoryName, endpoint, location } = route.params;

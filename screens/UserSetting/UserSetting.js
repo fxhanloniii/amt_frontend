@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Image, Scro
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
-const BASE_URL = 'http://13.57.40.111:8000';
+const BASE_URL = 'http://3.101.60.200:8000';
 
 const UserSettings = ({ route, navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();
@@ -14,12 +14,56 @@ const UserSettings = ({ route, navigation }) => {
   const [state, setState] = useState(userProfile?.state || '');
   const [firstName, setFirstName] = useState(user?.first_name || '');
   const [lastName, setLastName] = useState(user?.last_name || '');
+  const [loading, setLoading] = useState(false);
 
   
   useEffect(() => {
     fetchUserProfile();
   }, [user, token]);
 
+
+  const handleDeleteAccount = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${BASE_URL}/delete-account/`, {
+        headers: {
+          method: 'DELETE',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        // Account deleted successfully 
+        Alert.alert('Your account has been deleted.', [
+          {text: 'OK', onPress: () => navigation.navigate('LogIn')},
+        ]);
+      } else {
+        // handle other status codes 
+        Alert.alert('Error', 'Failed to delete account. Please try again later.');
+      }
+    } catch (error) {
+      // handle network errors or other exceptions
+      console.error('Error deleting account:', error);
+      Alert.alert('Error', 'Failed to delete account. Please try again later.');
+    }
+  } 
+
+  const handleConfirmation = () => {
+    Alert.alert(
+      'Confirmation',
+      'Are you sure you want to delete your account? This action cannot be undone.',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Delete', 
+        onPress: () => handleDeleteAccount(),
+        style: 'destructive'},
+      ],
+      { cancelable: false }
+    )
+  }
   const handleLogout = async () => {
     await signOut();
     navigation.navigate('LogIn'); 
@@ -151,7 +195,7 @@ const UserSettings = ({ route, navigation }) => {
         <Image source={profilePicture} style={styles.profileImage} key={profilePicture} />
       </TouchableOpacity>
         <Text style={styles.displayName}>{firstName} {lastName}</Text>
-      <TextInput
+       {/* <TextInput
         style={styles.input}
         value={bio}
         onChangeText={setBio}
@@ -169,12 +213,15 @@ const UserSettings = ({ route, navigation }) => {
       onChangeText={setState}
       placeholder="State"
       />
-      {/* Additional fields here */}
-      <TouchableOpacity style={styles.button} onPress={handleUpdate}>
-        <Text style={styles.buttonText}>Update Profile</Text>
-      </TouchableOpacity>
+      
+       <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+         <Text style={styles.buttonText}>Update Profile</Text>
+       </TouchableOpacity>  */}
       <TouchableOpacity style={styles.button} onPress={handleLogout}>
         <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.deleteButton} onPress={handleConfirmation} disabled={loading}>
+        <Text style={styles.buttonText}>Delete Account</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -219,10 +266,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 50,
   },
+  deleteButton: {
+    backgroundColor: 'red',
+    padding: 15,
+    alignItems: 'center',
+    borderRadius: 50,
+    marginTop: 10,
+  },
   buttonText: {
     color: 'white',
     fontSize: 18,
-    
   },
 });
 

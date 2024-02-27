@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 import { useAuth } from '../../AuthContext/AuthContext';
-const BASE_URL = 'http://13.57.40.111:8000';
+const BASE_URL = 'http://3.101.60.200:8000';
 
 const Inbox = ({ navigation }) => {
     const [conversations, setConversations] = useState([]);

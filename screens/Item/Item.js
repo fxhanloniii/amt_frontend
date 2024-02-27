@@ -5,7 +5,7 @@ import Swiper from 'react-native-swiper';
 import SettingsIcon from '../../assets/images/settingsicon.png';
 import HeartIcon from '../../assets/images/heart.png';
 import HeartFilledIcon from '../../assets/images/heart2.png';
-const BASE_URL = 'http://13.57.40.111:8000';
+const BASE_URL = 'http://3.101.60.200:8000';
 
 const Item = ({ route, navigation }) => {
   const [item, setItem] = useState(null);

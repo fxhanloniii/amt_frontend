@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
-const BASE_URL = 'http://13.57.40.111:8000';
+const BASE_URL = 'http://3.101.60.200:8000';
 
 const Message = ({ route, navigation }) => {
     const { conversationId, itemDetails } = route.params;
@@ -278,6 +278,7 @@ const styles = StyleSheet.create({
 
     currentUserText: {
         color: 'white',
+        fontFamily: 'BasicSans-Regular'
     },
 
     otherUserText: {

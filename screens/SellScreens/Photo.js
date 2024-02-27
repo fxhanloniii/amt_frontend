@@ -63,7 +63,7 @@ export default function PhotoPage({ route, navigation }) {
         <Text style={styles.header}>Sell an Item</Text>
       <View style={styles.photoOptions}>
         <TouchableOpacity onPress={takePhoto} style={styles.photoButton}>
-          <Text>Take a Photo</Text>
+          <Text style={styles.buttonText}>Take a Photo</Text>
         </TouchableOpacity>
         <TouchableOpacity
               onPress={pickImage}
@@ -73,7 +73,7 @@ export default function PhotoPage({ route, navigation }) {
               ]}
               disabled={selectedImages.length >= 10} // Disable button if limit is reached
           >
-              <Text>{selectedImages.length > 0 ? "Add Another Photo" : "Select a Photo"}</Text>
+              <Text style={styles.buttonText}>{selectedImages.length > 0 ? "Add Another Photo" : "Select a Photo"}</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.photoGrid}>
@@ -151,4 +151,8 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
   },
+  buttonText: {
+    fontSize: 16,
+    fontFamily: 'BasicSans-Regular',
+  }
 });

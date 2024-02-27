@@ -1,7 +1,29 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Image } from 'react-native';
 import PhotoPage from './Photo.js';
 import { Picker } from '@react-native-picker/picker';
+import Appliances from '../../assets/images/Appliances.png';
+import BathFaucets from '../../assets/images/Bath_Faucets.png';
+import Cleaning from '../../assets/images/Cleaning.png';
+import ConcreteBrick from '../../assets/images/Concrete_Brick.png';
+import DoorsWindows from '../../assets/images/Doors_Windows.png';
+import Drywall from '../../assets/images/Drywall.png';
+import Electrical from '../../assets/images/Electrical.png';
+import Siding from '../../assets/images/Siding.png';
+import FlooringRugs from '../../assets/images/Flooring_Rugs.png';
+import GardenPatio from '../../assets/images/Garden_Patio.png';
+import Hardware from '../../assets/images/Hardware.png';
+import HeatingAir from '../../assets/images/Heating_Air.png';
+import Kitchen from '../../assets/images/Kitchen.png';
+import LightingFans from '../../assets/images/Lighting_Fans.png';
+import Lumber from '../../assets/images/Lumber.png';
+import Misc from '../../assets/images/Misc.png';
+import Paint from '../../assets/images/Paint.png';
+import Plumbing from '../../assets/images/Plumbing.png';
+import Roofing from '../../assets/images/Roofing.png';
+import Storage from '../../assets/images/Storage.png';
+import TilesMasonry from '../../assets/images/Tiles_Masonry.png';
+import Tools from '../../assets/images/Tools.png';
 
 const InfoInputScreen = ({ navigation }) => {
   // Define state variables for user inputs
@@ -11,6 +33,11 @@ const InfoInputScreen = ({ navigation }) => {
   const [price, setPrice] = useState('');
   const [isForSale, setIsForSale] = useState(true); // Default to "For Sale"
   const [isPriceNegotiable, setIsPriceNegotiable] = useState(false);
+  const [modalVisible, setModalVisible]= useState(false);
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible)
+  };
 
   // Function to handle the "Next" button press
 const handleNextPress = () => {
@@ -33,6 +60,7 @@ const handleNextPress = () => {
 
   const handleCategorySelect = (selectedCategory) => {
     setCategory(selectedCategory);
+    toggleModal();
   };
 
    // Define the list of categories
@@ -43,6 +71,31 @@ const handleNextPress = () => {
     'Kitchen', 'Lighting & Fans', 'Lumber', 'Misc.', 'Paint', 
     'Plumbing', 'Roofing', 'Storage', 'Tiles & Masonry', 'Tools'
   ];
+
+  const categoryIcons = {
+    'Appliances': Appliances,
+    'Bath & Faucets': BathFaucets,
+    'Cleaning': Cleaning,
+    'Concrete & Brick': ConcreteBrick,
+    'Doors & Windows': DoorsWindows,
+    'Drywall': Drywall,
+    'Electrical': Electrical,
+    'Siding': Siding,
+    'Flooring & Rugs': FlooringRugs,
+    'Garden & Patio': GardenPatio,
+    'Hardware': Hardware,
+    'Heating & Air': HeatingAir,
+    'Kitchen': Kitchen,
+    'Lighting & Fans': LightingFans,
+    'Lumber': Lumber,
+    'Misc.': Misc,
+    'Paint': Paint,
+    'Plumbing': Plumbing,
+    'Roofing': Roofing,
+    'Storage': Storage,
+    'Tiles & Masonry': TilesMasonry,
+    'Tools': Tools,
+  };
 
   const handleForSaleChange = (saleStatus) => {
     setIsForSale(saleStatus);
@@ -60,15 +113,47 @@ const handleNextPress = () => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}>
         <Text style={styles.header}>Sell an Item</Text>
-        <Picker
-          selectedValue={category}
-          onValueChange={(itemValue, itemIndex) =>
-            setCategory(itemValue)
-          }>
-          {categories.map((cat) => (
-            <Picker.Item label={cat} value={cat} key={cat} />
-          ))}
-        </Picker>
+        <TouchableOpacity style={styles.selectCategoryButton} onPress={toggleModal}>
+          <Text style={styles.selectCategoryButtonText}>Select Category</Text>
+        </TouchableOpacity>
+        <View style={styles.selectedCategory}>
+          <Image source={categoryIcons[category]} style={styles.categoryIcon} />
+          <Text style={styles.selectedCategoryText}>{category}</Text>
+        </View>
+
+            <Modal visible={modalVisible} animationType="slide" onRequestClose={toggleModal}>
+            <View style={styles.overlay}>
+              <View style={styles.modalContainer}>
+              {/* <Picker
+                selectedValue={category}
+                onValueChange={(itemValue, itemIndex) =>
+                  setCategory(itemValue)
+                }>
+                {categories.map((cat) => (
+                  <Picker.Item label={cat} value={cat} key={cat} />
+                ))}
+              </Picker> */}
+                <ScrollView style={styles.categoryList}>
+                  {categories.map((cat) => (
+                    <TouchableOpacity
+                      key={cat}
+                      style={styles.categoryItem}
+                      onPress={() => handleCategorySelect(cat)}
+                      >
+                        <View style={styles.selectedCategoryContainer}>
+                          <Image source={categoryIcons[cat]} style={styles.categoryIcon} />
+                          <Text style={styles.categoryText}>{cat}</Text>
+                        </View>
+                      </TouchableOpacity>
+                  ))}
+                </ScrollView>
+                <TouchableOpacity style={styles.closeModalButton} onPress={toggleModal}>
+                  <Text style={styles.closeModalButtonText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+              </View>
+            </Modal>
+        
 
         <Text style={styles.label}>Title:</Text>
         <TextInput
@@ -163,13 +248,14 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 15,
     fontWeight: 'bold',
-    marginTop: 20,
+    marginTop: 5,
     marginBottom: 20,
     textAlign: 'left',
   },
   label: {
     fontSize: 14,
     marginVertical: 8,
+    fontFamily: 'BasicSans-Regular',
   },
   input: {
     borderWidth: 1,
@@ -179,6 +265,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 16,
     backgroundColor: '#fcfbfa',
+    fontFamily: 'BasicSans-Regular',
   },
   descriptionInput: {
     borderWidth: 1,
@@ -190,6 +277,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fcfbfa',
     textAlignVertical: 'top',
     minHeight: 100,
+    fontFamily: 'BasicSans-Regular',
   },
   optionButton: {
     borderWidth: 1,
@@ -198,6 +286,7 @@ const styles = StyleSheet.create({
     padding: 8,
     marginBottom: 16,
     alignItems: 'center',
+    
   },
   selectedOption: {
     backgroundColor: 'lightblue',
@@ -212,6 +301,7 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: 'white',
     fontSize: 18,
+    fontFamily: 'BasicSans-Regular',
     
   },
   scrollContentContainer: {
@@ -240,6 +330,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
+    fontFamily: 'BasicSans-Regular',
   },
   radioOption: {
     flexDirection: 'row',
@@ -267,6 +358,7 @@ const styles = StyleSheet.create({
   },
   radioLabel: {
     fontSize: 16,
+    fontFamily: 'BasicSans-Regular',
     
   },
   priceSection: {
@@ -286,6 +378,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fcfbfa',
     textAlignVertical: 'top',
     marginRight: 8,
+    fontFamily: 'BasicSans-Regular',
   },
   toggleSwitch: {
     marginHorizontal: 12,
@@ -305,9 +398,78 @@ const styles = StyleSheet.create({
   },
   toggleLabel: {
     fontSize: 16,
-    
+    fontFamily: 'BasicSans-Regular',
   },
-  
+  modal: {
+    backgroundColor: '#f2efe9',
+  },
+  modalContainer: {
+    marginTop: 80,
+    margin: 20,
+    marginBottom: 80,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+
+  },
+  selectCategoryButton: {
+    backgroundColor: '#293e48',
+    borderRadius: 50,
+    padding: 10,
+    alignItems: 'center',
+    marginTop: 1,
+  },
+  selectCategoryButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'BasicSans-Regular',
+  },
+  selectedCategory: {
+    backgroundColor: 'white',
+    borderRadius: 50,
+    padding: 5,
+    alignItems: 'center',
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  selectedCategoryText: {
+    fontSize: 16,
+    fontFamily: 'BasicSans-Regular',
+  },
+  categoryList: {
+    width: '100%',
+  },
+  categoryItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  categoryText: {
+    fontSize: 16,
+    fontFamily: 'BasicSans-Regular',
+  },
+  closeModalButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#ddd',
+  },
+  categoryIcon: {
+    width: 35, 
+    height: 35, 
+    marginRight: 10,
+  },
+  selectedCategoryContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 });
 
 export default InfoInputScreen;

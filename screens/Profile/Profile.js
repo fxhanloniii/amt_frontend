@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView }
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 import settingsIcon from '../../assets/images/settingsicon.png';
-const BASE_URL = 'http://13.57.40.111:8000';
+const BASE_URL = 'http://3.101.60.200:8000';
 
 const Profile = ({ navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();
@@ -253,7 +253,7 @@ const Profile = ({ navigation }) => {
 
       {/* Favorites */}
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Favorites</Text>
+        <Text style={styles.sectionTitle}>My Favorites</Text>
         {userFavorites.length === 0 ? (
           <View style={styles.emptyStateContainer}>
             <Text style={styles.emptyText}>Save your favorites</Text>
@@ -292,12 +292,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   firstName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+    fontFamily: 'RigSans-Bold',
   },
   userUsername: {
-    fontSize: 12,
+    fontSize: 14,
     color: 'gray',
+    fontFamily: 'BasicSans-RegularIt'
   },
   divider: {
     height: 1,
@@ -311,6 +313,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
+    fontFamily: 'RigSans-Bold',
   },
   emptyStateContainer: {
     width: '100%',

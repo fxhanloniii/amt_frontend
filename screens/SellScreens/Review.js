@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, ScrollView, Button, StyleSheet } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
 import * as Location from 'expo-location';
-const BASE_URL = 'http://13.57.40.111:8000';
+const BASE_URL = 'http://3.101.60.200:8000';
 
 const Review = ({ route, navigation }) => {
   
@@ -98,6 +98,7 @@ const Review = ({ route, navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.header}>Sell an Item</Text>
       <View style={styles.imageContainer}>
         <Text style={styles.header}>Selected Photos:</Text>
         <ScrollView horizontal={true}>
@@ -111,7 +112,7 @@ const Review = ({ route, navigation }) => {
         </ScrollView>
       </View>
       
-      <Text style={styles.header}>Additional Information:</Text>
+      
       <Text style={styles.label}>Location:</Text>
       <TextInput
         style={styles.input}
@@ -151,16 +152,18 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingBottom: 16,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     backgroundColor: '#f2efe9',
+  },
+  header: {
+    fontSize: 18,
+    marginTop: 20,
+    marginBottom: 10,
+    textAlign: 'left',
+    fontFamily: 'RigSans-Bold',
   },
   imageContainer: {
     alignItems: 'center',
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginVertical: 10,
   },
   label: {
     fontSize: 16,

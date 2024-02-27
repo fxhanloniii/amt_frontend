@@ -63,5 +63,6 @@ const styles = StyleSheet.create({
       iconText: {
         fontSize: 12,
         color: '#364a54',
+        fontFamily: 'BasicSans-Regular',
       },   
 })

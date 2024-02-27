@@ -23,7 +23,7 @@ import Roofing from '../../assets/images/Roofing.png';
 import Storage from '../../assets/images/Storage.png';
 import TilesMasonry from '../../assets/images/Tiles_Masonry.png';
 import Tools from '../../assets/images/Tools.png';
-const BASE_URL = 'http://13.57.40.111:8000';
+const BASE_URL = 'http://3.101.60.200:8000';
 <link rel="stylesheet" href="https://use.typekit.net/ftp2quu.css"></link>
 
 export default function Home({ navigation }) {
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     titleTopCatergories: {
       fontSize: 18, 
       fontWeight: 'bold',
-      
+
   },
   locationText: {
     color: '#9e3f19'
@@ -248,7 +248,8 @@ categoryIcon: {
     color: '#293e49',
     textAlign: 'center',
     paddingRight: 30,
-    fontFamily: "RigSans-Bold", 
+    fontFamily: 'BasicSans-Regular',
+    fontSize: 16,
   },
 
   viewAllButton: {
@@ -262,10 +263,12 @@ categoryIcon: {
     justifyContent: 'center',  
     alignItems: 'center',
     alignSelf: 'center',
+    fontFamily: 'BasicSans-Regular', 
   },
   viewAllButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontFamily: 'BasicSans-Regular',
+    fontSize: 16,
 
   },
   modalContainer: {
