@@ -2,12 +2,12 @@
   "expo": {
     "name": "Rubble",
     "slug": "rubble",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/images/appicon1.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/images/appicon1.png",
+      "image": "./assets/tile_rubble.jpeg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,8 +17,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.rubbleapp.rubble",
-      "buildNumber": "8",
-      "version": "1.0.7"
+      "buildNumber": "9",
+      "version": "1.0.8"
     },
     "android": {
       "adaptiveIcon": {
