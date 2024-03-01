@@ -25,6 +25,7 @@ import TilesMasonry from '../../assets/images/Tiles_Masonry.png';
 import Tools from '../../assets/images/Tools.png';
 const BASE_URL = 'http://3.101.60.200:8000';
 <link rel="stylesheet" href="https://use.typekit.net/ftp2quu.css"></link>
+import RecentlyPosted from '../../components/RecentlyPosted';
 
 export default function Home({ navigation }) {
   const [viewAll, setViewAll] = useState(false);
@@ -173,6 +174,8 @@ export default function Home({ navigation }) {
         <TouchableOpacity style={styles.viewAllButton} onPress={() => setViewAll(!viewAll)}>
           <Text style={styles.viewAllButtonText}>{viewAll ? 'View Less' : 'View All Categories'}</Text>
         </TouchableOpacity>
+
+        <RecentlyPosted navigation={navigation} />
       </ScrollView>
     </View>
   );
@@ -210,7 +213,7 @@ const styles = StyleSheet.create({
     titleTopCatergories: {
       fontSize: 18, 
       fontWeight: 'bold',
-
+      fontFamily:' RigSans-Bold',
   },
   locationText: {
     color: '#9e3f19'

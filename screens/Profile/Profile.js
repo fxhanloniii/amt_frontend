@@ -170,7 +170,7 @@ const Profile = ({ navigation }) => {
       return (
         <TouchableOpacity key={item?.id} onPress={() => handleItemPress(item?.id)}>
           <View style={styles.listingItemContainer}>
-            {/* You can show a placeholder image or text here */}
+            
             <Text>No Image</Text>
           </View>
         </TouchableOpacity>
