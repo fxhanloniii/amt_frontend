@@ -22,10 +22,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/tile_rubble.jpeg",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.rubbleapp.rubble"
+      "package": "com.rubbleapp.rubble",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
