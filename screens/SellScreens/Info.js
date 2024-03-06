@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Image } from 'react-native';
 import PhotoPage from './Photo.js';
-import { Picker } from '@react-native-picker/picker';
 import Appliances from '../../assets/images/Appliances.png';
 import BathFaucets from '../../assets/images/Bath_Faucets.png';
 import Cleaning from '../../assets/images/Cleaning.png';
@@ -124,15 +123,7 @@ const handleNextPress = () => {
             <Modal visible={modalVisible} animationType="slide" onRequestClose={toggleModal}>
             <View style={styles.overlay}>
               <View style={styles.modalContainer}>
-              {/* <Picker
-                selectedValue={category}
-                onValueChange={(itemValue, itemIndex) =>
-                  setCategory(itemValue)
-                }>
-                {categories.map((cat) => (
-                  <Picker.Item label={cat} value={cat} key={cat} />
-                ))}
-              </Picker> */}
+              
                 <ScrollView style={styles.categoryList}>
                   {categories.map((cat) => (
                     <TouchableOpacity
