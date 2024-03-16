@@ -81,7 +81,7 @@ export default function PhotoPage({ route, navigation }) {
           data={selectedImages}
           renderItem={renderPhoto}
           keyExtractor={(item, index) => index.toString()}
-          numColumns={3}
+          numColumns={2}
         />
       </View>
       <View style={styles.bottomBar}>
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2efe9',
   },
   header: {
-    fontSize: 15,
+    fontSize: 18,
     fontWeight: 'bold',
     marginTop: 20,
     marginBottom: 10,
@@ -128,12 +128,13 @@ const styles = StyleSheet.create({
   photoGrid: {
     flex: 1,
     padding: 2,
+    alignItems: 'center',
   },
   photo: {
-    aspectRatio: 1,
-    width: '33%',
-    borderWidth: 2,
-    borderColor: 'grey',
+    width: 150,
+    height: 150,
+    resizeMode: 'cover',
+    margin: 5,
   },
   bottomBar: {
     flexDirection: 'row',

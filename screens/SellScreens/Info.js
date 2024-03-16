@@ -115,11 +115,17 @@ const handleNextPress = () => {
         <TouchableOpacity style={styles.selectCategoryButton} onPress={toggleModal}>
           <Text style={styles.selectCategoryButtonText}>Select Category</Text>
         </TouchableOpacity>
-        <View style={styles.selectedCategory}>
+        
+        <View style={category ? styles.selectedCategory : styles.hiddenCategory}>
+        {category && (
+          <>
           <Image source={categoryIcons[category]} style={styles.categoryIcon} />
           <Text style={styles.selectedCategoryText}>{category}</Text>
+          </>
+        )}
         </View>
-
+        
+        
             <Modal visible={modalVisible} animationType="slide" onRequestClose={toggleModal}>
             <View style={styles.overlay}>
               <View style={styles.modalContainer}>
@@ -235,9 +241,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingBottom: 16,
     backgroundColor: '#f2efe9',
+    justifyContent: 'space-between',
   },
   header: {
-    fontSize: 15,
+    fontSize: 18,
     fontWeight: 'bold',
     marginTop: 5,
     marginBottom: 20,
@@ -247,6 +254,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginVertical: 8,
     fontFamily: 'BasicSans-Regular',
+    marginTop: 10,
   },
   input: {
     borderWidth: 1,
@@ -267,7 +275,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#fcfbfa',
     textAlignVertical: 'top',
-    minHeight: 100,
+    minHeight: 150,
     fontFamily: 'BasicSans-Regular',
   },
   optionButton: {
@@ -287,13 +295,12 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 10,
     alignItems: 'center',
-    marginTop: 1,
+    marginTop: 40,
   },
   nextButtonText: {
     color: 'white',
     fontSize: 18,
     fontFamily: 'BasicSans-Regular',
-    
   },
   scrollContentContainer: {
     flexGrow: 1,
@@ -395,18 +402,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2efe9',
   },
   modalContainer: {
-    marginTop: 80,
+    paddingTop: 80,
     margin: 20,
     marginBottom: 80,
     backgroundColor: 'white',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 4,
     elevation: 5,
 
   },
@@ -434,6 +441,9 @@ const styles = StyleSheet.create({
   selectedCategoryText: {
     fontSize: 16,
     fontFamily: 'BasicSans-Regular',
+  },
+  hiddenCategory: {
+    height: 50,
   },
   categoryList: {
     width: '100%',

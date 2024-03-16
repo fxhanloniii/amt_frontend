@@ -100,19 +100,24 @@ const Review = ({ route, navigation }) => {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Sell an Item</Text>
       <View style={styles.imageContainer}>
-        <Text style={styles.header}>Selected Photos:</Text>
+        {/* <Text style={styles.header}>Selected Photos:</Text> */}
         <ScrollView horizontal={true}>
           {selectedImages.map((imageUri, index) => (
             <Image
               key={index}
               source={{ uri: imageUri }}
-              style={{ width: 100, height: 100, margin: 10 }}
+              style={{ width: 300, height: 300, margin: 10 }}
             />
           ))}
         </ScrollView>
       </View>
       
-      
+      <View style={styles.itemTitle}>
+        <Text style={styles.label}>{title}</Text>
+      </View>
+      <View style={styles.itemPrice}>
+        <Text style={styles.label}>${price}</Text>
+      </View>
       <Text style={styles.label}>Location:</Text>
       <TextInput
         style={styles.input}
@@ -158,7 +163,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 18,
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 5,
     textAlign: 'left',
     fontFamily: 'RigSans-Bold',
   },
@@ -168,7 +173,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginVertical: 8,
+    marginVertical: 0,
   },
   input: {
     borderWidth: 1,
@@ -178,6 +183,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontSize: 16,
     backgroundColor: '#fcfbfa',
+    fontFamily: 'BasicSans-RegularIt',
+    color: 'gray',
   },
   publishedMessage: {
     alignItems: 'center',
@@ -201,7 +208,8 @@ const styles = StyleSheet.create({
   },
   nextButtonText: {
     color: 'white',            
-    fontSize: 18,              
+    fontSize: 18,
+    fontFamily: 'BasicSans-Regular',              
   },
   errorText: {
     color: 'red',
