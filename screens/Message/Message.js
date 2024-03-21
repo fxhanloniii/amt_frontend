@@ -34,7 +34,7 @@ const Message = ({ route, navigation }) => {
         fetchMessages();
         fetchUserProfile();
         // connect to websocket server 
-        webSocket.current = new WebSocket(`ws://13.57.40.111:8001/ws/chat/${conversationId}/`);
+        webSocket.current = new WebSocket(`${BASE_URL}/ws/chat/${conversationId}/`);
 
         webSocket.current.onmessage = (e) => {
             const data = JSON.parse(e.data);
@@ -45,7 +45,7 @@ const Message = ({ route, navigation }) => {
                     };
 
         return () => {
-            if (webSocket.current) {
+            if (webSocket.current) {  
                 webSocket.current.close();
             }
         };

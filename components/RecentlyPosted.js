@@ -24,7 +24,7 @@ const RecentlyPosted = ({ navigation }) => {
             },);
             const data = await response.json();
             setRecentlyPosted(data);
-            console.log('recentlyPosted:', recentlyPosted);
+            console.log('recentlyPosted', recentlyPosted);
             console.log('Images for one of the items:', recentlyPosted[0].images);
             setLoading(false);
             } catch (error) {
