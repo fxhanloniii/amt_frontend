@@ -2,7 +2,7 @@
   "expo": {
     "name": "Rubble",
     "slug": "rubble",
-    "version": "1.0.9",
+    "version": "1.0.11",
     "orientation": "portrait",
     "icon": "./assets/images/appicon1.png",
     "userInterfaceStyle": "light",
@@ -17,8 +17,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.rubbleapp.rubble",
-      "buildNumber": "10",
-      "version": "1.0.9"
+      "buildNumber": "12",
+      "version": "1.0.11"
     },
     "android": {
       "adaptiveIcon": {

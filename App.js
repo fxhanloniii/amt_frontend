@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { AuthProvider, useAuth } from './AuthContext/AuthContext'; 
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Font from 'expo-font';
-<link rel="stylesheet" href="https://use.typekit.net/ftp2quu.css"></link>
+
 // Screen Imports
 import Home from './screens/Home/Home';
 import SignUp from './screens/SignUp/SignUp';
@@ -27,12 +27,19 @@ import Footer from './components/Footer';
 
 // Function to load fonts
 async function loadFonts() {
-  await Font.loadAsync({
-    'RigSans-Bold': require('./assets/fonts/rigsans-bold.ttf'),
-    'BasicSans-Regular': require('./assets/fonts/basicsans-regular.ttf'),
-    'BasicSans-RegularIt': require('./assets/fonts/basicsans-regularit.ttf'),
-  });
+  try {
+    await Font.loadAsync({
+      'RigSans-Bold': require('./assets/fonts/rigsans-bold.ttf'), // Corrected casing
+      'BasicSans-Regular': require('./assets/fonts/basicsans-regular.ttf'),
+      'BasicSans-RegularIt': require('./assets/fonts/basicsans-regularit.ttf'),
+    });
+  } catch (error) {
+    console.log('Error loading fonts:', error);
+    throw new Error('Fonts could not be loaded');
+  }
 }
+
+
 
 
 
@@ -48,10 +55,10 @@ const App = () => {
 
   return (
     <NavigationContainer>
+      {fontsLoaded ? (
       <View style={styles.container}>
         <Header />
         <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-          {/* Define your screens here */}
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="LogIn" component={LogIn} />
           <Stack.Screen name="SignUp" component={SignUp} />
@@ -68,6 +75,9 @@ const App = () => {
         </Stack.Navigator>
         <Footer isSignedIn={isSignedIn}/>
       </View>
+      ) : (
+        <Text>Loading...</Text>
+      )}
       <StatusBar style="auto" />
     </NavigationContainer>
   );

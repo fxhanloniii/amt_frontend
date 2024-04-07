@@ -147,11 +147,14 @@ const Message = ({ route, navigation }) => {
                 
                 <View>
                 <View style={styles.messageContent}>
-                <Text style={[
+                    <Text style={[
                         styles.senderName,
-                        isCurrentUser ? styles.currentUserText : styles.otherUserText
-                    ]}>{senderName}</Text>
-                    <Text style={isCurrentUser ? styles.currentUserText : styles.otherUserText}>{item.text}</Text>
+                        isCurrentUser ? styles.currentUserTextName : styles.otherUserTextName
+                        ]}>{senderName}
+                    </Text>
+                    <View style={styles.messageText}>
+                        <Text style={isCurrentUser ? styles.currentUserText : styles.otherUserText}>{item.text}</Text>
+                    </View>
                 </View>
                 </View>
             </View>
@@ -258,39 +261,68 @@ const styles = StyleSheet.create({
         height: 50,
         borderRadius: 50,
     },
+    senderName: {
+        fontFamily: 'RigSans-Bold', 
+    },
+    currentUserTextName: {
+        color: 'white',
+    },
+    otherUserTextName: {
+        color: '#364a54',
+    },
     messageBubble: {
         flexDirection: 'row',
         marginVertical: 5,
         padding: 10,
         backgroundColor: '#f0f0f0',
         borderRadius: 10,
-        width: '70%',
+        // width: 'auto',
+        // height: 'auto',
     },
     currentUserBubble: {
         alignSelf: 'flex-end',
         backgroundColor: '#364a54',
+        width: '80%',
+        flexDirection: 'row',
     },
 
     otherUserBubble: {
         alignSelf: 'flex-start',
         backgroundColor: 'white',
+        width: '80%',
+        flexDirection: 'row',
+        
     },
-
+    messageContent: {
+        marginLeft: 8,
+        flexShrink: 1,
+        flexWrap: 'wrap',
+        flexDirection: 'column',
+    },
+    messageText: {
+        flexWrap: 'wrap',
+        width: '90%',
+        height: 'auto',
+        flexDirection: 'row',
+    },
     currentUserText: {
         color: 'white',
-        fontFamily: 'BasicSans-Regular'
+        fontFamily: 'BasicSans-Regular',
+        flexWrap: 'wrap',
+        width: 'auto',
+        height: 'auto',
     },
 
     otherUserText: {
         color: '#364a54',
+        fontFamily: 'BasicSans-Regular',
+        flexWrap: 'wrap',
+        width: 'auto',
+        height: 'auto',
     },
 
-    senderName: {
-        fontWeight: 'bold',
-    },
-    messageContent: {
-        marginLeft: 8, 
-    },
+    
+    
     viewListingButton: {
         backgroundColor: '#364a54', 
         color: 'white',

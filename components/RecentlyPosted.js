@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { useAuth } from '../AuthContext/AuthContext';
 const BASE_URL = 'http://3.101.60.200:8000';
-
+import { useIsFocused } from '@react-navigation/native';
 const RecentlyPosted = ({ navigation }) => {
     const { token } = useAuth();
     const [recentlyPosted, setRecentlyPosted] = useState([]);
     const [loading, setLoading] = useState(true);
+    const isFocused = useIsFocused();
 
     useEffect(() => {
-        fetchRecentlyPosted();
-    },[]);
+        if (isFocused) {
+            fetchRecentlyPosted();
+        }  
+    },[isFocused, token]);
 
     const fetchRecentlyPosted = async () => {
         try {
@@ -24,8 +27,6 @@ const RecentlyPosted = ({ navigation }) => {
             },);
             const data = await response.json();
             setRecentlyPosted(data);
-            console.log('recentlyPosted', recentlyPosted);
-            console.log('Images for one of the items:', recentlyPosted[0].images);
             setLoading(false);
             } catch (error) {
                 console.error('Error fetching recent items:', error);
@@ -38,7 +39,7 @@ const RecentlyPosted = ({ navigation }) => {
             <Text style={styles.title}>Recently Listed</Text>
             {loading ? (
                     <Text>Loading...</Text>
-                ) : (
+                ) : recentlyPosted && recentlyPosted.length > 0 ? (
             <View style={styles.recentlyPostedContainer}>
                 {recentlyPosted.map((item, index) => (
                     <TouchableOpacity key={index} onPress={() => navigation.navigate('Item', { itemId: item.id})}>
@@ -53,6 +54,8 @@ const RecentlyPosted = ({ navigation }) => {
                     </TouchableOpacity>
                 ))}
             </View>
+                ): (
+                    <Text>No items found</Text>
                 )}
         </View>
     )
