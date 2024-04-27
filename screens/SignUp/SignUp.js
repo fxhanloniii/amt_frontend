@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Image, Alert } from 'react-native';
 import { registerUser } from '../../api/auth';  // Importing the registerUser function from auth.js
+import * as ImagePicker from 'expo-image-picker';
 
 export default function SignUp({ navigation }) {
     const [email, setEmail] = useState('');
@@ -8,13 +9,56 @@ export default function SignUp({ navigation }) {
     const [password, setPassword] = useState('');
     const [isPasswordVisible, setPasswordVisibility] = useState(false);
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [profileImage, setProfileImage] = useState(null);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
 
+    const pickImage = async () => {
+        result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.cancelled) {
+            setProfileImage(result.uri);
+        }
+    };
+
+    const uploadImage = async (uri) => {
+        const formData = new FormData();
+        formData.append('image', {
+          uri: uri,
+          type: 'image/jpeg', 
+          name: 'profile-pic.jpg',
+        });
+      
+        try {
+          const response = await fetch(`${BASE_URL}/upload-image/`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Token ${token}`,
+              'Content-Type': 'multipart/form-data',
+            },
+            body: formData,
+          });
+      
+          if (response.ok) {
+            const data = await response.json();
+            setProfileImage({ uri: data.image_url });
+            updateUserProfileImage(data.image_url); 
+                  }
+        } catch (error) {
+          console.error('Error uploading image:', error);
+        }
+      };
+    
+
     const handleSignUp = async () => {
       if (password !== confirmPassword) {
-        console.error("Passwords don't match!");
-        return; // Stop execution here if passwords don't match
+        Alert.alert("Error", "Passwords don't match!");
+        return; 
     }
         try {
             const response = await registerUser(username, email, password, confirmPassword, firstName, lastName);
@@ -32,6 +76,15 @@ export default function SignUp({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity onPress={pickImage}>
+                {profileImage ? (
+                    <Image source={{ uri: profileImage }} style={styles.profileImage} />
+                ) : (
+                    <View style={styles.placeholderImage}>
+                        <Text>Add Photo</Text>
+                    </View>
+                )}
+            </TouchableOpacity>
             <TextInput
                 style={styles.input}
                 placeholder="Username"
@@ -95,5 +148,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         padding: 10,
         backgroundColor: '#fcfbfa',
+        // fontFamily: 'basicsans-regularit',
     },
 });

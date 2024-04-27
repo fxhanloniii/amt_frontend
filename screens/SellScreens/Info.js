@@ -24,6 +24,7 @@ import Storage from '../../assets/images/Storage.png';
 import TilesMasonry from '../../assets/images/Tiles_Masonry.png';
 import Tools from '../../assets/images/Tools.png';
 
+
 const InfoInputScreen = ({ navigation }) => {
   // Define state variables for user inputs
   const [category, setCategory] = useState('');
@@ -219,7 +220,7 @@ const pickerSelectStyles = StyleSheet.create({
     borderColor: 'gray',
     borderRadius: 4,
     color: 'black',
-    paddingRight: 30, // to ensure the text is never behind the icon
+    paddingRight: 30, 
     backgroundColor: '#fcfbfa',
   },
   inputAndroid: {
@@ -230,7 +231,7 @@ const pickerSelectStyles = StyleSheet.create({
     borderColor: 'gray',
     borderRadius: 8,
     color: 'black',
-    paddingRight: 30, // to ensure the text is never behind the icon
+    paddingRight: 30, 
     backgroundColor: '#fcfbfa',
   },
 });
@@ -239,7 +240,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 5,
-    paddingBottom: 16,
     backgroundColor: '#f2efe9',
     justifyContent: 'space-between',
   },
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     marginVertical: 8,
-    fontFamily: 'BasicSans-Regular',
+    fontFamily: 'basicsans-regular',
     marginTop: 10,
   },
   input: {
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 16,
     backgroundColor: '#fcfbfa',
-    fontFamily: 'BasicSans-Regular',
+    fontFamily: 'basicsans-regular',
   },
   descriptionInput: {
     borderWidth: 1,
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fcfbfa',
     textAlignVertical: 'top',
     minHeight: 150,
-    fontFamily: 'BasicSans-Regular',
+    fontFamily: 'basicsans-regular',
   },
   optionButton: {
     borderWidth: 1,
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: 'white',
     fontSize: 18,
-    fontFamily: 'BasicSans-Regular',
+    fontFamily: 'basicsans-regular',
   },
   scrollContentContainer: {
     flexGrow: 1,
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
-    fontFamily: 'BasicSans-Regular',
+    fontFamily: 'basicsans-regular',
   },
   radioOption: {
     flexDirection: 'row',
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
   },
   radioLabel: {
     fontSize: 16,
-    fontFamily: 'BasicSans-Regular',
+    fontFamily: 'basicsans-regular',
     
   },
   priceSection: {
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fcfbfa',
     textAlignVertical: 'top',
     marginRight: 8,
-    fontFamily: 'BasicSans-Regular',
+    fontFamily: 'basicsans-regular',
   },
   toggleSwitch: {
     marginHorizontal: 12,
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
   },
   toggleLabel: {
     fontSize: 16,
-    fontFamily: 'BasicSans-Regular',
+    fontFamily: 'basicsans-regular',
   },
   modal: {
     backgroundColor: '#f2efe9',
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
   selectCategoryButtonText: {
     color: 'white',
     fontSize: 16,
-    fontFamily: 'BasicSans-Regular',
+    fontFamily: 'basicsans-regular',
   },
   selectedCategory: {
     backgroundColor: 'white',
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
   },
   selectedCategoryText: {
     fontSize: 16,
-    fontFamily: 'BasicSans-Regular',
+    fontFamily: 'basicsans-regular',
   },
   hiddenCategory: {
     height: 50,
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 16,
-    fontFamily: 'BasicSans-Regular',
+    fontFamily: 'basicsans-regular',
   },
   closeModalButton: {
     marginTop: 20,

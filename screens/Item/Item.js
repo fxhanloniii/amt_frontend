@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Image, Modal } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import { useAuth } from '../../AuthContext/AuthContext';
 import Swiper from 'react-native-swiper';
 import SettingsIcon from '../../assets/images/settingsicon.png';
@@ -9,7 +10,7 @@ const BASE_URL = 'http://3.101.60.200:8000';
 
 const Item = ({ route, navigation }) => {
   const [item, setItem] = useState(null);
-  const [inputMessage, setInputMessage] = useState('Still Available?');
+  const [inputMessage, setInputMessage] = useState('Still available?');
   const { user, token } = useAuth();
   const [itemImages, setItemImages] = useState([]);
   const [isDeleteItemModalOpen, setDeleteItemModalOpen] = useState(false);
@@ -126,10 +127,10 @@ const handleDeleteItem = async () => {
     });
 
     if (response.ok) {
-      // Item deleted successfully
+      
       console.log("Item deleted");
-      // Navigate back or refresh items
-      navigation.goBack(); // or navigation.navigate to another screen
+      
+      navigation.goBack(); 
     } else {
       // Handle error
       console.error('Failed to delete item');

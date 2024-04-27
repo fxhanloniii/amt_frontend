@@ -66,7 +66,7 @@ const UserSettings = ({ route, navigation }) => {
   }
   const handleLogout = async () => {
     await signOut();
-    navigation.navigate('LogIn'); 
+    navigation.navigate('SplashScreen'); 
   };
 
   // Function to pick a profile picture

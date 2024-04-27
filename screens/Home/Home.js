@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity, Modal, Image } from 'react-native';
 import * as Location from 'expo-location';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 import Appliances from '../../assets/images/Appliances.png';
 import BathFaucets from '../../assets/images/Bath_Faucets.png';
 import Cleaning from '../../assets/images/Cleaning.png';
@@ -37,12 +39,29 @@ export default function Home({ navigation }) {
 
   // Full list of categories
   const allCategories = [
-    'Appliances', 'Bath & Faucets', 'Cleaning', 'Concrete & Brick', 
-    'Doors & Windows', 'Drywall', 'Electrical', 'Siding', 
-    'Flooring & Rugs', 'Garden & Patio', 'Hardware', 'Heating & Air', 
-    'Kitchen', 'Lighting & Fans', 'Lumber', 'Misc.', 'Paint', 
-    'Plumbing', 'Roofing', 'Storage', 'Tiles & Masonry', 'Tools'
-  ];
+    'Concrete & Brick',
+    'Doors & Windows',
+    'Electrical',
+    'Garden & Patio',
+    'Hardware',
+    'Lumber',
+    'Tiles & Masonry',
+    'Tools',
+    'Appliances', 
+    'Bath & Faucets', 
+    'Cleaning', 
+    'Drywall', 
+    'Siding', 
+    'Flooring & Rugs', 
+    'Heating & Air', 
+    'Kitchen', 
+    'Lighting & Fans', 
+    'Misc.', 
+    'Paint', 
+    'Plumbing', 
+    'Roofing', 
+    'Storage'
+];
 
   const categoryIcons = {
     'Appliances': Appliances,
@@ -213,7 +232,7 @@ const styles = StyleSheet.create({
     titleTopCatergories: {
       fontSize: 18, 
       fontWeight: 'bold',
-      fontFamily:' RigSans-Bold',
+      fontFamily:' rigsans-bold',
   },
   locationText: {
     color: '#9e3f19'
@@ -251,7 +270,7 @@ categoryIcon: {
     color: '#293e49',
     textAlign: 'center',
     paddingRight: 30,
-    fontFamily: 'BasicSans-Regular',
+    fontFamily: 'basicsans-regular',
     fontSize: 16,
   },
 
@@ -266,11 +285,11 @@ categoryIcon: {
     justifyContent: 'center',  
     alignItems: 'center',
     alignSelf: 'center',
-    fontFamily: 'BasicSans-Regular', 
+    fontFamily: 'basicsans-regular',
   },
   viewAllButtonText: {
     color: 'white',
-    fontFamily: 'BasicSans-Regular',
+    fontFamily: 'basicsans-regular',
     fontSize: 16,
 
   },

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList, Image, TextInput, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, TextInput, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
 const BASE_URL = 'http://3.101.60.200:8000';
 
@@ -10,8 +10,9 @@ const CategoryItems = ({ route, navigation }) => {
   const { user, token } = useAuth();
   const { searchQuery: initialSearchQuery } = route.params;
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
+  const [loadingImages, setLoadingImages] = useState({});
+  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
-  console.log(items)
   useEffect(() => {
     const fetchItems = async () => {
       try {
@@ -22,6 +23,7 @@ const CategoryItems = ({ route, navigation }) => {
           // If endpoint is provided, use it
           apiUrl = endpoint;
         } else if (categoryName) {
+          console.log('categoryName:', categoryName);
           // If category name is provided, use it
           apiUrl = `${BASE_URL}/items/?category=${encodeURIComponent(categoryName)}`;
         } else {
@@ -44,7 +46,9 @@ const CategoryItems = ({ route, navigation }) => {
 
         if (response.ok) {
           const itemsData = await response.json();
-          setItems(itemsData);
+          console.log(itemsData);
+          setItems(itemsData.reverse());
+          
           
         } else {
           console.error('Failed to fetch items');
@@ -55,6 +59,8 @@ const CategoryItems = ({ route, navigation }) => {
     };
     fetchItems();
   }, [categoryName, endpoint, searchQuery, location, token]);
+
+  
 
   const handleItemPress = (itemId) => {
     
@@ -92,7 +98,8 @@ const CategoryItems = ({ route, navigation }) => {
         renderItem={({ item }) => (
           <TouchableWithoutFeedback onPress={() => handleItemPress(item.id)}>
             <View style={styles.itemContainer}>
-              <Image source={{ uri: item.images[0]?.image }} style={styles.itemImage} />
+              <Image source={{ uri: item.images[0]?.image }} style={styles.itemImage} 
+               />
               <View style={styles.itemDetails}>
                 <Text style={styles.itemPrice}>{item.price}</Text>
                 <Text style={styles.itemName}>{item.title}</Text>
@@ -171,6 +178,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f2efe9',
   },
 });
 

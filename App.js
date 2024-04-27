@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { getFocusedRouteNameFromRoute, useNavigationContainerRef } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text } from 'react-native';
 import { AuthProvider, useAuth } from './AuthContext/AuthContext'; 
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Font from 'expo-font';
-
+import Layout from './components/Layout';
 // Screen Imports
 import Home from './screens/Home/Home';
 import SignUp from './screens/SignUp/SignUp';
@@ -21,6 +22,8 @@ import Profile from './screens/Profile/Profile';
 import Inbox from './screens/Inbox/Inbox';
 import Message from './screens/Message/Message';
 import UserSetting from './screens/UserSetting/UserSetting';
+import LogIn2 from './screens/LogIn/LogIn2';
+import SplashScreen from './screens/SplashScreen/SplashScreen';
 // Component Imports
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -29,9 +32,9 @@ import Footer from './components/Footer';
 async function loadFonts() {
   try {
     await Font.loadAsync({
-      'RigSans-Bold': require('./assets/fonts/rigsans-bold.ttf'), // Corrected casing
-      'BasicSans-Regular': require('./assets/fonts/basicsans-regular.ttf'),
-      'BasicSans-RegularIt': require('./assets/fonts/basicsans-regularit.ttf'),
+      'rigsans-bold': require('./assets/fonts/rigsans-bold.ttf'), 
+      'basicsans-regular': require('./assets/fonts/basicsans-regular.ttf'),
+      'basicsans-regularit': require('./assets/fonts/basicsans-regularit.ttf'),
     });
   } catch (error) {
     console.log('Error loading fonts:', error);
@@ -39,6 +42,15 @@ async function loadFonts() {
   }
 }
 
+
+const getActiveRouteName = (state) => {
+  const route = state.routes[state.index];
+  if (route.state) {
+    
+    return getActiveRouteName(route.state);
+  }
+  return route.name;
+};
 
 
 
@@ -48,17 +60,39 @@ const Stack = createStackNavigator();
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const { isSignedIn } = useAuth();
-
+  const [splashComplete, setSplashComplete] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState('SplashScreen');
+  const navigationRef = useNavigationContainerRef();
   useEffect(() => {
     loadFonts().then(() => setFontsLoaded(true)).catch(err => console.log('Error loading fonts:', err));
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = navigationRef.addListener('state', () => {
+      const state = navigationRef.current.getRootState(); 
+      const currentRouteName = getActiveRouteName(state) || 'SplashScreen'; 
+      setCurrentScreen(currentRouteName);
+      console.log("Updated Current Screen to:", currentRouteName);
+    });
+    return unsubscribe;
+  }, [navigationRef]);
+
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       {fontsLoaded ? (
       <View style={styles.container}>
-        <Header />
-        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+        {fontsLoaded && currentScreen !== 'SplashScreen' && <Header />}
+        <Stack.Navigator
+            initialRouteName="SplashScreen"
+            screenOptions={{ headerShown: false }}
+            onStateChange={(state) => {
+              console.log("Navigation State Changed:", state);
+              const currentRouteName = state.routes[state.index].name;
+              console.log("Current Route Name:", currentRouteName);
+              setCurrentScreen(currentRouteName);
+            }}
+          >
+          <Stack.Screen name="SplashScreen" component={SplashScreen} />
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="LogIn" component={LogIn} />
           <Stack.Screen name="SignUp" component={SignUp} />
@@ -72,8 +106,9 @@ const App = () => {
           <Stack.Screen name="Inbox" component={Inbox} />
           <Stack.Screen name="Message" component={Message} />
           <Stack.Screen name="UserSetting" component={UserSetting} />
+          <Stack.Screen name="LogIn2" component={LogIn2} />
         </Stack.Navigator>
-        <Footer isSignedIn={isSignedIn}/>
+        {fontsLoaded && currentScreen !== 'SplashScreen' && currentScreen !== 'SignUp' && <Footer />}
       </View>
       ) : (
         <Text>Loading...</Text>
@@ -91,6 +126,8 @@ const styles = StyleSheet.create({
 });
 
 const AppWithAuthProvider = () => {
+
+  
   return (
     <SafeAreaProvider>
       <AuthProvider> 

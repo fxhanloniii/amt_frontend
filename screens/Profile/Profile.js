@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView }
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 import settingsIcon from '../../assets/images/settingsicon.png';
+import Layout from '../../components/Layout';
 const BASE_URL = 'http://3.101.60.200:8000';
 
 const Profile = ({ navigation }) => {
@@ -215,6 +216,7 @@ const Profile = ({ navigation }) => {
   }
 
   return (
+    
     <ScrollView style={styles.container}>
       {/* Profile Header */}
       <View style={styles.headerContainer}>
@@ -267,6 +269,7 @@ const Profile = ({ navigation }) => {
       </View>
       
     </ScrollView>
+    
   );
 };
 
@@ -294,12 +297,12 @@ const styles = StyleSheet.create({
   firstName: {
     fontSize: 18,
     fontWeight: 'bold',
-    fontFamily: 'RigSans-Bold',
+    fontFamily: 'rigsans-bold',
   },
   userUsername: {
     fontSize: 14,
     color: 'gray',
-    fontFamily: 'BasicSans-RegularIt'
+    fontFamily: 'basicsans-regularit'
   },
   divider: {
     height: 1,
@@ -313,7 +316,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
-    fontFamily: 'RigSans-Bold',
+    fontFamily: 'rigsans-bold',
   },
   emptyStateContainer: {
     width: '100%',

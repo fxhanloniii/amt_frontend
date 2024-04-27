@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
         paddingVertical: 10,
+        paddingBottom: 20,
       },
       buttonContainer: {
         alignItems: 'center',
@@ -63,6 +64,6 @@ const styles = StyleSheet.create({
       iconText: {
         fontSize: 12,
         color: '#364a54',
-        fontFamily: 'BasicSans-Regular',
+        fontFamily: 'basicsans-regular',
       },   
 })

@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View, Platform, StatusBar, Image } from 'react-native'
+import { StyleSheet, Text, View, Platform, StatusBar, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
+import { useNavigation } from '@react-navigation/native';
 
 // Importing each letter
 import R from '../assets/images/o.png'
@@ -9,16 +10,27 @@ import b2 from '../assets/images/q.png'
 import l from '../assets/images/r.png'
 import e from '../assets/images/s.png'
 
+
+
 export default function Header() {
+
+  const navigation = useNavigation();
+
+  const handlePress = () => {
+    navigation.navigate('Home');
+  };
+
   return (
-    <View style={styles.headerContainer}>
-      <Image source={R} style={styles.R} />
-      <Image source={u} style={styles.u} />
-      <Image source={b1} style={styles.b} />
-      <Image source={b2} style={styles.b} />
-      <Image source={l} style={styles.l} />
-      <Image source={e} style={styles.e} />
-    </View>
+    <TouchableOpacity onPress={handlePress}>
+      <View style={styles.headerContainer}>
+        <Image source={R} style={styles.R} />
+        <Image source={u} style={styles.u} />
+        <Image source={b1} style={styles.b} />
+        <Image source={b2} style={styles.b} />
+        <Image source={l} style={styles.l} />
+        <Image source={e} style={styles.e} />
+      </View>
+    </TouchableOpacity>
   )
 }
 

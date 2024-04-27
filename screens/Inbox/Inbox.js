@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 import { useAuth } from '../../AuthContext/AuthContext';
+import Layout from '../../components/Layout';
+
 const BASE_URL = 'http://3.101.60.200:8000';
 
 const Inbox = ({ navigation }) => {
@@ -68,15 +70,17 @@ const Inbox = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Inbox</Text>
-            <FlatList
-                contentContainerStyle={styles.listContentContainer}
-                data={conversations}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id.toString()}
-            />
-        </View>
+        
+            <View style={styles.container}>
+                <Text style={styles.header}>Inbox</Text>
+                <FlatList
+                    contentContainerStyle={styles.listContentContainer}
+                    data={conversations}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id.toString()}
+                />
+            </View>
+        
     );
 
 
@@ -98,7 +102,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     listContentContainer: {
-        width: '90%', 
+        width: '100%',
         alignItems: 'center', 
     },
     itemContainer: {
@@ -108,7 +112,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderWidth: 1,
         borderColor: '#ccc',
-        width:'90%',
+        width: 350,
         alignSelf: 'center',
         backgroundColor: 'white', 
         marginBottom: 10,

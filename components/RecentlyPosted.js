@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 16,
-        fontFamily: 'RigSans-Bold',
+        fontFamily: 'rigsans-bold',
         marginBottom: 10,
     },
     itemContainer: {
@@ -96,6 +96,6 @@ const styles = StyleSheet.create({
     },
     itemPrice: {
         fontSize: 14,
-        fontFamily: 'RigSans-Bold',
+        fontFamily: 'rigsans-bold',
     },
 })
