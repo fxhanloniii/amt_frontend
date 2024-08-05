@@ -23,7 +23,7 @@ export default function LogIn2() {
     return (
         <View style={styles.container}>
             <TextInput
-                placeholder="Username"
+                placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
                 style={styles.input}

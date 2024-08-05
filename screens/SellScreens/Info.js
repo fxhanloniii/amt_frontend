@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Image } from 'react-native';
-import PhotoPage from './Photo.js';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import Appliances from '../../assets/images/Appliances.png';
 import BathFaucets from '../../assets/images/Bath_Faucets.png';
 import Cleaning from '../../assets/images/Cleaning.png';
@@ -24,14 +23,12 @@ import Storage from '../../assets/images/Storage.png';
 import TilesMasonry from '../../assets/images/Tiles_Masonry.png';
 import Tools from '../../assets/images/Tools.png';
 
-
 const InfoInputScreen = ({ navigation }) => {
-  // Define state variables for user inputs
   const [category, setCategory] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
-  const [isForSale, setIsForSale] = useState(true); // Default to "For Sale"
+  const [isForSale, setIsForSale] = useState(true);
   const [isPriceNegotiable, setIsPriceNegotiable] = useState(false);
   const [modalVisible, setModalVisible]= useState(false);
 
@@ -39,19 +36,15 @@ const InfoInputScreen = ({ navigation }) => {
     setModalVisible(!modalVisible)
   };
 
-  // Function to handle the "Next" button press
-const handleNextPress = () => {
-    // Validate user inputs
+  const handleNextPress = () => {
     if (!category || !title || !description || !price) {
-      // Show an error message to the user indicating that all fields are required
       alert("Please fill in all required fields.");
     } else {
-      // Navigate to the next screen (PhotoUploadScreen) with user inputs
       navigation.navigate('PhotoPage', {
         category,
         title,
         description,
-        price,
+        price: isForSale ? price : '0',
         isForSale,
         isPriceNegotiable,
       });
@@ -63,10 +56,9 @@ const handleNextPress = () => {
     toggleModal();
   };
 
-   // Define the list of categories
-   const categories = [
+  const categories = [
     'Appliances', 'Bath & Faucets', 'Cleaning', 'Concrete & Brick', 
-    'Doors & Windows', 'Drywall', 'Electrical', 'Sliding', 
+    'Doors & Windows', 'Drywall', 'Electrical', 'Siding', 
     'Flooring & Rugs', 'Garden & Patio', 'Hardware', 'Heating & Air', 
     'Kitchen', 'Lighting & Fans', 'Lumber', 'Misc.', 'Paint', 
     'Plumbing', 'Roofing', 'Storage', 'Tiles & Masonry', 'Tools'
@@ -99,142 +91,145 @@ const handleNextPress = () => {
 
   const handleForSaleChange = (saleStatus) => {
     setIsForSale(saleStatus);
+    if (!saleStatus) {
+      setPrice('0');
+      setIsPriceNegotiable(false);
+    } else {
+      setPrice('');
+    }
   };
 
   const handlePriceNegotiableChange = () => {
     setIsPriceNegotiable(!isPriceNegotiable);
   };
-  
-  
 
   return (
-    <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollContentContainer}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
-        <Text style={styles.header}>Sell an Item</Text>
-        <TouchableOpacity style={styles.selectCategoryButton} onPress={toggleModal}>
-          <Text style={styles.selectCategoryButtonText}>Select Category</Text>
-        </TouchableOpacity>
-        
-        <View style={category ? styles.selectedCategory : styles.hiddenCategory}>
-        {category && (
-          <>
-          <Image source={categoryIcons[category]} style={styles.categoryIcon} />
-          <Text style={styles.selectedCategoryText}>{category}</Text>
-          </>
-        )}
-        </View>
-        
-        
-            <Modal visible={modalVisible} animationType="slide" onRequestClose={toggleModal}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+      style={styles.container}
+    >
+      <View style={styles.container}>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContentContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.header}>Sell an Item</Text>
+          <TouchableOpacity style={styles.selectCategoryButton} onPress={toggleModal}>
+            <Text style={styles.selectCategoryButtonText}>Select Category</Text>
+          </TouchableOpacity>
+          
+          <View style={category ? styles.selectedCategory : styles.hiddenCategory}>
+            {category && (
+              <>
+                <Image source={categoryIcons[category]} style={styles.categoryIcon} />
+                <Text style={styles.selectedCategoryText}>{category}</Text>
+              </>
+            )}
+          </View>
+
+          <Modal visible={modalVisible} animationType="slide" onRequestClose={toggleModal}>
             <View style={styles.overlay}>
               <View style={styles.modalContainer}>
-              
                 <ScrollView style={styles.categoryList}>
                   {categories.map((cat) => (
                     <TouchableOpacity
                       key={cat}
                       style={styles.categoryItem}
                       onPress={() => handleCategorySelect(cat)}
-                      >
-                        <View style={styles.selectedCategoryContainer}>
-                          <Image source={categoryIcons[cat]} style={styles.categoryIcon} />
-                          <Text style={styles.categoryText}>{cat}</Text>
-                        </View>
-                      </TouchableOpacity>
+                    >
+                      <View style={styles.selectedCategoryContainer}>
+                        <Image source={categoryIcons[cat]} style={styles.categoryIcon} />
+                        <Text style={styles.categoryText}>{cat}</Text>
+                      </View>
+                    </TouchableOpacity>
                   ))}
                 </ScrollView>
                 <TouchableOpacity style={styles.closeModalButton} onPress={toggleModal}>
                   <Text style={styles.closeModalButtonText}>Close</Text>
                 </TouchableOpacity>
               </View>
-              </View>
-            </Modal>
-        
+            </View>
+          </Modal>
 
-        <Text style={styles.label}>Title:</Text>
-        <TextInput
+          <Text style={styles.label}>Title:</Text>
+          <TextInput
             style={styles.input}
             placeholder="Ex. Brand, model, color, size"
             value={title}
             onChangeText={(text) => setTitle(text)}
-        />
+          />
 
-        <Text style={styles.label}>Description:</Text>
-        <TextInput
+          <Text style={styles.label}>Description:</Text>
+          <TextInput
             style={styles.descriptionInput}
             placeholder="Enter description"
             multiline
             numberOfLines={4}
             value={description}
             onChangeText={(text) => setDescription(text)}
-        />
+          />
 
-      <View style={styles.radioGroup}>
-        <TouchableOpacity style={styles.radioOption} onPress={() => setIsForSale(true)}>
-          <View style={[styles.radioCircle, isForSale && styles.radioCircleSelected]}>
-            {isForSale && <View style={styles.radioCircleInner} />}
+          <View style={styles.radioGroup}>
+            <TouchableOpacity style={styles.radioOption} onPress={() => handleForSaleChange(true)}>
+              <View style={[styles.radioCircle, isForSale && styles.radioCircleSelected]}>
+                {isForSale && <View style={styles.radioCircleInner} />}
+              </View>
+              <Text style={styles.radioLabel}>For Sale</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.radioOption} onPress={() => handleForSaleChange(false)}>
+              <View style={[styles.radioCircle, !isForSale && styles.radioCircleSelected]}>
+                {!isForSale && <View style={styles.radioCircleInner} />}
+              </View>
+              <Text style={styles.radioLabel}>For Free</Text>
+            </TouchableOpacity>
           </View>
-          <Text style={styles.radioLabel}>For Sale</Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity style={styles.radioOption} onPress={() => setIsForSale(false)}>
-          <View style={[styles.radioCircle, !isForSale && styles.radioCircleSelected]}>
-            {!isForSale && <View style={styles.radioCircleInner} />}
+          {isForSale ? (
+            <View style={styles.priceSection}>
+              <TextInput
+                style={styles.priceInput}
+                placeholder="Enter price"
+                keyboardType="numeric"
+                value={price}
+                onChangeText={setPrice}
+              />
+              <TouchableOpacity style={styles.radioOption} onPress={handlePriceNegotiableChange}>
+                <View style={[styles.radioCircle, isPriceNegotiable && styles.radioCircleSelected]}>
+                  {isPriceNegotiable && <View style={styles.radioCircleInner} />}
+                </View>
+                <Text style={styles.radioLabel}>Negotiable</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.priceSectionPlaceholder} />
+          )}
+
+          <View style={styles.bottomSection}>
+            <View style={styles.progressBarContainer}>
+              <View style={[styles.progressBarStep, styles.activeStep, styles.roundedLeft]} />
+              <View style={styles.progressBarStep} />
+              <View style={[styles.progressBarStep, styles.roundedRight]} />
+            </View>
+            <View style={styles.progressBarLabels}>
+              <Text style={[styles.progressLabel, styles.alignLeft]}>Post</Text>
+              <Text style={[styles.progressLabel, styles.alignCenter]}>Photos</Text>
+              <Text style={[styles.progressLabel, styles.alignRight]}>Finish</Text>
+            </View>
+
+            <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
+              <View style={styles.buttonSymbol}>
+                <Text style={styles.symbolText}>{'>'}</Text>
+              </View>
+              <Text style={styles.nextButtonText}>Next</Text>
+            </TouchableOpacity>
           </View>
-          <Text style={styles.radioLabel}>For Free</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.priceSection}>
-        <TextInput
-          style={styles.priceInput}
-          placeholder="Enter price"
-          keyboardType="numeric"
-          value={price}
-          onChangeText={setPrice}
-        />
-        <TouchableOpacity style={styles.radioOption} onPress={handlePriceNegotiableChange}>
-          <View style={[styles.radioCircle, isPriceNegotiable && styles.radioCircleSelected]}>
-            {isPriceNegotiable && <View style={styles.radioCircleInner} />}
-          </View>
-          <Text style={styles.radioLabel}>Negotiable</Text>
-        </TouchableOpacity>
-      </View>
-
-        <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
-            <Text style={styles.nextButtonText}>Next</Text>
-        </TouchableOpacity>
         </ScrollView>
-    </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
-
-const pickerSelectStyles = StyleSheet.create({
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 4,
-    color: 'black',
-    paddingRight: 30, 
-    backgroundColor: '#fcfbfa',
-  },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 0.5,
-    borderColor: 'gray',
-    borderRadius: 8,
-    color: 'black',
-    paddingRight: 30, 
-    backgroundColor: '#fcfbfa',
-  },
-});
 
 const styles = StyleSheet.create({
   container: {
@@ -246,8 +241,8 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 5,
-    marginBottom: 20,
+    marginTop: 20,
+    marginBottom: 10,
     textAlign: 'left',
   },
   label: {
@@ -285,22 +280,9 @@ const styles = StyleSheet.create({
     padding: 8,
     marginBottom: 16,
     alignItems: 'center',
-    
   },
   selectedOption: {
     backgroundColor: 'lightblue',
-  },
-  nextButton: {
-    backgroundColor: '#293e48',
-    borderRadius: 50,
-    padding: 10,
-    alignItems: 'center',
-    marginTop: 40,
-  },
-  nextButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontFamily: 'basicsans-regular',
   },
   scrollContentContainer: {
     flexGrow: 1,
@@ -357,13 +339,17 @@ const styles = StyleSheet.create({
   radioLabel: {
     fontSize: 16,
     fontFamily: 'basicsans-regular',
-    
   },
   priceSection: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 5,
+  },
+  priceSectionPlaceholder: {
+    height: 56,
+    marginBottom: 5,
+    paddingHorizontal: 16,
   },
   priceInput: {
     flex: 1,
@@ -388,11 +374,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#000',
     backgroundColor: '#fff',
-    
   },
   toggleIndicatorActive: {
     backgroundColor: '#000',
-    
   },
   toggleLabel: {
     fontSize: 16,
@@ -407,15 +391,7 @@ const styles = StyleSheet.create({
     marginBottom: 80,
     backgroundColor: 'white',
     alignItems: 'center',
-    // shadowColor: '#000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 2,
-    // },
-    // shadowOpacity: 0.25,
-    // shadowRadius: 4,
     elevation: 5,
-
   },
   selectCategoryButton: {
     backgroundColor: '#293e48',
@@ -470,6 +446,94 @@ const styles = StyleSheet.create({
   selectedCategoryContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  bottomBar: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  nextButton: {
+    flexDirection: 'row',
+    padding: 4,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderRadius: 50,
+    backgroundColor: '#293e48',
+    width: '95%',
+    alignSelf: 'center',
+  },
+  nextButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontFamily: 'basicsans-regular',
+    flex: 1,
+    textAlign: 'center',
+    marginLeft: -10,
+  },
+  buttonSymbol: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  symbolText: {
+    color: '#293e48',
+    fontSize: 28,
+    fontFamily: 'basicsans-regular',
+    alignSelf: 'center',
+    lineHeight: 28,
+  },
+  progressBarContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20, // Increased margin to push the progress bar down
+  },
+  progressBarStep: {
+    flex: 1,
+    height: 4,
+    backgroundColor: '#ccc',
+    marginHorizontal: 4,
+    borderRadius: 2,
+  },
+  activeStep: {
+    backgroundColor: '#293e48',
+  },
+  roundedLeft: {
+    borderTopLeftRadius: 2,
+    borderBottomLeftRadius: 2,
+  },
+  roundedRight: {
+    borderTopRightRadius: 2,
+    borderBottomRightRadius: 2,
+  },
+  progressBarLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    marginTop: 4,
+  },
+  progressLabel: {
+    fontSize: 12,
+    color: '#999',
+    fontFamily: 'basicsans-regularit',
+    marginBottom: 10,
+  },
+  alignLeft: {
+    textAlign: 'left',
+    flex: 1,
+  },
+  alignCenter: {
+    textAlign: 'center',
+    flex: 1,
+  },
+  alignRight: {
+    textAlign: 'right',
+    flex: 1,
+  },
+  bottomSection: {
+    marginTop: 20,
   },
 });
 

@@ -1,39 +1,47 @@
 
 // Backend API for authentication
 
-const BASE_URL = 'http://3.101.60.200:8000';
+const BASE_URL = 'http://localhost:8000';
 
-// Function to register a user
-export const registerUser = async (username, email, password, confirmPassword, firstName, lastName) => {
-        console.log(username, email, password, confirmPassword, firstName, lastName)
-    const response = await fetch(`${BASE_URL}/dj-rest-auth/registration/`, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            username,
-            email,
-            password1: password,
-            password2: confirmPassword,
-            first_name: firstName,
-            last_name: lastName,
-        }),
+
+
+export const registerUser = async (username, email, password, confirmPassword, zipCode, profilePictureUrl) => {
+    try {
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('email', email);
+        formData.append('password1', password);
+        formData.append('password2', confirmPassword);   // Add lastName to FormData
+        formData.append('zip_code', zipCode);
+        formData.append('profile_picture_url', profilePictureUrl);
+
+         // Log each value before appending
+         console.log('username:', username);
+         console.log('email:', email);
+         console.log('password1:', password);
+         console.log('password2:', confirmPassword);
+         console.log('zip_code:', zipCode);
+         console.log('profile_picture_url:', profilePictureUrl);
         
-    });
-    
-    // 
-    if (response.status === 204) {
-        // Registration successful 
-                return true
-    } else {
-        // Registration failed or encountered an error
-        const errorData = await response.json().catch(() => ({})); // Handle potential JSON parse error
-        
+
+        const response = await fetch(`${BASE_URL}/dj-rest-auth/registration/`, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return { success: true, token: data.token, userId: data.user_id };
+        } else {
+            const errorData = await response.json();
+            console.log('Registration error:', errorData);
+            return { success: false, error: errorData };
+        }
+    } catch (error) {
+        console.error('Error during registration:', error);
+        return { success: false, error: 'An error occurred during registration' };
     }
 };
-
 // function to log in a user and retrieve the user token
 // Function to log in a user and retrieve the user token
 export const loginUser = async (email, password) => {

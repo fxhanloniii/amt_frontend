@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 import settingsIcon from '../../assets/images/settingsicon.png';
+import selling from '../../assets/images/selling.png';
+import savefavorites from '../../assets/images/savefavorites.png';
+import pencil from '../../assets/images/pencil.png';
 import Layout from '../../components/Layout';
-const BASE_URL = 'http://3.101.60.200:8000';
+const BASE_URL = 'http://localhost:8000';
 
 const Profile = ({ navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();
@@ -14,6 +17,7 @@ const Profile = ({ navigation }) => {
   const [userFavorites, setUserFavorites] = useState([]);
   const [loading, setLoading] = useState(false);
   const [profilePicture, setProfilePicture] = useState(noProfilePhoto);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     setUserListings([]);
@@ -31,6 +35,10 @@ const Profile = ({ navigation }) => {
 
   const navigateToSettings = () => {
     navigation.navigate('UserSetting', { userProfile });
+  };
+
+  const handleSearch = () => {
+    navigation.navigate('Category', { searchQuery });
   };
 
   const fetchUserItems = async () => {
@@ -209,8 +217,8 @@ const Profile = ({ navigation }) => {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text>Loading profile...</Text>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#364a54" />
       </View>
     );
   }
@@ -225,10 +233,15 @@ const Profile = ({ navigation }) => {
           <Text style={styles.firstName}>{user?.first_name} </Text>
           <Text style={styles.userUsername}>@{user?.username}</Text>
         </View>
-        <TouchableOpacity onPress={navigateToSettings} style={styles.settingsButton}>
-            <Image source={settingsIcon} style={styles.settingsButtonImage} />
-          </TouchableOpacity>
       </View>
+      <TouchableOpacity onPress={navigateToSettings} style={styles.editProfileButton}>
+        <View style={styles.editProfileContent}>
+          <View style={styles.iconContainer}>
+            <Image source={pencil} style={styles.editIcon} />
+          </View>
+          <Text style={styles.editProfileText}>Edit Profile</Text>
+        </View>
+      </TouchableOpacity>
 
       {/* Divider */}
       <View style={styles.divider} />
@@ -239,7 +252,7 @@ const Profile = ({ navigation }) => {
         {userlistings.length === 0 ? (
           <TouchableOpacity onPress={() => navigation.navigate('Info')}>
             <View style={styles.emptyStateContainer}>
-              <Text style={styles.emptyText}>Let's start selling!</Text>
+              <Image source={selling} style={styles.emptyImage} />
             </View>
           </TouchableOpacity>
         ) : (
@@ -250,15 +263,14 @@ const Profile = ({ navigation }) => {
         {renderSeeMoreButton('userlistings')}
       </View>
 
-      {/* Divider */}
-      <View style={styles.divider} />
+      
 
       {/* Favorites */}
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>My Favorites</Text>
         {userFavorites.length === 0 ? (
           <View style={styles.emptyStateContainer}>
-            <Text style={styles.emptyText}>Save your favorites</Text>
+            <Image source={savefavorites} style={styles.emptyImage} />
           </View>
         ) : (
           <View style={styles.itemList}>
@@ -277,6 +289,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: '#f2efe9',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#f2efe9',
   },
   headerContainer: {
@@ -313,22 +331,31 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 20,
+    marginTop: 20,
     fontFamily: 'rigsans-bold',
   },
   emptyStateContainer: {
-    width: '100%',
-    height: 100,
+    width: 225,
+    height: 200,
     backgroundColor: '#fcfbfa',
     justifyContent: 'center',
     alignItems: 'center',
     borderColor: '#293e49',
+    borderWidth: 1,
+    borderRadius: 25,
+    overflow: 'hidden',
   },
   emptyText: {
     fontSize: 16,
     color: '#364a54',
+  },
+  emptyImage: {
+    width: 200, 
+    height: 200, 
+    resizeMode: 'contain', 
   },
   itemList: {
     flexDirection: 'row',
@@ -351,7 +378,7 @@ const styles = StyleSheet.create({
     width: 110,
     height: 110,
     marginBottom: 2,
-    backgroundColor: 'grey',
+    backgroundColor: 'transparent',
   },
   seeMoreButton: {
     alignItems: 'center',
@@ -375,6 +402,40 @@ const styles = StyleSheet.create({
     width: 20, 
     height: 20, 
     resizeMode: 'contain',
+  },
+  editProfileButton: {
+    alignSelf: 'flex-start',
+    marginBottom: 5,
+    backgroundColor: '#293e48',
+    borderRadius: 25,
+    paddingHorizontal: 2,
+    paddingVertical: 2,
+    paddingRight: 10,
+    flexDirection: 'row',
+    alignItems: 'space-between',
+  },
+  editProfileContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    width: 30,
+    height: 30,
+    borderRadius: 25,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+    alignSelf: 'flex-start',
+  },
+  editIcon: {
+    width: 14,
+    height: 14,
+  },
+  editProfileText: {
+    color: 'white',
+    fontSize: 12,
+    fontFamily: 'basicsans-regular',
   },
 });
 

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { logoutUser, loginUser } from '../api/auth';
 const AuthContext = createContext();
-const BASE_URL = 'http://3.101.60.200:8000';
+const BASE_URL = 'http://localhost:8000';
 
 export const useAuth = () => {
   return useContext(AuthContext);
@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [isSignedIn, setIsSignedIn] = useState(false); // Initialize with the appropriate value
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null)
+  const [zipCode, setZipCode] = useState('');
 
   const loadUserToken = async () => {
     try {
@@ -41,7 +42,24 @@ export const AuthProvider = ({ children }) => {
       if (userResponse.ok) {
         const userData = await userResponse.json();
         setUser(userData);
-              } else {
+        console.log("Retrieved user data:", userData);
+
+        // Fetch user profile to get the zip code
+        const profileResponse = await fetch(`${BASE_URL}/profiles/user/${userData.pk}/`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${authToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          setZipCode(profileData.zip_code);
+          console.log("Retrieved profile data:", profileData);
+        } else {
+          console.error('Failed to fetch profile data');
+        }
+      } else {
         console.error('Failed to fetch user data');
       }
     } catch (error) {
@@ -88,6 +106,7 @@ export const AuthProvider = ({ children }) => {
                 await SecureStore.deleteItemAsync('usertoken');
         setUser(null);
         setToken(null);
+        setZipCode('');
       } else {
         console.log("Logout failed"); // New log
       }
@@ -97,7 +116,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isSignedIn, signIn, signOut, token, setAuthToken, user }}>
+    <AuthContext.Provider value={{ isSignedIn, signIn, signOut, token, setAuthToken, user, zipCode }}>
       {children}
     </AuthContext.Provider>
   );

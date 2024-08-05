@@ -24,6 +24,8 @@ import Message from './screens/Message/Message';
 import UserSetting from './screens/UserSetting/UserSetting';
 import LogIn2 from './screens/LogIn/LogIn2';
 import SplashScreen from './screens/SplashScreen/SplashScreen';
+import SetRadius from './screens/SetRadius/SetRadius';
+import ThankYou from './screens/ThankYou/ThankYou';
 // Component Imports
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -107,8 +109,10 @@ const App = () => {
           <Stack.Screen name="Message" component={Message} />
           <Stack.Screen name="UserSetting" component={UserSetting} />
           <Stack.Screen name="LogIn2" component={LogIn2} />
+          <Stack.Screen name="SetRadius" component={SetRadius} />
+          <Stack.Screen name="ThankYou" component={ThankYou} />
         </Stack.Navigator>
-        {fontsLoaded && currentScreen !== 'SplashScreen' && currentScreen !== 'SignUp' && <Footer />}
+        {fontsLoaded && currentScreen !== 'SplashScreen' && currentScreen !== 'SignUp' && currentScreen !== 'SetRadius' && currentScreen !== 'ThankYou' && <Footer />}
       </View>
       ) : (
         <Text>Loading...</Text>

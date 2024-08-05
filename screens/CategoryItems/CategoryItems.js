@@ -1,39 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Image, TextInput, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
-const BASE_URL = 'http://3.101.60.200:8000';
+const BASE_URL = 'http://localhost:8000';
 
 const CategoryItems = ({ route, navigation }) => {
-  const { categoryName, endpoint, location } = route.params;
+  const { categoryName, endpoint, zipCode, radius, searchQuery: initialSearchQuery } = route.params;
   const [items, setItems] = useState([]);
-  const [filteredItems, setFilteredItems] = useState([]);
-  const { user, token } = useAuth();
-  const { searchQuery: initialSearchQuery } = route.params;
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
-  const [loadingImages, setLoadingImages] = useState({});
-  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        let apiUrl = '';
+        setLoading(true);
+        let apiUrl = `${BASE_URL}/items/?`;
+
         if (searchQuery) {
-          apiUrl = `${BASE_URL}/items/?search=${encodeURIComponent(searchQuery)}`;
-        } else if (endpoint) {
-          // If endpoint is provided, use it
-          apiUrl = endpoint;
-        } else if (categoryName) {
-          console.log('categoryName:', categoryName);
-          // If category name is provided, use it
-          apiUrl = `${BASE_URL}/items/?category=${encodeURIComponent(categoryName)}`;
-        } else {
-          console.error('No endpoint or category name provided');
-          return;
+          apiUrl += `search=${encodeURIComponent(searchQuery)}&`;
         }
 
-        // Add location to the URL if it's provided
-        if (location) {
-          apiUrl += `&location=${encodeURIComponent(location)}`;
+        if (categoryName) {
+          apiUrl += `category=${encodeURIComponent(categoryName)}&`;
+        }
+
+        if (zipCode) {
+          apiUrl += `zip_code=${encodeURIComponent(zipCode)}&radius=${encodeURIComponent(radius)}`;
         }
 
         const response = await fetch(apiUrl, {
@@ -46,24 +38,21 @@ const CategoryItems = ({ route, navigation }) => {
 
         if (response.ok) {
           const itemsData = await response.json();
-          console.log(itemsData);
           setItems(itemsData.reverse());
-          
-          
         } else {
           console.error('Failed to fetch items');
         }
       } catch (error) {
         console.error('Error fetching items:', error);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchItems();
-  }, [categoryName, endpoint, searchQuery, location, token]);
 
-  
+    fetchItems();
+  }, [categoryName, endpoint, searchQuery, zipCode, radius, token]);
 
   const handleItemPress = (itemId) => {
-    
     navigation.navigate('Item', { itemId });
   };
 
@@ -74,41 +63,50 @@ const CategoryItems = ({ route, navigation }) => {
   const handleSearch = () => {
     navigation.navigate('Category', {
       searchQuery,
-      location,
+      zipCode,
+      radius,
     });
   };
 
   return (
     <View style={styles.container}>
       <TextInput
-      style={styles.searchBar}
-      placeholder="What does your project need?"
-      value={searchQuery}
-      onChangeText={handleSearchQueryChange}
-      onSubmitEditing={handleSearch}
-    />
+        style={styles.searchBar}
+        placeholder="What are you looking for?"
+        value={searchQuery}
+        onChangeText={handleSearchQueryChange}
+        onSubmitEditing={handleSearch}
+      />
       <View style={styles.categoryLocationContainer}>
         <Text style={styles.titleCategory}>{categoryName}</Text>
-        <Text style={styles.locationInput}>{location}</Text>
+        <Text style={styles.locationInput}>{zipCode}</Text>
       </View>
       <View style={styles.horizontalLine} />
-      <FlatList
-        data={items}
-        keyExtractor={(item, index) => `${item.id }-${index}`}
-        renderItem={({ item }) => (
-          <TouchableWithoutFeedback onPress={() => handleItemPress(item.id)}>
-            <View style={styles.itemContainer}>
-              <Image source={{ uri: item.images[0]?.image }} style={styles.itemImage} 
-               />
-              <View style={styles.itemDetails}>
-                <Text style={styles.itemPrice}>{item.price}</Text>
-                <Text style={styles.itemName}>{item.title}</Text>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#364a54" />
+        </View>
+      ) : (
+        <FlatList
+          data={items}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          renderItem={({ item }) => (
+            <TouchableWithoutFeedback onPress={() => handleItemPress(item.id)}>
+              <View style={styles.itemContainer}>
+                <Image
+                  source={{ uri: item.images[0]?.image }}
+                  style={styles.itemImage}
+                />
+                <View style={styles.itemDetails}>
+                  <Text style={styles.itemPrice}>{item.price === 0 ? 'FREE' : `$${item.price}`}</Text>
+                  <Text style={styles.itemName} numberOfLines={1} ellipsizeMode='tail'>{item.title}</Text>
+                </View>
               </View>
-            </View>
-          </TouchableWithoutFeedback>
-        )}
-        numColumns={2}
-      />
+            </TouchableWithoutFeedback>
+          )}
+          numColumns={2}
+        />
+      )}
     </View>
   );
 };
@@ -162,22 +160,23 @@ const styles = StyleSheet.create({
     width: 165,
     height: 165,
     marginBottom: 8,
-    backgroundColor: 'lightgray',
+    backgroundColor: 'transparent',
   },
   itemDetails: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     width: '100%',
     paddingHorizontal: 5,
   },
   itemName: {
     fontSize: 12,
     flex: 2,
+    marginLeft: 0,
   },
   itemPrice: {
     fontSize: 12,
     fontWeight: 'bold',
     flex: 1,
+    marginRight: 5,
   },
   loadingContainer: {
     flex: 1,

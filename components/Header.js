@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Platform, StatusBar, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
-
+import { useAuth } from '../AuthContext/AuthContext';
 // Importing each letter
 import R from '../assets/images/o.png'
 import u from '../assets/images/p.png'
@@ -15,9 +15,14 @@ import e from '../assets/images/s.png'
 export default function Header() {
 
   const navigation = useNavigation();
+  const { isSignedIn } = useAuth();
 
   const handlePress = () => {
-    navigation.navigate('Home');
+    if (isSignedIn) {
+      navigation.navigate('Home');
+    } else {
+      navigation.navigate('SplashScreen');
+    }
   };
 
   return (

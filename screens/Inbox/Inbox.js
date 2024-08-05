@@ -3,8 +3,9 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 import { useAuth } from '../../AuthContext/AuthContext';
 import Layout from '../../components/Layout';
+import inboxIcon from '../../assets/images/inbox.png';
 
-const BASE_URL = 'http://3.101.60.200:8000';
+const BASE_URL = 'http://localhost:8000';
 
 const Inbox = ({ navigation }) => {
     const [conversations, setConversations] = useState([]);
@@ -71,15 +72,21 @@ const Inbox = ({ navigation }) => {
 
     return (
         
-            <View style={styles.container}>
-                <Text style={styles.header}>Inbox</Text>
-                <FlatList
-                    contentContainerStyle={styles.listContentContainer}
-                    data={conversations}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id.toString()}
-                />
+        <View style={styles.container}>
+        <Text style={styles.header}>Inbox</Text>
+        {conversations.length > 0 ? (
+            <FlatList
+                contentContainerStyle={styles.listContentContainer}
+                data={conversations}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id.toString()}
+            />
+        ) : (
+            <View style={styles.emptyContainer}>
+                <Image source={inboxIcon} style={styles.inboxIcon} />
             </View>
+        )}
+        </View>
         
     );
 
@@ -98,8 +105,10 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginTop: 10,
+        marginTop: 15,
         marginBottom: 10,
+        alignSelf: 'flex-start',
+        marginLeft: 20,
     },
     listContentContainer: {
         width: '100%',
@@ -144,5 +153,16 @@ const styles = StyleSheet.create({
     fullSizeImage: {
         width: '100%',
         height: '100%',
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    inboxIcon: {
+        width: 250,
+        height: 250,
+        resizeMode: 'contain',
     },
 });

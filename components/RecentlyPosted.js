@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native';
 import { useAuth } from '../AuthContext/AuthContext';
-const BASE_URL = 'http://3.101.60.200:8000';
+const BASE_URL = 'http://localhost:8000';
 import { useIsFocused } from '@react-navigation/native';
 const RecentlyPosted = ({ navigation }) => {
     const { token } = useAuth();
     const [recentlyPosted, setRecentlyPosted] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [imagesLoaded, setImagesLoaded] = useState(Array(10).fill(false));
     const isFocused = useIsFocused();
 
     useEffect(() => {
@@ -38,7 +39,9 @@ const RecentlyPosted = ({ navigation }) => {
         <View style={styles.container}>
             <Text style={styles.title}>Recently Listed</Text>
             {loading ? (
-                    <Text>Loading...</Text>
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#364a54" />
+                </View>
                 ) : recentlyPosted && recentlyPosted.length > 0 ? (
             <View style={styles.recentlyPostedContainer}>
                 {recentlyPosted.map((item, index) => (
@@ -46,8 +49,8 @@ const RecentlyPosted = ({ navigation }) => {
                         <View style={styles.itemContainer}>
                         <Image source={{ uri: item.images[0]?.image }} style={styles.itemImage} />
                         <View style={styles.itemDetails}>
-                            <Text style={styles.itemPrice}>${item.price}</Text>
-                            <Text style={styles.recentlyPostedTitle}>{item.title}</Text>
+                            <Text style={styles.itemPrice}>{item.price === 0 ? 'FREE' : `$${item.price}`}</Text>
+                            <Text style={styles.recentlyPostedTitle} numberOfLines={1} ellipsizeMode='tail'>{item.title}</Text>
                         </View>
                         </View>
                         
@@ -81,7 +84,7 @@ const styles = StyleSheet.create({
         width: 165,
         height: 165,
         marginBottom: 8,
-        backgroundColor: 'lightgray',
+        backgroundColor: 'transparent',
     },
     recentlyPostedContainer: {
         flexDirection: 'row',
@@ -97,5 +100,11 @@ const styles = StyleSheet.create({
     itemPrice: {
         fontSize: 14,
         fontFamily: 'rigsans-bold',
+        marginRight: 5,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 })

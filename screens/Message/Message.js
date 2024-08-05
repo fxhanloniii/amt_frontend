@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
-const BASE_URL = 'http://3.101.60.200:8000';
+const BASE_URL = 'http://localhost:8000';
 
 const Message = ({ route, navigation }) => {
     const { conversationId, itemDetails } = route.params;
@@ -146,15 +146,19 @@ const Message = ({ route, navigation }) => {
                     />
                 
                 <View>
+                <View style={{ flex: 1 }}>
                 <View style={styles.messageContent}>
                     <Text style={[
                         styles.senderName,
                         isCurrentUser ? styles.currentUserTextName : styles.otherUserTextName
                         ]}>{senderName}
                     </Text>
+                    <View style={{ flex: 1 }}>
                     <View style={styles.messageText}>
                         <Text style={isCurrentUser ? styles.currentUserText : styles.otherUserText}>{item.text}</Text>
                     </View>
+                    </View>
+                </View>
                 </View>
                 </View>
             </View>
@@ -276,8 +280,8 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: '#f0f0f0',
         borderRadius: 10,
-        // width: 'auto',
-        // height: 'auto',
+        width: 'auto',
+        height: 'auto',
     },
     currentUserBubble: {
         alignSelf: 'flex-end',
@@ -295,34 +299,24 @@ const styles = StyleSheet.create({
     },
     messageContent: {
         marginLeft: 8,
-        flexShrink: 1,
-        flexWrap: 'wrap',
-        flexDirection: 'column',
+        flex: 1,
     },
     messageText: {
-        flexWrap: 'wrap',
-        width: '90%',
-        height: 'auto',
-        flexDirection: 'row',
+        flex: 1,
     },
     currentUserText: {
         color: 'white',
         fontFamily: 'BasicSans-Regular',
+        flex: 1,
         flexWrap: 'wrap',
-        width: 'auto',
-        height: 'auto',
     },
 
     otherUserText: {
         color: '#364a54',
         fontFamily: 'BasicSans-Regular',
+        flex: 1,
         flexWrap: 'wrap',
-        width: 'auto',
-        height: 'auto',
     },
-
-    
-    
     viewListingButton: {
         backgroundColor: '#364a54', 
         color: 'white',

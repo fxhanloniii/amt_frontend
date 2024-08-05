@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity, Modal, Image } from 'react-native';
 import * as Location from 'expo-location';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
 import Appliances from '../../assets/images/Appliances.png';
 import BathFaucets from '../../assets/images/Bath_Faucets.png';
 import Cleaning from '../../assets/images/Cleaning.png';
@@ -25,9 +23,10 @@ import Roofing from '../../assets/images/Roofing.png';
 import Storage from '../../assets/images/Storage.png';
 import TilesMasonry from '../../assets/images/Tiles_Masonry.png';
 import Tools from '../../assets/images/Tools.png';
-const BASE_URL = 'http://3.101.60.200:8000';
-<link rel="stylesheet" href="https://use.typekit.net/ftp2quu.css"></link>
 import RecentlyPosted from '../../components/RecentlyPosted';
+import { useAuth } from '../../AuthContext/AuthContext';
+
+const BASE_URL = 'http://localhost:8000';
 
 export default function Home({ navigation }) {
   const [viewAll, setViewAll] = useState(false);
@@ -36,6 +35,7 @@ export default function Home({ navigation }) {
   const [userLocation, setUserLocation] = useState(null);
   const [customLocation, setCustomLocation] = useState('');
   const [isLocationModalOpen, setLocationModalOpen] = useState(false);
+  const { zipCode, user } = useAuth();
 
   // Full list of categories
   const allCategories = [
@@ -89,25 +89,22 @@ export default function Home({ navigation }) {
   };
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-                return;
-      }
-  
-      let currentLocation = await Location.getCurrentPositionAsync({});
-      setUserLocation(currentLocation);
-  
-      let address = await Location.reverseGeocodeAsync({
-        latitude: currentLocation.coords.latitude,
-        longitude: currentLocation.coords.longitude,
-      });
-  
-      if (address.length > 0) {
-        setLocation(`${address[0].city}, ${address[0].region}`);
-      }
-    })();
-  }, []);
+    if (zipCode) {
+      const fetchCityAndState = async () => {
+        try {
+          const response = await fetch(`http://api.zippopotam.us/us/${zipCode}`);
+          const data = await response.json();
+          if (data.places && data.places.length > 0) {
+            const place = data.places[0];
+            setLocation(`${place['place name']}, ${place['state abbreviation']}`);
+          }
+        } catch (error) {
+          console.error('Error fetching city and state:', error);
+        }
+      };
+      fetchCityAndState();
+    }
+  }, [zipCode]);
 
   const openLocationModal = () => {
     setLocationModalOpen(true);
@@ -135,7 +132,7 @@ export default function Home({ navigation }) {
   };
 
   const handleSearch = () => {
-    navigation.navigate('Category', { searchQuery, location });
+    navigation.navigate('Category', { searchQuery, zipCode, radius: user.delivery_radius });
   };
 
   // Function to render a category button
@@ -143,7 +140,7 @@ export default function Home({ navigation }) {
     <TouchableOpacity 
       key={category} 
       style={styles.categoryButton} 
-      onPress={() => navigation.navigate('Category', { categoryName: category, location })}
+      onPress={() => navigation.navigate('Category', { categoryName: category, zipCode, radius: user.delivery_radius })}
     >
       <View style={styles.categoryContent}>
       <Image source={categoryIcons[category]} style={styles.categoryIcon} />
@@ -158,7 +155,7 @@ export default function Home({ navigation }) {
     <View style={styles.container}>
       <TextInput 
         style={styles.searchBar}
-        placeholder="What does your project need?"
+        placeholder="What are you looking for?"
         onChangeText={text => setSearchQuery(text)}
         onSubmitEditing={handleSearch}
       />
@@ -232,7 +229,7 @@ const styles = StyleSheet.create({
     titleTopCatergories: {
       fontSize: 18, 
       fontWeight: 'bold',
-      fontFamily:' rigsans-bold',
+      fontFamily:'rigsans-bold',
   },
   locationText: {
     color: '#9e3f19'

@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Image, Scro
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
-const BASE_URL = 'http://3.101.60.200:8000';
+const BASE_URL = 'http://localhost:8000';
 
 const UserSettings = ({ route, navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();
