@@ -116,7 +116,12 @@ const InfoInputScreen = ({ navigation }) => {
         >
           <Text style={styles.header}>Sell an Item</Text>
           <TouchableOpacity style={styles.selectCategoryButton} onPress={toggleModal}>
-            <Text style={styles.selectCategoryButtonText}>Select Category</Text>
+            <View style={styles.buttonContent}>
+              <View style={styles.circle}>
+                <Text style={styles.dots}>•••</Text>
+              </View>
+              <Text style={styles.selectCategoryButtonText}>Select Category</Text>
+            </View>
           </TouchableOpacity>
           
           <View style={category ? styles.selectedCategory : styles.hiddenCategory}>
@@ -534,6 +539,46 @@ const styles = StyleSheet.create({
   },
   bottomSection: {
     marginTop: 20,
+  },
+  selectCategoryButton: {
+    backgroundColor: '#293e48',
+    borderRadius: 50,
+    paddingVertical: 5,
+    paddingHorizontal: 0,
+    marginTop: 10,
+    width: '100%',  
+    height: 40,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  buttonContent: {
+    flexDirection: 'row',  // Align the circle and text horizontally
+    alignItems: 'center',  // Center them vertically
+    justifyContent: 'center',  // Ensure the text is centered in the button
+    width: '100%',  // Make the content take the full width of the button
+    position: 'relative',  // Allow absolute positioning of the circle
+  },
+  circle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',  // Position the circle absolutely
+    left: 3,  // Keep it on the left side
+  },
+  dots: {
+    color: '#293e48',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  selectCategoryButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'basicsans-regular',
+    textAlign: 'center',  // Center the text
+    flex: 1,  // Allow the text to take up available space
   },
 });
 

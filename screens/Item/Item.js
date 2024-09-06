@@ -330,8 +330,9 @@ const Item = ({ route, navigation }) => {
   
   
 
-  const handleMarkAsSold = async () => {
-    // Mark the item as sold
+  const handleMarkAsSold = () => {
+    // Navigate to the SelectBuyerScreen with the itemId as a parameter
+    navigation.navigate('SelectBuyer', { itemId: item.id });
   };
 
 
@@ -791,7 +792,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 300,
-    resizeMode: 'cover ',
+    resizeMode: 'cover',
     borderWidth: 0,
     borderColor: 'transparent',
   },

@@ -19,7 +19,7 @@ const Review = ({ route, navigation }) => {
 
   const { token, zipCode: userZipCode } = useAuth();
   const [location, setLocation] = useState('');
-  const [zipCode, setZipCode] = useState(userZipCode || '');
+  const [zipCode, setZipCode] = useState(user.zipCode || '');
   const [region, setRegion] = useState(null);
   const [isPublished, setIsPublished] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingBottom: 24,
     justifyContent: 'space-between',
     backgroundColor: '#f2efe9',
   },

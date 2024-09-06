@@ -60,10 +60,13 @@ const Inbox = ({ navigation }) => {
                 />
                 <View style={styles.messageContainer}>
                     <Text style={styles.username}>{otherUserDetails.first_name || 'User'}</Text>
-                    <Text>{lastMessageText}</Text>
+                    <Text style={styles.lastMessageText}>{lastMessageText}</Text>
                 </View>
                 <View style={itemImageAvailable ? styles.itemImage : styles.defaultItemImage}>
                     {itemImage && <Image source={itemImage} style={styles.fullSizeImage} />}
+                </View>
+                <View style={styles.arrowContainer}>
+                    <Text style={styles.arrowText}>{'>'}</Text>
                 </View>
             </View>
         </TouchableOpacity>
@@ -121,6 +124,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderWidth: 1,
         borderColor: '#ccc',
+        borderRadius:10,
         width: 350,
         alignSelf: 'center',
         backgroundColor: 'white', 
@@ -137,7 +141,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     username: {
-        fontWeight: 'bold',
+        fontFamily: 'rigsans-bold',
     },
     itemImage: {
         width: 50,
@@ -164,5 +168,17 @@ const styles = StyleSheet.create({
         width: 250,
         height: 250,
         resizeMode: 'contain',
+    },
+    lastMessageText: {
+        fontFamily: 'basicsans-regular',
+    },
+    arrowContainer: {
+        paddingLeft: 8, // 5px padding on the left and right
+        justifyContent: 'center',
+    },
+    arrowText: {
+        fontSize: 20,
+        color: 'black',
+        fontFamily: 'rigsans-bold',
     },
 });

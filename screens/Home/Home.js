@@ -188,7 +188,12 @@ export default function Home({ navigation }) {
         {allCategories.slice(0, viewAll ? allCategories.length : 8).map(renderCategory)}
         
         <TouchableOpacity style={styles.viewAllButton} onPress={() => setViewAll(!viewAll)}>
-          <Text style={styles.viewAllButtonText}>{viewAll ? 'View Less' : 'View All Categories'}</Text>
+          <View style={styles.buttonContent}>
+            <View style={styles.circle}>
+              <Text style={styles.dots}>•••</Text>
+            </View>
+            <Text style={styles.viewAllButtonText}>{viewAll ? 'View Less' : 'View All Categories'}</Text>
+          </View>
         </TouchableOpacity>
 
         <RecentlyPosted navigation={navigation} />
@@ -278,17 +283,38 @@ categoryIcon: {
     borderRadius: 50,
     margin: 10,
     width: '90%',  
-    height: 35,
-    justifyContent: 'center',  
-    alignItems: 'center',
+    height: 40,
+    justifyContent: 'center',
     alignSelf: 'center',
-    fontFamily: 'basicsans-regular',
+  },
+  buttonContent: {
+    flexDirection: 'row',  // Align the circle and text horizontally
+    alignItems: 'center',  // Center them vertically
+    justifyContent: 'center',  // Ensure the text is centered in the button
+    width: '100%',  // Make the content take the full width of the button
+    position: 'relative',  // Allow absolute positioning of the circle
+  },
+  circle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',  // Position the circle absolutely
+    left: 2,  // Keep it on the left side
+  },
+  dots: {
+    color: '#293e49',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   viewAllButtonText: {
     color: 'white',
     fontFamily: 'basicsans-regular',
     fontSize: 16,
-
+    textAlign: 'center',  // Center the text
+    flex: 1,  // Allow the text to take up available space
   },
   modalContainer: {
     flex: 1,

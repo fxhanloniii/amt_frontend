@@ -91,6 +91,12 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'space-evenly',
     },
+    recentlyPostedTitle: {
+        fontSize: 14,
+        fontFamily: 'rigsans-regular',
+        width: 165,
+        overflow: 'hidden',
+    },
     itemDetails: {
         width: 165,
         flexDirection: 'row',

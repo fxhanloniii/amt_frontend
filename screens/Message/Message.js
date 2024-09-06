@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 const BASE_URL = 'http://localhost:8000';
@@ -13,6 +13,7 @@ const Message = ({ route, navigation }) => {
     const [profilePicture, setProfilePicture] = useState(noProfilePhoto);
     const [userProfile, setUserProfile] = useState(null);
     const [isCurrentUserProfile, setIsCurrentUserProfile] = useState(false);
+    const flatListRef = useRef(null);
     console.log(itemDetails)
     useEffect(() => {
 
@@ -166,7 +167,11 @@ const Message = ({ route, navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView 
+            style={styles.container} 
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        >
             {/* Item Details Section */}
             {itemDetails && (
             <View style={styles.itemDetails}>
@@ -197,9 +202,11 @@ const Message = ({ route, navigation }) => {
             )}
             <View style={styles.divider} />
             <FlatList
+                ref={flatListRef}
                 data={messages}
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
+                onContentSizeChange={() => flatListRef.current.scrollToEnd({ animated: true })}
             />
             <View style={styles.messageBoxContainer}>
                 <TextInput
@@ -212,7 +219,7 @@ const Message = ({ route, navigation }) => {
                     <Text style={styles.sendButtonText}>Send</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -266,7 +273,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
     },
     senderName: {
-        fontFamily: 'RigSans-Bold', 
+        fontFamily: 'rigsans-bold', 
     },
     currentUserTextName: {
         color: 'white',
@@ -306,14 +313,14 @@ const styles = StyleSheet.create({
     },
     currentUserText: {
         color: 'white',
-        fontFamily: 'BasicSans-Regular',
+        fontFamily: 'basicsans-regular',
         flex: 1,
         flexWrap: 'wrap',
     },
 
     otherUserText: {
         color: '#364a54',
-        fontFamily: 'BasicSans-Regular',
+        fontFamily: 'basicsans-regular',
         flex: 1,
         flexWrap: 'wrap',
     },

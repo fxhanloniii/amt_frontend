@@ -2,50 +2,49 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Image, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../AuthContext/AuthContext';
-import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
+import noProfilePhoto from '../../assets/images/noprofilephoto.png';
+import TrashIcon from '../../assets/images/trashcan.png'; // Assuming you have a trash can icon
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 const BASE_URL = 'http://localhost:8000';
 
 const UserSettings = ({ route, navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();
   const [userProfile, setUserProfile] = useState(null);
-  const [profilePicture, setProfilePicture] = useState(route.params?.userProfile?.profilePictureUrl || 'default-profile-pic-url');
+  const [profilePicture, setProfilePicture] = useState(route.params?.userProfile?.profilePictureUrl || noProfilePhoto);
   const [bio, setBio] = useState(userProfile?.bio || '');
   const [city, setCity] = useState(userProfile?.city || '');
   const [state, setState] = useState(userProfile?.state || '');
   const [firstName, setFirstName] = useState(user?.first_name || '');
   const [lastName, setLastName] = useState(user?.last_name || '');
+  const [zipCode, setZipCode] = useState(userProfile?.zip_code || '');
   const [loading, setLoading] = useState(false);
 
-  
   useEffect(() => {
     fetchUserProfile();
   }, [user, token]);
-
 
   const handleDeleteAccount = async () => {
     try {
       setLoading(true);
       const response = await fetch(`${BASE_URL}/delete-account/`, {
+        method: 'DELETE',
         headers: {
-          method: 'DELETE',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Token ${token}`,
         },
       });
       if (response.ok) {
-        // Account deleted successfully 
-        Alert.alert('Your account has been deleted.', [
-          {text: 'OK', onPress: () => navigation.navigate('LogIn')},
+        Alert.alert('Account Deleted', 'Your account has been deleted.', [
+          { text: 'OK', onPress: () => navigation.navigate('LogIn') },
         ]);
       } else {
-        // handle other status codes 
         Alert.alert('Error', 'Failed to delete account. Please try again later.');
       }
     } catch (error) {
-      // handle network errors or other exceptions
       console.error('Error deleting account:', error);
       Alert.alert('Error', 'Failed to delete account. Please try again later.');
     }
-  } 
+  };
 
   const handleConfirmation = () => {
     Alert.alert(
@@ -57,19 +56,21 @@ const UserSettings = ({ route, navigation }) => {
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
-        {text: 'Delete', 
-        onPress: () => handleDeleteAccount(),
-        style: 'destructive'},
+        {
+          text: 'Delete',
+          onPress: () => handleDeleteAccount(),
+          style: 'destructive',
+        },
       ],
       { cancelable: false }
-    )
-  }
-  const handleLogout = async () => {
-    await signOut();
-    navigation.navigate('SplashScreen'); 
+    );
   };
 
-  // Function to pick a profile picture
+  const handleLogout = async () => {
+    await signOut();
+    navigation.navigate('SplashScreen');
+  };
+
   const pickProfilePicture = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -79,7 +80,7 @@ const UserSettings = ({ route, navigation }) => {
     });
 
     if (!result.cancelled) {
-        uploadImage(result.uri);
+      uploadImage(result.uri);
     }
   };
 
@@ -87,25 +88,25 @@ const UserSettings = ({ route, navigation }) => {
     const formData = new FormData();
     formData.append('image', {
       uri: uri,
-      type: 'image/jpeg', 
+      type: 'image/jpeg',
       name: 'profile-pic.jpg',
     });
-  
+
     try {
-      const response = await fetch(`${BASE_URL}/upload-image/`, {
+      const response = await fetch(`${BASE_URL}/profiles/upload-profile-picture/`, {
         method: 'POST',
         headers: {
-          'Authorization': `Token ${token}`,
+          Authorization: `Token ${token}`,
           'Content-Type': 'multipart/form-data',
         },
         body: formData,
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         setProfilePicture({ uri: data.image_url });
-        updateUserProfileImage(data.image_url); 
-              }
+        updateUserProfileImage(data.image_url);
+      }
     } catch (error) {
       console.error('Error uploading image:', error);
     }
@@ -113,45 +114,54 @@ const UserSettings = ({ route, navigation }) => {
 
   const updateUserProfileImage = async (imageUrl) => {
     const updatedProfile = {
-        ...userProfile, 
-        profile_picture_url: imageUrl
+      ...userProfile,
+      profile_picture_url: imageUrl,
     };
-    await updateUserProfile(updatedProfile); 
-    };
+    await updateUserProfile(updatedProfile);
+  };
 
   const handleUpdate = async () => {
     const newProfileData = {
       bio: bio,
       city: city,
       state: state,
+      zip_code: zipCode,
       profile_picture_url: profilePicture,
       first_name: firstName,
       last_name: lastName,
     };
-  
+
+    console.log("Submitting Data: ", newProfileData);
+
     await updateUserProfile(newProfileData);
   };
 
   const updateUserProfile = async (newProfileData) => {
     try {
-        console.log(user.pk)
       const response = await fetch(`${BASE_URL}/profiles/user/${user.pk}/`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Token ${token}`,
+          Authorization: `Token ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newProfileData),
       });
 
+      // Parse the response JSON once and store it in a variable
+      const responseData = await response.json();
+
+      // Log the status and the parsed response data
+      console.log("Response Status: ", response.status);
+      console.log("Response Data: ", responseData);
+
       if (response.ok) {
-                Alert.alert("Profile Updated", "Your profile has been updated successfully.");
-        const updatedData = await response.json();
-        setUserProfile(updatedData);
+        Alert.alert('Profile Updated', 'Your profile has been updated successfully.');
+        setUserProfile(responseData);
+        
       } else {
         const errorData = await response.json();
         console.error('Failed to update user profile', errorData);
-        Alert.alert("Update Failed", "There was a problem updating your profile.");
+        Alert.alert('Update Failed', 'There was a problem updating your profile.');
       }
     } catch (error) {
       console.error('Error updating user profile:', error);
@@ -160,26 +170,27 @@ const UserSettings = ({ route, navigation }) => {
 
   const fetchUserProfile = async () => {
     try {
-            const response = await fetch(`${BASE_URL}/profiles/user/${user.pk}/`, {
+      const response = await fetch(`${BASE_URL}/profiles/user/${user.pk}/`, {
         method: 'GET',
         headers: {
-          'Authorization': `Token ${token}`,
+          Authorization: `Token ${token}`,
           'Content-Type': 'application/json',
         },
       });
 
       if (response.ok) {
         const data = await response.json();
+        console.log("Fetched Data:", data);
         setUserProfile(data);
         if (data.profile_picture_url) {
-            setProfilePicture({ uri: data.profile_picture_url });
-            
+          setProfilePicture({ uri: data.profile_picture_url });
         } else {
-            setProfilePicture(noProfilePhoto);
+          setProfilePicture(noProfilePhoto);
         }
         setBio(data.bio || '');
         setCity(data.city || '');
         setState(data.state || '');
+        setZipCode(data.zip_code || '');
       } else {
         console.error('Failed to fetch user profile');
       }
@@ -189,40 +200,54 @@ const UserSettings = ({ route, navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Text style={styles.title}>Settings</Text>
       <TouchableOpacity onPress={pickProfilePicture}>
         <Image source={profilePicture} style={styles.profileImage} key={profilePicture} />
       </TouchableOpacity>
-        <Text style={styles.displayName}>{firstName} {lastName}</Text>
-       {/* <TextInput
+      <Text style={styles.displayName}>{firstName || user?.username} {lastName}</Text>
+
+      <TextInput
         style={styles.input}
-        value={bio}
-        onChangeText={setBio}
-        placeholder="Bio"
+        value={firstName}
+        onChangeText={setFirstName}
+        placeholder="First Name"
       />
       <TextInput
         style={styles.input}
-        value={city}
-        onChangeText={setCity}
-        placeholder="City"
+        value={lastName}
+        onChangeText={setLastName}
+        placeholder="Last Name"
       />
       <TextInput
-      style={styles.input}
-      value={state}
-      onChangeText={setState}
-      placeholder="State"
+        style={styles.input}
+        value={zipCode}
+        onChangeText={setZipCode}
+        placeholder="Zip Code"
       />
-      
-       <TouchableOpacity style={styles.button} onPress={handleUpdate}>
-         <Text style={styles.buttonText}>Update Profile</Text>
-       </TouchableOpacity>  */}
-      <TouchableOpacity style={styles.button} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Logout</Text>
+
+      <TouchableOpacity style={styles.saveButton} onPress={handleUpdate}>
+        <View style={styles.buttonSymbol}>
+          <Text style={styles.symbolText}>{'>'}</Text>
+        </View>
+        <Text style={styles.saveButtonText}>Save</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.deleteButton} onPress={handleConfirmation} disabled={loading}>
-        <Text style={styles.buttonText}>Delete Account</Text>
-      </TouchableOpacity>
+
+      <View style={styles.bottomButtonsContainer}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <View style={styles.buttonSymbol}>
+            <Text style={styles.symbolText}>{'>'}</Text>
+          </View>
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.deleteButton} onPress={handleConfirmation} disabled={loading}>
+          <View style={styles.buttonSymbol}>
+            <Image source={TrashIcon} style={styles.trashIcon} />
+          </View>
+          <Text style={styles.deleteButtonText}>Delete Account</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -232,6 +257,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#f2efe9',
+  },
+  contentContainer: {
+    flexGrow: 1,
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: 20,
@@ -259,23 +288,79 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#fcfbfa',
   },
-  button: {
+  saveButton: {
+    flexDirection: 'row',
+    padding: 4,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderRadius: 50,
     backgroundColor: '#293e48',
-    padding: 15,
-    alignItems: 'center',
-    marginTop: 10,
-    borderRadius: 50,
+    marginBottom: 20,
   },
-  deleteButton: {
-    backgroundColor: 'red',
-    padding: 15,
-    alignItems: 'center',
-    borderRadius: 50,
-    marginTop: 10,
-  },
-  buttonText: {
+  saveButtonText: {
     color: 'white',
     fontSize: 18,
+    fontFamily: 'basicsans-regular',
+    flex: 1,
+    textAlign: 'center',
+    marginLeft: -10,
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    padding: 4,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderRadius: 50,
+    backgroundColor: '#293e48',
+    marginBottom: 10,
+  },
+  logoutButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontFamily: 'basicsans-regular',
+    flex: 1,
+    textAlign: 'center',
+    marginLeft: -10,
+  },
+  deleteButton: {
+    flexDirection: 'row',
+    padding: 4,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderRadius: 50,
+    backgroundColor: '#364a54',
+    marginTop: 10,
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontFamily: 'basicsans-regular',
+    flex: 1,
+    textAlign: 'center',
+    marginLeft: -10,
+  },
+  buttonSymbol: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  symbolText: {
+    color: '#293e48',
+    fontSize: 28,
+    fontFamily: 'basicsans-regular',
+    alignSelf: 'center',
+    lineHeight: 28,
+  },
+  trashIcon: {
+    width: 20,
+    height: 20,
+    tintColor: '#293e48',
+  },
+  bottomButtonsContainer: {
+    marginTop: 'auto',
   },
 });
 
