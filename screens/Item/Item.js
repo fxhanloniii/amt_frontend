@@ -82,7 +82,9 @@ const Item = ({ route, navigation }) => {
               console.error('Failed to fetch location data');
             }
           } else if (itemData.location) {
-            // If no zip code, parse the location string (e.g., "City, State") to set the region
+            const [city, state] = itemData.location.split(', ');
+            setCity(city);
+            setState(state);
             parseLocation(itemData.location);
           }
         } else {
@@ -996,6 +998,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
     color: '#364a54',
+    fontFamily: 'rigsans-bold',
   },
   confirmationText: {
     fontSize: 16,

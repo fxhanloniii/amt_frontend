@@ -96,6 +96,8 @@ const styles = StyleSheet.create({
         fontFamily: 'rigsans-regular',
         width: 165,
         overflow: 'hidden',
+        numberOfLines: 1,   // Limits to one line
+        ellipsizeMode: 'tail',
     },
     itemDetails: {
         width: 165,

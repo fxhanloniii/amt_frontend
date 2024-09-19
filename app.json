@@ -7,7 +7,6 @@
     "icon": "./assets/images/appicon1.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/tile_rubble.jpeg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

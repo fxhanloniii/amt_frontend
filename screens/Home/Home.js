@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity, Modal, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity, Modal, Image, ActivityIndicator } from 'react-native';
+import MapView, { Circle, Marker } from 'react-native-maps';
+
 import * as Location from 'expo-location';
 import Appliances from '../../assets/images/Appliances.png';
 import BathFaucets from '../../assets/images/Bath_Faucets.png';
@@ -35,7 +37,10 @@ export default function Home({ navigation }) {
   const [userLocation, setUserLocation] = useState(null);
   const [customLocation, setCustomLocation] = useState('');
   const [isLocationModalOpen, setLocationModalOpen] = useState(false);
-  const { zipCode, user } = useAuth();
+  const { zipCode: userZipCode, user } = useAuth();
+  const [customZipCode, setCustomZipCode] = useState(''); // For overriding user's zipCode
+  const [radius, setRadius] = useState(25); // Stores the radius entered by the user
+  const [region, setRegion] = useState(null);
 
   // Full list of categories
   const allCategories = [
@@ -89,22 +94,31 @@ export default function Home({ navigation }) {
   };
 
   useEffect(() => {
-    if (zipCode) {
-      const fetchCityAndState = async () => {
-        try {
-          const response = await fetch(`http://api.zippopotam.us/us/${zipCode}`);
-          const data = await response.json();
-          if (data.places && data.places.length > 0) {
-            const place = data.places[0];
-            setLocation(`${place['place name']}, ${place['state abbreviation']}`);
-          }
-        } catch (error) {
-          console.error('Error fetching city and state:', error);
-        }
-      };
-      fetchCityAndState();
+    // Use the user's zipCode by default
+    if (userZipCode) {
+      fetchCoordinates(userZipCode);
     }
-  }, [zipCode]);
+  }, [userZipCode]);
+
+  const fetchCoordinates = async (zip) => {
+    try {
+      const response = await fetch(`http://api.zippopotam.us/us/${zip}`);
+      const data = await response.json();
+      const place = data.places[0];
+  
+      setRegion({
+        latitude: parseFloat(place.latitude),
+        longitude: parseFloat(place.longitude),
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
+  
+      setLocation(`${place['place name']}, ${place['state abbreviation']}`);
+    } catch (error) {
+      console.error('Error fetching coordinates:', error);
+    }
+  };
+  
 
   const openLocationModal = () => {
     setLocationModalOpen(true);
@@ -114,16 +128,16 @@ export default function Home({ navigation }) {
     setLocationModalOpen(false);
   };
 
-  const handleSaveLocation = () => {
-    // Perform validation here to check if the customLocation is in the correct format
-    if (isValidLocationFormat(customLocation)) {
-      setLocation(customLocation);
+  const handleSaveLocation = async () => {
+    if (customZipCode) {
+      await fetchCoordinates(customZipCode); // Fetch coordinates for the entered customZipCode
+      setLocation(`${customZipCode}`);
       closeLocationModal();
     } else {
-      // Show an error message to the user, indicating an invalid format
-      alert('Please enter a valid location format (e.g., Los Angeles, CA)');
+      alert('Please enter a valid zip code.');
     }
   };
+  
 
   const isValidLocationFormat = (location) => {
     // Use a regular expression to check if the format matches "City, State"
@@ -132,24 +146,41 @@ export default function Home({ navigation }) {
   };
 
   const handleSearch = () => {
-    navigation.navigate('Category', { searchQuery, zipCode, radius: user.delivery_radius });
+    const zipToUse = customZipCode || userZipCode;  // Use custom or user zipCode
+    if (!zipToUse) {
+      alert('Please enter a valid zip code.');
+      return;
+    }
+    navigation.navigate('Category', { searchQuery, zipCode: zipToUse, radius });
   };
+  
 
-  // Function to render a category button
-  const renderCategory = (category) => (
-    <TouchableOpacity 
-      key={category} 
-      style={styles.categoryButton} 
-      onPress={() => navigation.navigate('Category', { categoryName: category, zipCode, radius: user.delivery_radius })}
-    >
-      <View style={styles.categoryContent}>
-      <Image source={categoryIcons[category]} style={styles.categoryIcon} />
-      <View style={styles.categoryTextContainer}>
-        <Text style={styles.categoryButtonText}>{category}</Text>
-      </View>
-    </View>
-    </TouchableOpacity>
-  );
+  const renderCategory = (category) => {
+    // Ensure you're passing the correct zipCode (either custom or user zipCode)
+    const zipToUse = customZipCode || userZipCode;
+  
+    // Check if zipToUse is defined, otherwise return null to prevent errors
+    if (!zipToUse) {
+      console.error('Zip code is not available');
+      return null;
+    }
+  
+    return (
+      <TouchableOpacity 
+        key={category} 
+        style={styles.categoryButton} 
+        onPress={() => navigation.navigate('Category', { categoryName: category, zipCode: zipToUse, radius })}
+      >
+        <View style={styles.categoryContent}>
+          <Image source={categoryIcons[category]} style={styles.categoryIcon} />
+          <View style={styles.categoryTextContainer}>
+            <Text style={styles.categoryButtonText}>{category}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+  
  
   return (
     <View style={styles.container}>
@@ -162,26 +193,62 @@ export default function Home({ navigation }) {
       <View style={styles.categoryLocationContainer}>
         <Text style={styles.titleTopCatergories}>Top Categories</Text>
         <TouchableOpacity style={styles.locationContainer} onPress={openLocationModal}>
+          <Image source={require('../../assets/images/location-pin.png')} style={styles.locationIcon} />
           <Text style={styles.locationText}>{customLocation || location}</Text>
         </TouchableOpacity>
 
-        {/* Modal for custom location input */}
-      <Modal visible={isLocationModalOpen} animationType="slide">
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Enter Your Location</Text>
-          <TextInput
-            style={styles.locationInput}
-            placeholder="E.g., Los Angeles, CA"
-            onChangeText={(text) => setCustomLocation(text)}
-          />
-          <TouchableOpacity style={styles.saveButton} onPress={handleSaveLocation}>
-            <Text style={styles.saveButtonText}>Save</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.cancelButton} onPress={closeLocationModal}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
+        <Modal visible={isLocationModalOpen} animationType="slide">
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Edit Location</Text>
+
+            {region ? (
+              <MapView
+                style={styles.map}
+                region={region}
+                onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
+              >
+                <Marker coordinate={{ latitude: region.latitude, longitude: region.longitude }} />
+              </MapView>
+            ) : (
+              <ActivityIndicator size="large" color="#364a54" />
+            )}
+            <Text style={styles.inputLabel}>Zip Code</Text>
+            <TextInput
+              style={styles.locationInput}
+              placeholder="Enter zip code"
+              value={customZipCode}
+              onChangeText={(text) => setCustomZipCode(text)}
+              onSubmitEditing={() => fetchCoordinates(customZipCode || userZipCode)}
+            />
+            <Text style={styles.inputLabel}>Radius (in miles)</Text>
+            <TextInput
+              style={styles.locationInput}
+              placeholder="Enter radius (in miles)"
+              keyboardType="numeric"
+              value={radius.toString()}
+              onChangeText={(text) => setRadius(Number(text))}
+            />
+
+            <View style={styles.buttonContainerBottom}>
+              <TouchableOpacity style={styles.saveButton} onPress={handleSaveLocation}>
+                <View style={styles.buttonSymbol}>
+                  <Text style={styles.symbolText}>{'>'}</Text>
+                </View>
+                <Text style={styles.saveButtonText}>Save</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.cancelButton} onPress={closeLocationModal}>
+                <View style={styles.buttonSymbol}>
+                  <Text style={styles.symbolText}>{'x'}</Text>
+                </View>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+
+
 
       </View>
       <ScrollView contentContainerStyle={styles.categoryContainer}>
@@ -236,8 +303,23 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       fontFamily:'rigsans-bold',
   },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',  // Push the location text to the right
+    paddingHorizontal: 10,  // Optional padding for spacing
+  },
+  
+  locationIcon: {
+    width: 18,  // Adjust the size as needed to match the design
+    height: 18,
+    marginRight: 4,  // Add space between the icon and the text
+  },
+  
   locationText: {
-    color: '#9e3f19'
+    color: '#9e3f19',  // Match the color you are using in your design
+    fontSize: 14,
+    textAlign: 'right',  // Align the text to the right
   },
   categoryButton: {
     backgroundColor: '#fcfbfa',
@@ -318,42 +400,98 @@ categoryIcon: {
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: '#f2efe9', 
-    paddingTop: 50, 
+    backgroundColor: '#f2efe9',
+    paddingTop: 50,
+    paddingHorizontal: 20,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    textAlign: 'center',
+    textAlign: 'left',
+    fontFamily: 'rigsans-bold',
     marginBottom: 20,
+    paddingTop: 50,
+  },
+  map: {
+    width: '100%',
+    height: 300, // Adjust height as needed
+    borderRadius: 10,
+    marginBottom: 10,
   },
   locationInput: {
+    width: '100%',
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     padding: 10,
-    margin: 20,
+    fontSize: 16,
+    marginBottom: 10,
+    backgroundColor: '#fcfbfa', // Matches background color
+    color: '#293e48', // Matches text color
+  },
+  buttonContainerBottom: {
+    width: '100%',
+    alignItems: 'center',  // Center the buttons
+    marginTop: 10,  // Add some spacing between inputs and buttons
   },
   saveButton: {
-    backgroundColor: '#293e49',
-    borderRadius: 5,
-    padding: 10,
-    margin: 10,
+    flexDirection: 'row',
+    padding: 4,
+    justifyContent: 'space-between',
     alignItems: 'center',
+    borderRadius: 50,
+    backgroundColor: '#293e48',
+    width: '100%',
+    alignSelf: 'center',
+    marginBottom: 10,
   },
   saveButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontFamily: 'basicsans-regular',
+    flex: 1,
+    textAlign: 'center',
+    marginLeft: -10,
   },
   cancelButton: {
-    backgroundColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    margin: 10,
+    flexDirection: 'row',
+    padding: 4,
+    justifyContent: 'space-between',
     alignItems: 'center',
+    borderRadius: 50,
+    backgroundColor: '#ccc',
+    width: '100%',
+    alignSelf: 'center',
   },
   cancelButtonText: {
-    color: 'black',
-    fontWeight: 'bold',
+    color: '#293e48',
+    fontSize: 18,
+    fontFamily: 'basicsans-regular',
+    flex: 1,
+    textAlign: 'center',
+    marginLeft: -10,
   },
+  buttonSymbol: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  symbolText: {
+    color: '#293e48',
+    fontSize: 28,
+    fontFamily: 'basicsans-regular',
+    alignSelf: 'center',
+    lineHeight: 28,
+  },
+  inputLabel: {
+    fontSize: 14,  
+    color: '#293e48',  
+    marginBottom: 5,  
+    alignSelf: 'flex-start',  
+    fontFamily: 'basicsans-regular'
+  },
+  
 });

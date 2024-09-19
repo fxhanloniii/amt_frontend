@@ -19,7 +19,7 @@ const Review = ({ route, navigation }) => {
 
   const { token, zipCode: userZipCode } = useAuth();
   const [location, setLocation] = useState('');
-  const [zipCode, setZipCode] = useState(user.zipCode || '');
+  const [zipCode, setZipCode] = useState(userZipCode || '');
   const [region, setRegion] = useState(null);
   const [isPublished, setIsPublished] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,10 +50,11 @@ const Review = ({ route, navigation }) => {
   };
 
   const handlePublish = async () => {
+    if (isLoading) return; // Prevent further clicks if already publishing
     try {
-      setIsLoading(true);
+      setIsLoading(true); // Disable button and show "Publishing..."
       setError('');
-
+  
       const formData = new FormData();
       formData.append('title', title);
       formData.append('description', description);
@@ -63,7 +64,7 @@ const Review = ({ route, navigation }) => {
       formData.append('isForSale', isForSale);
       formData.append('isPriceNegotiable', isPriceNegotiable);
       formData.append('category', category);
-
+  
       selectedImages.forEach((imageUri, index) => {
         formData.append('images', {
           uri: imageUri,
@@ -71,7 +72,7 @@ const Review = ({ route, navigation }) => {
           name: `image_${index}.jpg`,
         });
       });
-
+  
       const response = await fetch(`${BASE_URL}/upload-item-data-and-images/`, {
         method: 'POST',
         headers: {
@@ -79,9 +80,9 @@ const Review = ({ route, navigation }) => {
         },
         body: formData,
       });
-
+  
       const data = await response.json();
-
+  
       if (response.status === 201) {
         setIsPublished(true);
         navigation.navigate('Item', { itemId: data.item_id });
@@ -96,13 +97,14 @@ const Review = ({ route, navigation }) => {
       setIsLoading(false);
     }
   };
+  
 
   const renderItem = ({ item }) => (
     <Image source={{ uri: item }} style={styles.carouselImage} />
   );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={{ justifyContent: 'space-between', paddingBottom: 24 }} style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.header}>Sell an Item</Text>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -174,16 +176,19 @@ const Review = ({ route, navigation }) => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.nextButton}
-          onPress={handlePublish}
-          disabled={isPublished}
-        >
-          <View style={styles.buttonSymbol}>
-            <Text style={styles.symbolText}>{'>'}</Text>
-          </View>
-          <Text style={styles.nextButtonText}>Publish</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.nextButton, isLoading && { opacity: 0.5 }]} // Dim button when loading
+        onPress={handlePublish}
+        disabled={isLoading} // Disable button when loading
+      >
+        <View style={styles.buttonSymbol}>
+          <Text style={styles.symbolText}>{'>'}</Text>
+        </View>
+        <Text style={styles.nextButtonText}>
+          {isLoading ? 'Publishing...' : 'Publish'} {/* Show "Publishing..." when loading */}
+        </Text>
+      </TouchableOpacity>
+
       </View>
 
       {isPublished && (
@@ -205,8 +210,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingBottom: 24,
-    justifyContent: 'space-between',
     backgroundColor: '#f2efe9',
   },
   headerContainer: {
