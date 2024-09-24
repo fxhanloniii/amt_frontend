@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const BASE_URL = 'http://localhost:8000';
 
 const RateBuyerScreen = ({ route, navigation }) => {
-  const { buyerId } = route.params;
+  const { buyerId, itemId } = route.params;
   const { token } = useAuth();
   const [rating, setRating] = useState(0);
   const [buyer, setBuyer] = useState(null);
@@ -41,26 +41,26 @@ const RateBuyerScreen = ({ route, navigation }) => {
 
   const handleSubmitRating = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/rate-buyer/${buyerId}/`, {
+      const response = await fetch(`${BASE_URL}/rate-buyer-and-sold-item/${buyerId}/${itemId}/`, {
         method: 'POST',
         headers: {
+          'Authorization': `Token ${token}`,
           'Content-Type': 'application/json',
-          Authorization: `Token ${token}`,
         },
         body: JSON.stringify({ rating }),
       });
-
+  
       if (response.ok) {
-        Alert.alert("Success", "Your rating has been submitted.");
-        navigation.goBack();  // Go back to the previous screen
+        navigation.navigate('Sold');  // Navigate to the SoldScreen
       } else {
-        Alert.alert("Error", "Failed to submit rating.");
+        console.error('Failed to submit rating.');
       }
     } catch (error) {
       console.error('Error submitting rating:', error);
-      Alert.alert("Error", "An error occurred. Please try again.");
+      alert("Error submitting rating. Please try again.");
     }
   };
+  
 
   return (
     <View style={styles.container}>

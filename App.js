@@ -28,6 +28,7 @@ import SetRadius from './screens/SetRadius/SetRadius';
 import ThankYou from './screens/ThankYou/ThankYou';
 import SelectBuyerScreen from './screens/SelectBuyer/SelectBuyerScreen';
 import RateBuyerScreen from './screens/RateBuyer/RateBuyerScreen';
+import SoldScreen from './screens/SoldScreen/SoldScreen'
 // Component Imports
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -115,6 +116,7 @@ const App = () => {
           <Stack.Screen name="ThankYou" component={ThankYou} />
           <Stack.Screen name="SelectBuyer" component={SelectBuyerScreen} />
           <Stack.Screen name="RateBuyer" component={RateBuyerScreen} />
+          <Stack.Screen name="Sold" component={SoldScreen} />
         </Stack.Navigator>
         {fontsLoaded && currentScreen !== 'SplashScreen' && currentScreen !== 'SignUp' && currentScreen !== 'SetRadius' && currentScreen !== 'ThankYou' && <Footer />}
       </View>

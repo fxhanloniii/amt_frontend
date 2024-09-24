@@ -39,9 +39,26 @@ const SelectBuyerScreen = ({ route, navigation }) => {
     navigation.navigate('RateBuyer', { itemId, buyerId });
   };
 
-  const handleSoldToSomeoneElse = () => {
-    alert("Sold to someone else functionality is not implemented yet.");
+  const handleSoldToSomeoneElse = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/sold-item-to-someone-else/${itemId}/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${token}`,
+        },
+      });
+  
+      if (response.ok) {
+        navigation.navigate('Sold');  // Navigate to the SoldScreen
+      } else {
+        console.error('Failed to mark item as sold.');
+      }
+    } catch (error) {
+      console.error('Error marking item as sold:', error);
+    }
   };
+  
+  
 
   if (loading) {
     return (

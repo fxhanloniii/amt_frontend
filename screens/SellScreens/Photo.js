@@ -1,10 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function PhotoPage({ route, navigation }) {
     const { category, title, description, price, isForSale, isPriceNegotiable } = route.params;
     const [selectedImages, setSelectedImages] = useState([]);
+
+    // Request permissions when the component is mounted
+    useEffect(() => {
+        (async () => {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission denied', 'We need access to your photo library to make this work!');
+            }
+
+            const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
+            if (cameraStatus.status !== 'granted') {
+                Alert.alert('Permission denied', 'We need access to your camera to take photos.');
+            }
+        })();
+    }, []);
 
     // Function to open the image picker
     const pickImage = async () => {

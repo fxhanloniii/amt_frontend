@@ -7,6 +7,7 @@ import LogIn2 from '../LogIn/LogIn2';
 
 const { height: windowHeight } = Dimensions.get('window');
 const logoSlideUpDistance = windowHeight / 16;
+const BASE_URL = 'http://localhost:8000';
 
 export default function SplashScreen({ navigation }) {
     const { isSignedIn } = useAuth();
@@ -18,6 +19,19 @@ export default function SplashScreen({ navigation }) {
     const slideUpDuration = 1000;
 
     useEffect(() => {
+
+        const fetchGlobalItemsSold = async () => {
+            try {
+              const response = await fetch(`${BASE_URL}/global-items-sold/`);
+              const data = await response.json();
+              setGlobalItemsSold(data.items_saved_from_landfill);
+            } catch (error) {
+              console.error('Error fetching global items sold:', error);
+            }
+          };
+        
+          fetchGlobalItemsSold();
+
         if (!isSignedIn) {
             const fadeInAnimation = Animated.timing(fadeIn, {
                 toValue: 1,
