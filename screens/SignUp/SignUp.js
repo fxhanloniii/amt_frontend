@@ -4,7 +4,7 @@ import { registerUser, uploadProfileImage } from '../../api/auth';  // Importing
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../AuthContext/AuthContext';
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = "http://3.101.60.200:8080";
 
 export default function SignUp({ navigation }) {
     const [email, setEmail] = useState('');

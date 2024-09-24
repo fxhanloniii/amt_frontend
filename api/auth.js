@@ -1,7 +1,7 @@
 
 // Backend API for authentication
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = "http://3.101.60.200:8080";
 
 
 

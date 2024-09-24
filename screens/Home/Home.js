@@ -28,7 +28,7 @@ import Tools from '../../assets/images/Tools.png';
 import RecentlyPosted from '../../components/RecentlyPosted';
 import { useAuth } from '../../AuthContext/AuthContext';
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = "http://3.101.60.200:8080";
 
 export default function Home({ navigation }) {
   const [viewAll, setViewAll] = useState(false);

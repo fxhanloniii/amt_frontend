@@ -4,7 +4,7 @@ import MapView, { Circle, Marker } from 'react-native-maps';
 import Slider from '@react-native-community/slider';  // Import Slider from the community module
 import { useAuth } from '../../AuthContext/AuthContext';
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = "http://3.101.60.200:8080";
 
 const SetRadius = ({ navigation, route }) => {
     const { zipCode, token, userId } = route.params;

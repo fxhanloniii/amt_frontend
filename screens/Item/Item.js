@@ -13,7 +13,7 @@ import Money from '../../assets/images/money.png';
 import * as ImagePicker from 'expo-image-picker';
 
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = "http://3.101.60.200:8080";
 
 const Item = ({ route, navigation }) => {
   const [item, setItem] = useState(null);
