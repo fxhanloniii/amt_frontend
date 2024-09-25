@@ -7,7 +7,7 @@ import selling from '../../assets/images/selling.png';
 import savefavorites from '../../assets/images/savefavorites.png';
 import pencil from '../../assets/images/pencil.png';
 import Layout from '../../components/Layout';
-const BASE_URL = "http://3.101.60.200:8080";
+const BASE_URL = 'http://127.0.0.1:8000/';
 
 const Profile = ({ navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();

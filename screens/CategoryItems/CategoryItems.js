@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Image, TextInput, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator, Modal } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
 import MapView, { Circle, Marker } from 'react-native-maps';
-const BASE_URL = "http://3.101.60.200:8080";
+const BASE_URL = 'http://127.0.0.1:8000/';
 
 const CategoryItems = ({ route, navigation }) => {
   const { categoryName, endpoint, zipCode, radius: userRadius, searchQuery: initialSearchQuery } = route.params;

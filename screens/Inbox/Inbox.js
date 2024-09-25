@@ -5,7 +5,7 @@ import { useAuth } from '../../AuthContext/AuthContext';
 import Layout from '../../components/Layout';
 import inboxIcon from '../../assets/images/inbox.png';
 
-const BASE_URL = "http://3.101.60.200:8080";
+const BASE_URL = 'http://127.0.0.1:8000/';
 
 const Inbox = ({ navigation }) => {
     const [conversations, setConversations] = useState([]);

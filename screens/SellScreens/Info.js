@@ -200,12 +200,12 @@ const InfoInputScreen = ({ navigation }) => {
                 value={price}
                 onChangeText={setPrice}
               />
-              <TouchableOpacity style={styles.radioOption} onPress={handlePriceNegotiableChange}>
+              {/* <TouchableOpacity style={styles.radioOption} onPress={handlePriceNegotiableChange}>
                 <View style={[styles.radioCircle, isPriceNegotiable && styles.radioCircleSelected]}>
                   {isPriceNegotiable && <View style={styles.radioCircleInner} />}
                 </View>
                 <Text style={styles.radioLabel}>Negotiable</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           ) : (
             <View style={styles.priceSectionPlaceholder} />

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { logoutUser, loginUser } from '../api/auth';
 const AuthContext = createContext();
-const BASE_URL = "http://3.101.60.200:8080";
+const BASE_URL = 'http://127.0.0.1:8000/';
 
 export const useAuth = () => {
   return useContext(AuthContext);
