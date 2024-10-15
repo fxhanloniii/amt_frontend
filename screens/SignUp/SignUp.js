@@ -101,7 +101,12 @@ export default function SignUp({ navigation }) {
                 console.log('User registered successfully:', response);
                 navigation.navigate('SetRadius', { zipCode, token: response.token, userId: response.userId });
             } else {
-                Alert.alert('Error', 'Registration failed. Please try again.');
+                // Show detailed errors
+                const errorMessages = Object.keys(response.errors)
+                    .map(key => `${key}: ${response.errors[key].join(', ')}`)
+                    .join('\n');
+    
+                Alert.alert('Registration Failed', errorMessages);
             }
         } catch (error) {
             console.error('Error during sign up:', error);

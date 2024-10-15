@@ -27,8 +27,8 @@ import TilesMasonry from '../../assets/images/Tiles_Masonry.png';
 import Tools from '../../assets/images/Tools.png';
 import RecentlyPosted from '../../components/RecentlyPosted';
 import { useAuth } from '../../AuthContext/AuthContext';
-
-const BASE_URL = 'http://127.0.0.1:8000/';
+    
+const BASE_URL = 'http://127.0.0.1:8000/'; 
 
 export default function Home({ navigation }) {
   const [viewAll, setViewAll] = useState(false);
@@ -44,6 +44,7 @@ export default function Home({ navigation }) {
 
   // Full list of categories
   const allCategories = [
+    'Appliances', 
     'Concrete & Brick',
     'Doors & Windows',
     'Electrical',
@@ -52,7 +53,6 @@ export default function Home({ navigation }) {
     'Lumber',
     'Tiles & Masonry',
     'Tools',
-    'Appliances', 
     'Bath & Faucets', 
     'Cleaning', 
     'Drywall', 
@@ -82,7 +82,7 @@ export default function Home({ navigation }) {
     'Hardware': Hardware,
     'Heating & Air': HeatingAir,
     'Kitchen': Kitchen,
-    'Lighting & Fans': LightingFans,
+    'Lighting & Fans': LightingFans,   
     'Lumber': Lumber,
     'Misc.': Misc,
     'Paint': Paint,
@@ -94,11 +94,36 @@ export default function Home({ navigation }) {
   };
 
   useEffect(() => {
-    // Use the user's zipCode by default
-    if (userZipCode) {
+    if (!userZipCode) {
+      getLocation(); // Fetch geolocation if no user zip code is provided
+    } else {
       fetchCoordinates(userZipCode);
     }
   }, [userZipCode]);
+
+  // Function to get user location
+  const getLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Permission to access location was denied');
+        return;
+      }
+
+      const currentLocation = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = currentLocation.coords;
+      setUserLocation({ latitude, longitude });
+      
+      // Reverse geocode to get the zip code
+      const reverseGeocode = await Location.reverseGeocodeAsync({ latitude, longitude });
+      const zip = reverseGeocode[0].postalCode;
+      setGeoZipCode(zip); // Set geo-based zip code
+      fetchCoordinates(zip); // Fetch coordinates based on the reverse-geocoded zip code
+    } catch (error) {
+      console.error('Error getting location:', error);
+      alert('Could not retrieve location.');
+    }
+  };
 
   const fetchCoordinates = async (zip) => {
     try {
@@ -106,6 +131,9 @@ export default function Home({ navigation }) {
       const data = await response.json();
       const place = data.places[0];
   
+      // Ensure the state abbreviation is in uppercase
+      const formattedLocation = `${place['place name']}, ${place['state abbreviation'].toUpperCase()}`;
+    
       setRegion({
         latitude: parseFloat(place.latitude),
         longitude: parseFloat(place.longitude),
@@ -113,11 +141,12 @@ export default function Home({ navigation }) {
         longitudeDelta: 0.0421,
       });
   
-      setLocation(`${place['place name']}, ${place['state abbreviation']}`);
+      setLocation(formattedLocation);
     } catch (error) {
       console.error('Error fetching coordinates:', error);
     }
   };
+  
   
 
   const openLocationModal = () => {
