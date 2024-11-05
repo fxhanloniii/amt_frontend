@@ -11,13 +11,13 @@ export default function LogIn2() {
     const { setAuthToken, signIn, isSignedIn } = useAuth();
 
     const handleLogin = async () => {
-        try {
-            await signIn(email, password);
+        const loginSuccess = await signIn(email, password);
+    
+        if (loginSuccess) {
             navigation.navigate('Home');
-        } catch (error) {
-            console.error('Login failed: Login Page', error);
+        } else {
+            alert('Login failed. Please check your email and password.');
         }
-        
     };
 
     return (

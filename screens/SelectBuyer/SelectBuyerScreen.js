@@ -22,6 +22,7 @@ const SelectBuyerScreen = ({ route, navigation }) => {
         if (response.ok) {
           const data = await response.json();
           setInterestedUsers(data);
+          console.log(interestedUsers)
         } else {
           console.error('Failed to fetch interested users');
         }
@@ -36,6 +37,7 @@ const SelectBuyerScreen = ({ route, navigation }) => {
   }, [itemId, token]);
 
   const handleSelectBuyer = (buyerId) => {
+    console.log('Selected Buyer ID:', buyerId)
     navigation.navigate('RateBuyer', { itemId, buyerId });
   };
 
@@ -71,7 +73,7 @@ const SelectBuyerScreen = ({ route, navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Review</Text>
-      <Text style={styles.subHeader}>Congrats on selling your item! Please select your buyer to move forward.</Text>
+      <Text style={styles.subHeader}>Congratulations! Please select your buyer to leave a review.</Text>
       
       {interestedUsers.map((user) => (
         <TouchableOpacity key={user.id} style={styles.userButton} onPress={() => handleSelectBuyer(user.id)}>

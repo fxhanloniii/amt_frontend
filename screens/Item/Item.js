@@ -426,23 +426,14 @@ const Item = ({ route, navigation }) => {
 
   return (
     <ScrollView style={styles.scrollView}>
-      <View style={styles.buttonContainer}>
-        {isEditMode ? (
-          <TouchableOpacity style={styles.editImagesButton} onPress={editImages}>
-            <Text style={styles.editImagesButtonText}>Edit Images</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={handleFavoriteToggle} style={styles.favoriteButton}>
-            <Image source={favoriteIcon} style={styles.favoriteIcon} />
-          </TouchableOpacity>
-        )}
-        
-        {/* {isCurrentUserOwner && !isEditMode && (
-          <TouchableOpacity style={styles.settingsButton} onPress={() => setEditMode(true)}>
-              <Image source={SettingsIcon} style={styles.settingsIcon} />
-          </TouchableOpacity>
-        )} */}
+      {/* Back Button */}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.backButton}>{'< Back'}</Text>
+        </TouchableOpacity>
       </View>
+
+      
       <Modal visible={isDeleteItemModalOpen} animationType="slide">
           <View style={styles.modalContainer}>
               <Text style={styles.header}>Delete Item</Text>
@@ -603,6 +594,20 @@ const Item = ({ route, navigation }) => {
             ))}
           </Swiper>
           )}
+
+          {/* Place favorite button here inside imageContainer */}
+          <View style={styles.buttonContainer}>
+        {isEditMode ? (
+          <TouchableOpacity style={styles.editImagesButton} onPress={editImages}>
+            <Text style={styles.editImagesButtonText}>Edit Images</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={handleFavoriteToggle} style={styles.favoriteButton}>
+            <Image source={favoriteIcon} style={styles.favoriteIcon} />
+          </TouchableOpacity>
+        )}
+        </View>
+          
         </View>
 
         <View style={styles.titleContainer}>
@@ -636,7 +641,9 @@ const Item = ({ route, navigation }) => {
             keyboardType="numeric"
           />
         ) : (
-          <Text style={styles.price}>${item.price}</Text>
+          <Text style={styles.price}>
+            {item.price === 0 ? 'FREE' : `$${item.price}`}
+          </Text>
         )}
 
         <Text style={styles.descriptionTitle}>Description:</Text>
@@ -722,6 +729,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2efe9',
     paddingTop: 0,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10 ,
+    marginBottom: 0,
+  },
+  backButton: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: 'rigsans-bold',
+    paddingLeft: 20,
+  },
+
   imageContainer: {
     width: '100%',
     aspectRatio: 1,
@@ -731,6 +752,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     paddingTop: 0, 
     marginTop: 0,
+    position: 'relative'
   },
   buttonContainer: {
     position: 'absolute',
@@ -741,14 +763,15 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   favoriteButton: {
-    marginRight: 8,
-    top: 8,
-    right: 6,
+    position: 'absolute',
+    top: 15, 
+    right: 10, 
+    zIndex: 1,
   },
   favoriteIcon: {
     width: 24,
     height: 24,
-    zIndex: 1,
+    resizeMode: 'contain',
   },
   settingsButton: {
     zIndex: 1,
@@ -792,8 +815,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   image: {
-    width: '100%',
-    height: 300,
+    width: 350,
+    height: 350,
     resizeMode: 'cover',
     borderWidth: 0,
     borderColor: 'transparent',
@@ -979,12 +1002,12 @@ const styles = StyleSheet.create({
   iconImage: {
     width: 20,
     height: 20,
-    tintColor: '#293e48', // To match the icon color to the button
+    tintColor: '#293e48', 
   },
   deleteIconImage: {
     width: 20,
     height: 20,
-    tintColor: '#293e48', // To match the icon color to the button
+    tintColor: '#293e48', 
   },
   modalContainer: {
     flex: 1,

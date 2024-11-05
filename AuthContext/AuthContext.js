@@ -84,15 +84,19 @@ export const AuthProvider = ({ children }) => {
         // Check if login was successful based on the response
         if (response.success) {
             setIsSignedIn(true);
-            setAuthToken(response.token); // Change this line to response.key
-                        fetchUserData(response.token);
+            setAuthToken(response.token); 
+            fetchUserData(response.token);
+            return true; 
         } else {
-            // Handle login failure, e.g., show an error message
+            
             console.error('Login failed:', response.error); // Log the error message
+            return false;
         }
     } catch (error) {
         // Handle login error, e.g., show an error message
         console.error('Login error:', error);
+        return false
+        
     }
 };
 

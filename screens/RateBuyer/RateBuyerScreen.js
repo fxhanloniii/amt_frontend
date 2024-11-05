@@ -24,6 +24,7 @@ const RateBuyerScreen = ({ route, navigation }) => {
         if (response.ok) {
           const data = await response.json();
           setBuyer(data);
+          console.log(buyer)
         } else {
           console.error('Failed to fetch buyer details');
         }

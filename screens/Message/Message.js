@@ -172,6 +172,14 @@ const Message = ({ route, navigation }) => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
             keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
         >
+            {/* Add the back button */}
+            <View style={styles.headerContainer}>
+            <Text style={styles.header}></Text>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Text style={styles.backButton}>{'< Back'}</Text>
+                </TouchableOpacity>
+            </View>
+
             {/* Item Details Section */}
             {itemDetails && (
             <View style={styles.itemDetails}>
@@ -231,6 +239,19 @@ const styles = StyleSheet.create({
       paddingHorizontal: 5,
       paddingBottom: 16,
       backgroundColor: '#f2efe9',
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 20,
+        marginBottom: 10,
+    },
+    backButton: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        fontFamily: 'rigsans-bold',
+        paddingRight: 10,
     },
     itemDetails: {
         flexDirection: 'row',

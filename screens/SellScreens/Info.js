@@ -413,11 +413,12 @@ const styles = StyleSheet.create({
   selectedCategory: {
     backgroundColor: 'white',
     borderRadius: 50,
-    padding: 5,
+    padding: 4,
     alignItems: 'center',
     marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'center',
+    width: 180,
   },
   selectedCategoryText: {
     fontSize: 16,
@@ -583,3 +584,6 @@ const styles = StyleSheet.create({
 });
 
 export default InfoInputScreen;
+
+
+
