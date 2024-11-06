@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Image, Modal, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Image, Modal, ActivityIndicator, Alert, Share } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useAuth } from '../../AuthContext/AuthContext';
 import Swiper from 'react-native-swiper';
@@ -61,7 +61,8 @@ const Item = ({ route, navigation }) => {
           // Extract and set image URLs
           const imageUrls = itemData.images.map(img => img.image);
           setItemImages(imageUrls);
-  
+          
+          console.log("Fetched Item Data:", itemData);
           // Set region based on zip code or location
           if (itemData.zip_code) {
             const locationResponse = await fetch(`https://api.zippopotam.us/us/${itemData.zip_code}`);
@@ -229,6 +230,25 @@ const Item = ({ route, navigation }) => {
       }
     } catch (error) {
       console.error('Error handling favorite:', error);
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      const result = await Share.share({
+        message: `Check out this item: ${item.title}\n${item.description}\nPrice: $${item.price}`,
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          console.log('Shared with activity type:', result.activityType);
+        } else {
+          console.log('Item shared');
+        }
+      } else if (result.action === Share.dismissedAction) {
+        console.log('Share dismissed');
+      }
+    } catch (error) {
+      console.error('Error sharing item:', error);
     }
   };
 
@@ -426,11 +446,22 @@ const Item = ({ route, navigation }) => {
 
   return (
     <ScrollView style={styles.scrollView}>
-      {/* Back Button */}
+      {/* Header Container */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        {/* Back Button */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
           <Text style={styles.backButton}>{'< Back'}</Text>
         </TouchableOpacity>
+
+        {/* Right Side Icons (Favorite and Share) */}
+        <View style={styles.headerIcons}>
+          <TouchableOpacity onPress={handleShare} style={styles.headerButton}>
+            <Image source={require('../../assets/images/share.png')} style={styles.shareIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleFavoriteToggle} style={styles.headerButton}>
+            <Image source={favoriteIcon} style={styles.favoriteIcon} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       
@@ -580,12 +611,12 @@ const Item = ({ route, navigation }) => {
             <Swiper
             style={styles.wrapper}
             showsButtons={true}
-            autoplay={false}  // Disable automatic sliding
+            autoplay={false}  
             nextButton={<Text style={styles.buttonText}>›</Text>}
             prevButton={<Text style={styles.buttonText}>‹</Text>}
-            dotStyle={styles.dotStyle}  // Inactive dot style
+            dotStyle={styles.dotStyle}  
             activeDotStyle={styles.activeDotStyle}
-            paginationStyle={styles.pagination} // Add this line
+            paginationStyle={styles.pagination} 
           >
             {itemImages.map((imageUrl, index) => (
               <View key={index} style={styles.slide}>
@@ -603,7 +634,7 @@ const Item = ({ route, navigation }) => {
           </TouchableOpacity>
         ) : (
           <TouchableOpacity onPress={handleFavoriteToggle} style={styles.favoriteButton}>
-            <Image source={favoriteIcon} style={styles.favoriteIcon} />
+            
           </TouchableOpacity>
         )}
         </View>
@@ -625,7 +656,7 @@ const Item = ({ route, navigation }) => {
             <Image source={LocationPinIcon} style={styles.locationIcon} />
             <Text 
               style={[styles.location, isEditMode && styles.locationEditable]} 
-              onPress={isEditMode ? openEditLocationModal : null}  // Make it clickable in edit mode
+              onPress={isEditMode ? openEditLocationModal : null}  
             >
               {isEditMode && editLocation ? `${city}, ${state}` : `${city}, ${state}`}
             </Text>
@@ -657,7 +688,28 @@ const Item = ({ route, navigation }) => {
         ) : (
           <Text style={styles.description}>{item.description}</Text>
         )}
-
+      {/* Seller Information */}
+      <View style={styles.sellerContainer}>
+        <Text style={styles.sellerTitle}>Seller Information:</Text>
+        <View style={styles.sellerInfo}>
+          <Image
+            source={{ uri: item.seller_profile.profile_picture_url }}
+            style={styles.sellerProfilePicture}
+          />
+          <View style={styles.sellerDetails}>
+            <Text style={styles.sellerName}>{item.seller_profile.first_name}</Text>
+            <Text style={styles.sellerUsername}>@{item.seller_profile.username}</Text>
+            <View style={styles.sellerRatingContainer}>
+              <Text style={styles.sellerRatingStars}>
+                {"★".repeat(item.seller_profile.ratings)}
+                {"☆".repeat(5 - item.seller_profile.ratings)}
+              </Text>
+              <Text style={styles.sellerRatingCount}>({item.seller_profile.number_of_ratings})</Text>
+            </View>
+            <Text style={styles.sellerStatus}>{item.seller_profile.is_active ? "Active today" : "Inactive"}</Text>
+          </View>
+        </View>
+      </View>
 
         {isCurrentUserOwner && isEditMode ? (
           <View style={styles.buttonContainerBottom}>
@@ -735,12 +787,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10 ,
     marginBottom: 0,
+    paddingHorizontal: 20,
+  },
+  headerButton: {
+    padding: 0,
+  },
+  headerIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   backButton: {
     fontSize: 18,
     fontWeight: 'bold',
     fontFamily: 'rigsans-bold',
-    paddingLeft: 20,
+    paddingLeft: 0,
+  },
+  shareIcon: {
+    width: 24,
+    height: 24,
+    tintColor: 'black', 
+    marginRight: 4,
   },
 
   imageContainer: {
@@ -772,6 +838,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     resizeMode: 'contain',
+    marginRight: 4,
   },
   settingsButton: {
     zIndex: 1,
@@ -790,21 +857,21 @@ const styles = StyleSheet.create({
     height: 300,
   },
   pagination: {
-    bottom: 0, // Move the dots 4px closer to the image
+    bottom: -10, 
   },
   dotStyle: {
-    backgroundColor: 'transparent',  // Make the dot itself transparent
-    borderWidth: 1,  // Add a border around the dot
-    borderColor: 'gray',  // Set the border color to gray
-    width: 8,  // Adjust the size as needed
-    height: 8,  // Adjust the size as needed
-    borderRadius: 5,  // Make it a circle
-    marginHorizontal: 3,  // Spacing between dots
+    backgroundColor: 'transparent',  
+    borderWidth: 1,  
+    borderColor: 'gray',  
+    width: 8,  
+    height: 8,  
+    borderRadius: 5,  
+    marginHorizontal: 3,  
   },
   activeDotStyle: {
-    backgroundColor: '#364a54',  // Active dot with solid color
+    backgroundColor: '#364a54',  
     borderWidth: 1,
-    borderColor: '#364a54',  // Match the border color with the background
+    borderColor: '#364a54',  
     width: 8,
     height: 8,
     borderRadius: 5,
@@ -822,26 +889,28 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   titleContainer: {
-    flexDirection: 'row', // Place title and location side by side
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // Push title to left and location to right
+    justifyContent: 'space-between', 
     marginBottom: 10,
+    marginTop: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#364a54',
-    flex: 1, // Ensure title takes up available space
+    flex: 1, 
   },
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 10, // Add some space between title and location
+    marginLeft: 10, 
   },
   locationIcon: {
-    width: 18, // Size of the location icon
+    width: 18, 
     height: 18,
-    marginRight: 5, // Space between icon and text
+    marginRight: 5, 
+    tintColor: '#9e3f19'
   },
   location: {
     fontSize: 12,
@@ -1280,6 +1349,62 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     bottom: 32,  // Ensure the buttons are visible within the screen
+},
+sellerContainer: {
+  marginTop: 5,
+  marginBottom:5,
+  padding: 0,
+  backgroundColor: '#f2efe9',
+  borderRadius: 8,
+},
+sellerTitle: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  color: '#364a54',
+  marginBottom: 10,
+},
+sellerInfo: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+sellerProfilePicture: {
+  width: 50,
+  height: 50,
+  borderRadius: 25,
+  backgroundColor: '#293e48', // Fallback color if image is missing
+  marginRight: 10,
+},
+sellerDetails: {
+  flexDirection: 'column',
+},
+sellerName: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  color: '#364a54',
+},
+sellerUsername: {
+  fontSize: 14,
+  color: '#9e3f19',
+  marginBottom: 5,
+},
+sellerRatingContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 5,
+},
+sellerRatingStars: {
+  fontSize: 14,
+  color: '#ffd700', 
+  color: '#364a54',
+},
+sellerRatingCount: {
+  fontSize: 14,
+  color: '#6e6e6e',
+  marginLeft: 5,
+},
+sellerStatus: {
+  fontSize: 12,
+  color: '#6e6e6e',
 },
 });
 
