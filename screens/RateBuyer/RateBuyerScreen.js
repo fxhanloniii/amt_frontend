@@ -4,7 +4,7 @@ import { useAuth } from '../../AuthContext/AuthContext';
 import NoProfilePhoto from '../../assets/images/noprofilephoto.png';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const BASE_URL = 'http://127.0.0.1:8000/';
+const BASE_URL = "http://3.101.60.200:8080";
 
 const RateBuyerScreen = ({ route, navigation }) => {
   const { buyerId, itemId } = route.params;

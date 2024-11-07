@@ -6,7 +6,7 @@ import noProfilePhoto from '../../assets/images/noprofilephoto.png';
 import TrashIcon from '../../assets/images/trashcan.png'; // Assuming you have a trash can icon
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const BASE_URL = 'http://127.0.0.1:8000/';
+const BASE_URL = "http://3.101.60.200:8080";
 
 const UserSettings = ({ route, navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();

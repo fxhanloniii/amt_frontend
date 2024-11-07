@@ -15,7 +15,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 
 
-const BASE_URL = 'http://127.0.0.1:8000/';
+const BASE_URL = "http://3.101.60.200:8080";
 
 const Item = ({ route, navigation }) => {
   const [item, setItem] = useState(null);

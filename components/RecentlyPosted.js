@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native';
 import { useAuth } from '../AuthContext/AuthContext';
-const BASE_URL = 'http://127.0.0.1:8000/';
+const BASE_URL = "http://3.101.60.200:8080";
 import { useIsFocused } from '@react-navigation/native';
 const RecentlyPosted = ({ navigation }) => {
     const { token } = useAuth();

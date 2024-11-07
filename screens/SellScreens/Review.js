@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator, Dimensions, FlatList } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useAuth } from '../../AuthContext/AuthContext';
-const BASE_URL = 'http://127.0.0.1:8000/';
+const BASE_URL = "http://3.101.60.200:8080";
 
 const { width: screenWidth } = Dimensions.get('window');
 

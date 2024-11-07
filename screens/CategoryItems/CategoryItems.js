@@ -4,7 +4,7 @@ import { useAuth } from '../../AuthContext/AuthContext';
 import MapView, { Circle, Marker } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 
-const BASE_URL = 'http://127.0.0.1:8000/';
+const BASE_URL = "http://3.101.60.200:8080";
 
 const CategoryItems = ({ route, navigation }) => {
   const { categoryName, endpoint, zipCode, radius: userRadius, searchQuery: initialSearchQuery } = route.params;

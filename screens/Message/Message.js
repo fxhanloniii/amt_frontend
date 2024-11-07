@@ -3,7 +3,7 @@ import { View, Text, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, 
 import { Entypo } from '@expo/vector-icons';
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
-const BASE_URL = 'http://127.0.0.1:8000/';
+const BASE_URL = "http://3.101.60.200:8080";
 
 const Message = ({ route, navigation }) => {
     const { conversationId, itemDetails } = route.params;

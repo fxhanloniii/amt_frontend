@@ -8,7 +8,7 @@ import savefavorites from '../../assets/images/savefavorites.png';
 import pencil from '../../assets/images/pencil.png';
 import Layout from '../../components/Layout';
 import { FontAwesome } from '@expo/vector-icons';
-const BASE_URL = 'http://127.0.0.1:8000/';
+const BASE_URL = "http://3.101.60.200:8080";
 
 const Profile = ({ route, navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();
@@ -146,11 +146,14 @@ const Profile = ({ route, navigation }) => {
 
     if (showSeeMoreButton) {
       return (
-        <TouchableOpacity onPress={() => handleSeeMore(category)}>
-          <View style={styles.seeMoreButton}>
-            <Text style={styles.seeMoreText}>See More</Text>
+        <TouchableOpacity onPress={() => handleSeeMore(category)} style={styles.seeMoreButton}>
+        <View style={styles.buttonContent}>
+          <View style={styles.circle}>
+            <Text style={styles.dots}>•••</Text>
           </View>
-        </TouchableOpacity>
+          <Text style={styles.seeMoreText}>See More</Text>
+        </View>
+      </TouchableOpacity>
       );
     }
 
@@ -234,6 +237,7 @@ const Profile = ({ route, navigation }) => {
         <View style={styles.sellerDetails}>
           <Text style={styles.sellerName}>{userProfile?.first_name}</Text>
           <Text style={styles.sellerUsername}>@{userProfile?.username}</Text>
+          {userProfile && (
           <View style={styles.sellerRating}>
             {[...Array(5)].map((_, i) => (
               <FontAwesome 
@@ -245,6 +249,7 @@ const Profile = ({ route, navigation }) => {
             ))}
             <Text style={styles.ratingCount}>({userProfile.number_of_ratings})</Text>
           </View>
+          )}
           <Text style={styles.sellerStatus}>Active today</Text>
         </View>
       </View>
@@ -261,39 +266,41 @@ const Profile = ({ route, navigation }) => {
       <View style={styles.divider} />
 
       {/* My Listings */}
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>My Listings</Text>
-        {userlistings.length === 0 ? (
-          <TouchableOpacity onPress={() => navigation.navigate('Info')}>
-            <View style={styles.emptyStateContainer}>
-              <Image source={selling} style={styles.emptyImage} />
+      <View style={styles.centeredContainer}>
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>My Listings</Text>
+          {userlistings.length === 0 ? (
+            <TouchableOpacity onPress={() => navigation.navigate('Info')}>
+              <View style={styles.emptyStateContainer}>
+                <Image source={selling} style={styles.emptyImage} />
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.itemList}>
+              {userlistings.slice(0, 6).map((item) => renderListingItem({ item }))}
             </View>
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.itemList}>
-            {userlistings.slice(0, 6).map((item) => renderListingItem({ item }))}
-          </View>
-        )}
-        {renderSeeMoreButton('userlistings')}
+          )}
+          {renderSeeMoreButton('userlistings')}
+        </View>
       </View>
-
-      
 
       {/* Favorites */}
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>My Favorites</Text>
-        {userFavorites.length === 0 ? (
-          <View style={styles.emptyStateContainer}>
-            <Image source={savefavorites} style={styles.emptyImage} />
-          </View>
-        ) : (
-          <View style={styles.itemList}>
-            {userFavorites.slice(0, 6).map(renderFavoriteItem)}
-          </View>
-        )}
-        {renderSeeMoreButton('userfavorites')}
+      <View style={styles.centeredContainer}>
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>My Favorites</Text>
+          {userFavorites.length === 0 ? (
+            <View style={styles.emptyStateContainer}>
+              <Image source={savefavorites} style={styles.emptyImage} />
+            </View>
+          ) : (
+            <View style={styles.itemList}>
+              {userFavorites.slice(0, 6).map(renderFavoriteItem)}
+            </View>
+          )}
+          {renderSeeMoreButton('userfavorites')}
+        </View>
       </View>
-      
+        
     </ScrollView>
     
   );
@@ -302,8 +309,11 @@ const Profile = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingBottom: 20,
     backgroundColor: '#f2efe9',
+    
   },
   loadingContainer: {
     flex: 1,
@@ -411,10 +421,19 @@ const styles = StyleSheet.create({
     height: 200, 
     resizeMode: 'contain', 
   },
+  centeredSection: {
+    alignItems: 'center', 
+    width: '100%',
+  },
+  singleItemContainer: {
+    alignItems: 'flex-start', 
+    paddingLeft: 0, 
+  },
   itemList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'evenly',
+    justifyContent: 'flex-start', 
+    maxWidth: '100%', 
   },
   listingItemContainer: {
     flex: 1,
@@ -429,22 +448,49 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   itemImage: {
-    width: 110,
-    height: 110,
+    width: 115,
+    height: 115,
     marginBottom: 2,
     backgroundColor: 'transparent',
   },
   seeMoreButton: {
+    backgroundColor: '#293e49',
+    paddingVertical: 5,
+    borderRadius: 50,
+    marginVertical: 10,
+    width: '90%',
+    height: 40,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  buttonContent: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    backgroundColor: '#293e48',
-    marginVertical: 10,
-    borderRadius: 50,
+    width: '100%',
+    position: 'relative',
+  },
+  circle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    left: 10,
+  },
+  dots: {
+    color: '#293e49',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   seeMoreText: {
     color: 'white',
+    fontFamily: 'basicsans-regular',
     fontSize: 16,
+    textAlign: 'center',
+    flex: 1,
   },
   settingsButton: {
     position: 'absolute',
@@ -491,6 +537,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'basicsans-regular',
   },
+  
 });
 
 export default Profile;
