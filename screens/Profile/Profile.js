@@ -7,9 +7,10 @@ import selling from '../../assets/images/selling.png';
 import savefavorites from '../../assets/images/savefavorites.png';
 import pencil from '../../assets/images/pencil.png';
 import Layout from '../../components/Layout';
+import { FontAwesome } from '@expo/vector-icons';
 const BASE_URL = 'http://127.0.0.1:8000/';
 
-const Profile = ({ navigation }) => {
+const Profile = ({ route, navigation }) => {
   const { user, signOut, token, isSignedIn } = useAuth();
   const [userProfile, setUserProfile] = useState(null);
   const [isCurrentUserProfile, setIsCurrentUserProfile] = useState(false);
@@ -84,6 +85,7 @@ const Profile = ({ navigation }) => {
                   } else {
           setProfilePicture(noProfilePhoto);
         }
+        console.log("User Profile Data:", userProfileData);
         setIsCurrentUserProfile(userProfileData.user === user.id);
       } else {
         console.error('Failed to fetch user profile');
@@ -227,11 +229,23 @@ const Profile = ({ navigation }) => {
     
     <ScrollView style={styles.container}>
       {/* Profile Header */}
-      <View style={styles.headerContainer}>
-        <Image style={styles.profileImage} source={profilePicture} />
-        <View style={styles.userInfoContainer}>
-          <Text style={styles.firstName}>{user?.first_name} </Text>
-          <Text style={styles.userUsername}>@{user?.username}</Text>
+      <View style={styles.sellerInfoContainer}>
+        <Image style={styles.sellerProfileImage} source={profilePicture} />
+        <View style={styles.sellerDetails}>
+          <Text style={styles.sellerName}>{userProfile?.first_name}</Text>
+          <Text style={styles.sellerUsername}>@{userProfile?.username}</Text>
+          <View style={styles.sellerRating}>
+            {[...Array(5)].map((_, i) => (
+              <FontAwesome 
+                key={i} 
+                name="star" 
+                size={14} 
+                color={i < userProfile.ratings ? "#ffc107" : "#ccc"} 
+              />
+            ))}
+            <Text style={styles.ratingCount}>({userProfile.number_of_ratings})</Text>
+          </View>
+          <Text style={styles.sellerStatus}>Active today</Text>
         </View>
       </View>
       <TouchableOpacity onPress={navigateToSettings} style={styles.editProfileButton}>
@@ -296,6 +310,46 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f2efe9',
+  },
+  sellerInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    marginBottom: 10,
+  },
+  sellerProfileImage: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    marginRight: 10,
+    backgroundColor: 'gray',
+  },
+  sellerDetails: {
+    flex: 1,
+  },
+  sellerName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: 'rigsans-bold',
+  },
+  sellerUsername: {
+    fontSize: 14,
+    color: 'gray',
+    fontFamily: 'basicsans-regularit',
+  },
+  sellerRating: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  ratingCount: {
+    marginLeft: 5,
+    color: 'gray',
+    fontSize: 12,
+  },
+  sellerStatus: {
+    fontSize: 12,
+    color: 'gray',
   },
   headerContainer: {
     flexDirection: 'row',

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Image, TextInput, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator, Modal } from 'react-native';
 import { useAuth } from '../../AuthContext/AuthContext';
 import MapView, { Circle, Marker } from 'react-native-maps';
+import { Ionicons } from '@expo/vector-icons';
+
 const BASE_URL = 'http://127.0.0.1:8000/';
 
 const CategoryItems = ({ route, navigation }) => {
@@ -230,13 +232,17 @@ const CategoryItems = ({ route, navigation }) => {
       </Modal>
 
 
-      <TextInput
-        style={styles.searchBar}
-        placeholder="What are you looking for?"
-        value={searchQuery}
-        onChangeText={handleSearchQueryChange}
-        onSubmitEditing={handleSearch}
-      />
+      <View style={styles.searchBarContainer}>
+        <Ionicons name="ios-search" size={20} color="#d1d1d1" style={styles.searchIcon} />
+        <TextInput 
+          style={styles.searchBar}
+          placeholder="What are you looking for?"
+          placeholderTextColor="#d1d1d1"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onSubmitEditing={handleSearch}
+        />
+      </View>
       <View style={styles.categoryLocationContainer}>
         <Text style={styles.titleCategory}>{categoryName ? categoryName : searchQuery}</Text>
         <View style={styles.locationMainContainer}>
@@ -317,17 +323,30 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     width: '100%',
   },
-  searchBar: {
-    marginTop: 10,
+  searchBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 24,
     height: 40,
     width: '90%',
-    borderColor: '#d1d1d1',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingLeft: 10,
-    paddingRight: 10,
-    alignSelf: 'center',
     backgroundColor: 'white',
+    borderRadius: 0,
+    paddingLeft: 10,
+    alignSelf: 'center',
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 4,
+    elevation: 3, 
+  },
+  searchIcon: {
+    marginRight: 12,
+  },
+  searchBar: {
+    flex: 1, 
+    color: '#293e48',
+    fontSize: 16,
+    fontFamily: 'basicsans-regular',
   },
   categoryLocationContainer: {
     flexDirection: 'row',
@@ -348,6 +367,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     marginRight: 8,
+    tintColor: '#9e3f19',
   },
   
   locationText: {
@@ -384,16 +404,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     paddingHorizontal: 5,
+    justifyContent: 'space-between',
   },
   itemName: {
     fontSize: 12,
-    flex: 2,
+    flex: 1,
     marginLeft: 0,
   },
   itemPrice: {
     fontSize: 12,
     fontWeight: 'bold',
-    flex: 1,
     marginRight: 5,
   },
   loadingContainer: {

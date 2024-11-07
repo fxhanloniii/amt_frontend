@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 16,
         fontFamily: 'rigsans-bold',
-        marginBottom: 10,
+        marginBottom: 16,
     },
     itemContainer: {
         width: 165,

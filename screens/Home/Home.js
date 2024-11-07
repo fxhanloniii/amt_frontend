@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity, Modal, Image, ActivityIndicator } from 'react-native';
 import MapView, { Circle, Marker } from 'react-native-maps';
+import { Ionicons } from '@expo/vector-icons';
 
 import * as Location from 'expo-location';
 import Appliances from '../../assets/images/Appliances.png';
@@ -213,12 +214,16 @@ export default function Home({ navigation }) {
  
   return (
     <View style={styles.container}>
-      <TextInput 
-        style={styles.searchBar}
-        placeholder="What are you looking for?"
-        onChangeText={text => setSearchQuery(text)}
-        onSubmitEditing={handleSearch}
-      />
+      <View style={styles.searchBarContainer}>
+        <Ionicons name="ios-search" size={20} color="#d1d1d1" style={styles.searchIcon} />
+        <TextInput 
+          style={styles.searchBar}
+          placeholder="What are you looking for?"
+          placeholderTextColor="#d1d1d1"
+          onChangeText={text => setSearchQuery(text)}
+          onSubmitEditing={handleSearch}
+        />
+      </View>
       <View style={styles.categoryLocationContainer}>
         <Text style={styles.titleTopCatergories}>Top Categories</Text>
         <TouchableOpacity style={styles.locationContainer} onPress={openLocationModal}>
@@ -302,22 +307,34 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f2efe9',
-        //alignItems: 'center',
         justifyContent: 'flex-start',
         width: '100%',
       },
-      searchBar: {
-        marginTop: 10,  
+      searchBarContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 24,
         height: 40,
-        width: '90%',  
-        borderColor: '#d1d1d1',
-        borderWidth: 1,
-        borderRadius: 5,
-        paddingLeft: 10,  
-        paddingRight: 10,
+        width: '90%',
+        backgroundColor: 'white',
+        borderRadius: 0,
+        paddingLeft: 10,
         alignSelf: 'center',
-        backgroundColor: 'white', 
-    },
+        shadowColor: '#000', 
+        shadowOffset: { width: 0, height: 2 }, 
+        shadowOpacity: 0.1, 
+        shadowRadius: 4,
+        elevation: 3, 
+      },
+      searchIcon: {
+        marginRight: 12,
+      },
+      searchBar: {
+        flex: 1, 
+        color: '#293e48',
+        fontSize: 16,
+        fontFamily: 'basicsans-regular',
+      },
     categoryLocationContainer: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -335,20 +352,21 @@ const styles = StyleSheet.create({
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',  // Push the location text to the right
-    paddingHorizontal: 10,  // Optional padding for spacing
+    justifyContent: 'flex-end',  
+    paddingHorizontal: 10,  
   },
   
   locationIcon: {
-    width: 18,  // Adjust the size as needed to match the design
+    width: 18,  
     height: 18,
-    marginRight: 4,  // Add space between the icon and the text
+    marginRight: 4,  
+    tintColor: '#9e3f19',
   },
   
   locationText: {
-    color: '#9e3f19',  // Match the color you are using in your design
+    color: '#9e3f19', 
     fontSize: 14,
-    textAlign: 'right',  // Align the text to the right
+    textAlign: 'right',  
   },
   categoryButton: {
     backgroundColor: '#fcfbfa',
@@ -362,7 +380,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderColor: '#293e49',
-    borderWidth: 1,
+    borderWidth: 0.25,
     borderStyle: 'solid',
 },
 categoryTextContainer: {
@@ -374,9 +392,9 @@ categoryContent: {
   alignItems: 'center',
 },
 categoryIcon: {
-  width: 35, 
-  height: 35, 
-  marginLeft: 10,
+  width: 42, 
+  height: 42, 
+  marginLeft: 8,
   
 },
   categoryButtonText: {
@@ -384,7 +402,7 @@ categoryIcon: {
     textAlign: 'center',
     paddingRight: 30,
     fontFamily: 'basicsans-regular',
-    fontSize: 16,
+    fontSize: 17,
   },
 
   viewAllButton: {

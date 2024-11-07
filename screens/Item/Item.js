@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Image, Modal, ActivityIndicator, Alert, Share } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Circle } from 'react-native-maps';
 import { useAuth } from '../../AuthContext/AuthContext';
 import Swiper from 'react-native-swiper';
 import SettingsIcon from '../../assets/images/settingsicon.png';
@@ -11,6 +11,8 @@ import TrashIcon from '../../assets/images/trashcan.png';
 import LocationPinIcon from '../../assets/images/location-pin.png';
 import Money from '../../assets/images/money.png';
 import * as ImagePicker from 'expo-image-picker';
+import { formatDistanceToNow } from 'date-fns';
+
 
 
 const BASE_URL = 'http://127.0.0.1:8000/';
@@ -59,11 +61,12 @@ const Item = ({ route, navigation }) => {
           setEditLocation(itemData.zip_code);
   
           // Extract and set image URLs
-          const imageUrls = itemData.images.map(img => img.image);
+          const imageUrls = itemData.images.map((img) => img.image);
           setItemImages(imageUrls);
-          
+  
           console.log("Fetched Item Data:", itemData);
-          // Set region based on zip code or location
+  
+          // Set region based on zip code if latitude and longitude are not directly available
           if (itemData.zip_code) {
             const locationResponse = await fetch(`https://api.zippopotam.us/us/${itemData.zip_code}`);
             if (locationResponse.ok) {
@@ -71,51 +74,29 @@ const Item = ({ route, navigation }) => {
               const place = locationData.places[0];
               const latitude = parseFloat(place.latitude);
               const longitude = parseFloat(place.longitude);
+  
               setRegion({
                 latitude: latitude,
                 longitude: longitude,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
               });
+  
+              // Set city and state based on zip code data
               setCity(place['place name']);
               setState(place['state abbreviation']);
+              console.log(city, state)
             } else {
-              console.error('Failed to fetch location data');
+              console.error("Failed to fetch location data");
             }
-          } else if (itemData.location) {
-            const [city, state] = itemData.location.split(', ');
-            setCity(city);
-            setState(state);
-            parseLocation(itemData.location);
           }
         } else {
-          console.error('Failed to fetch item data');
+          console.error("Failed to fetch item data");
         }
       } catch (error) {
-        console.error('Error fetching item data:', error);
+        console.error("Error fetching item data:", error);
       } finally {
         setIsLoading(false);
-      }
-    };
-  
-    const parseLocation = async (location) => {
-      if (location) {
-        // Assuming location is in the format "City, State"
-        const locationResponse = await fetch(`https://api.zippopotam.us/us/${location}`);
-        if (locationResponse.ok) {
-          const locationData = await locationResponse.json();
-          const place = locationData.places[0];
-          const latitude = parseFloat(place.latitude);
-          const longitude = parseFloat(place.longitude);
-          setRegion({
-            latitude: latitude,
-            longitude: longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          });
-          setCity(place['place name']);
-          setState(place['state abbreviation']);
-        }
       }
     };
   
@@ -133,13 +114,14 @@ const Item = ({ route, navigation }) => {
           setFavoriteIcon(data.isFavorited ? HeartFilledIcon : HeartIcon);
         }
       } catch (error) {
-        console.error('Error checking favorite status:', error);
+        console.error("Error checking favorite status:", error);
       }
     };
   
     fetchItemData();
     checkIfFavorited();
   }, [route.params.itemId, token]);
+  
   
   const handleSaveLocation = async () => {
     if (editLocation) {
@@ -232,6 +214,9 @@ const Item = ({ route, navigation }) => {
       console.error('Error handling favorite:', error);
     }
   };
+
+  const timeAgo = item ? formatDistanceToNow(new Date(item.date_posted), { addSuffix: true }) : '';
+
 
   const handleShare = async () => {
     try {
@@ -443,6 +428,8 @@ const Item = ({ route, navigation }) => {
   
 
   const isCurrentUserOwner = user && user.pk === item.seller;
+
+  
 
   return (
     <ScrollView style={styles.scrollView}>
@@ -677,6 +664,33 @@ const Item = ({ route, navigation }) => {
           </Text>
         )}
 
+        <Text style={styles.timestamp}>Listed {timeAgo}</Text>
+
+        
+
+        {!isCurrentUserOwner && (
+  // Render the Message Seller section only if the current user is not the owner
+  <>
+    <View style={styles.divider}/>
+    <View style={styles.messageBox}>
+      <TextInput
+        style={styles.messageInput}
+        placeholder="Still available?"
+        placeholderTextColor="#364a54"
+        editable={true}
+        value={inputMessage}
+        onChangeText={setInputMessage}
+      />
+      <TouchableOpacity style={styles.messageButton} onPress={handleMessageSeller}>
+        <Text style={styles.messageButtonText}>Message Seller</Text>
+      </TouchableOpacity>
+    </View>
+  </>
+)}
+
+        {/* Divider */}
+        <View style={styles.divider} />
+
         <Text style={styles.descriptionTitle}>Description:</Text>
         {isEditMode ? (
           <TextInput
@@ -688,6 +702,9 @@ const Item = ({ route, navigation }) => {
         ) : (
           <Text style={styles.description}>{item.description}</Text>
         )}
+
+        {/* Divider */}
+        <View style={styles.divider} />
       {/* Seller Information */}
       <View style={styles.sellerContainer}>
         <Text style={styles.sellerTitle}>Seller Information:</Text>
@@ -711,55 +728,77 @@ const Item = ({ route, navigation }) => {
         </View>
       </View>
 
-        {isCurrentUserOwner && isEditMode ? (
-          <View style={styles.buttonContainerBottom}>
-            <TouchableOpacity style={styles.saveButton} onPress={handleSaveListing}>
-              <View style={styles.buttonSymbol}>
-                <Text style={styles.symbolText}>{'>'}</Text>
-              </View>
-              <Text style={styles.saveButtonText}>Save Listing</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.markAsSoldButton} onPress={handleMarkAsSold}>
-              <View style={styles.buttonSymbol}>
-                  <Image source={Money} style={styles.iconImage} />
-              </View>
-              <Text style={styles.markAsSoldButtonText}>Mark As Sold</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          !isCurrentUserOwner && (
-            <View style={styles.messageBox}>
-              <TextInput
-                style={styles.messageInput}
-                placeholder="Still available?"
-                placeholderTextColor="#364a54"
-                editable={true}
-                value={inputMessage}
-                onChangeText={setInputMessage}
-              />
-              <TouchableOpacity style={styles.messageButton} onPress={handleMessageSeller}>
-                <Text style={styles.messageButtonText}>Message Seller</Text>
-              </TouchableOpacity>
-            </View>
-          )
-        )}
-        {isCurrentUserOwner && !isEditMode && (
-          <View style={styles.buttonContainerBottom}>
-            <TouchableOpacity style={styles.editButton} onPress={() => setEditMode(true)}>
-              <View style={styles.editIcon}>
-                <Image source={PencilIcon} style={styles.iconImage} />
-              </View>
-              <Text style={styles.editButtonText}>Edit Listing</Text>
-            </TouchableOpacity>
+      {/* Divider */}
+      <View style={styles.divider} />
 
-            <TouchableOpacity style={styles.deleteButton} onPress={openDeleteItemModal}>
-              <View style={styles.buttonSymbol}>
-                  <Image source={TrashIcon} style={styles.iconImage} />
-              </View>
-              <Text style={styles.deleteButtonText}>Delete Post</Text>
-          </TouchableOpacity>
+      {/* Location Section */}
+      <Text style={styles.locationTitle}>Location:</Text>
+        <View style={styles.mapContainer}>
+          {region ? (
+            <MapView
+              style={styles.map}
+              region={region}
+            >
+              <Marker coordinate={{ latitude: region.latitude, longitude: region.longitude }} />
+              <Circle 
+                center={{ latitude: region.latitude, longitude: region.longitude }} 
+                radius={2500} 
+                fillColor="rgba(0, 0, 0, 0.2)" 
+                strokeColor="rgba(0, 0, 0, 0.5)"
+              />
+            </MapView>
+          ) : (
+            <Text style={styles.noLocationText}>Location data not available</Text>
+          )}
+          {/* City and State */}
+          {city && state ? (
+            <Text style={styles.locationText}>{city}, {state}</Text>
+          ) : (
+            <Text style={styles.locationText}>Location not available</Text>
+          )}
+        </View>
+
+      
+        {isCurrentUserOwner && (
+  <View style={styles.buttonContainerBottom}>
+    {isEditMode ? (
+      // Render Save Listing and Mark as Sold buttons in edit mode
+      <>
+        <TouchableOpacity style={styles.saveButton} onPress={handleSaveListing}>
+          <View style={styles.buttonSymbol}>
+            <Text style={styles.symbolText}>{'>'}</Text>
           </View>
-        )}
+          <Text style={styles.saveButtonText}>Save Listing</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.markAsSoldButton} onPress={handleMarkAsSold}>
+          <View style={styles.buttonSymbol}>
+            <Image source={Money} style={styles.iconImage} />
+          </View>
+          <Text style={styles.markAsSoldButtonText}>Mark As Sold</Text>
+        </TouchableOpacity>
+      </>
+    ) : (
+      // Render Edit Listing and Delete Post buttons in non-edit mode
+      <>
+        <TouchableOpacity style={styles.editButton} onPress={() => setEditMode(true)}>
+          <View style={styles.editIcon}>
+            <Image source={PencilIcon} style={styles.iconImage} />
+          </View>
+          <Text style={styles.editButtonText}>Edit Listing</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.deleteButton} onPress={openDeleteItemModal}>
+          <View style={styles.buttonSymbol}>
+            <Image source={TrashIcon} style={styles.iconImage} />
+          </View>
+          <Text style={styles.deleteButtonText}>Delete Post</Text>
+        </TouchableOpacity>
+      </>
+    )}
+  </View>
+)}
+
       </View>
     </ScrollView>
   );
@@ -807,6 +846,11 @@ const styles = StyleSheet.create({
     height: 24,
     tintColor: 'black', 
     marginRight: 4,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#ccc',
+    marginVertical: 10,
   },
 
   imageContainer: {
@@ -892,7 +936,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between', 
-    marginBottom: 10,
+    marginBottom: 4,
     marginTop: 10,
   },
   title: {
@@ -915,7 +959,7 @@ const styles = StyleSheet.create({
   location: {
     fontSize: 12,
     color: '#9e3f19',
-    fontFamily: 'basicsans-regular', // Reddish-orange color
+    fontFamily: 'basicsans-regular', 
   },
   titleInput: {
     fontSize: 24,
@@ -931,8 +975,14 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 12,
+    marginBottom: 4,
     color: '#364a54',
+  },
+  timestamp: {
+    fontSize: 14,
+    color: '#6e6e6e',
+    marginBottom: 4,
+    fontFamily: 'basicsans-regularit'
   },
   priceInput: {
     fontSize: 18,
@@ -970,7 +1020,7 @@ const styles = StyleSheet.create({
   locationTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 2,
+    marginBottom: 8,
     color: '#364a54',
   },
   locationInput: {
@@ -1013,7 +1063,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonContainerBottom: {
-    marginTop: 20,
+    marginTop: 5,
     width: '100%',
     alignSelf: 'center',
   },
@@ -1180,9 +1230,9 @@ const styles = StyleSheet.create({
   },
   editImagesButton: {
     position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: 'rgba(0, 0, 0, 0.0)', // Optional: to make the button stand out
+    top: -8,
+    right: 6,
+    backgroundColor: 'rgba(0, 0, 0, 0.0)', 
     padding: 10,
     borderRadius: 50,
     borderColor: 'white',
@@ -1201,7 +1251,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: 50,
-    backgroundColor: '#293e48',  // Background color
+    backgroundColor: '#293e48', 
     width: '95%',
     alignSelf: 'center',
   },
@@ -1241,8 +1291,8 @@ const styles = StyleSheet.create({
   },
   imageWrapper: {
     position: 'relative',
-    width: '48%', // Adjust width as needed
-    height: 150, // Adjust height as needed
+    width: '48%',
+    height: 150,
     marginBottom: 10,
   },
   imagePreview: {
@@ -1368,9 +1418,9 @@ sellerInfo: {
   alignItems: 'center',
 },
 sellerProfilePicture: {
-  width: 50,
-  height: 50,
-  borderRadius: 25,
+  width: 60,
+  height: 60,
+  borderRadius: 30,
   backgroundColor: '#293e48', // Fallback color if image is missing
   marginRight: 10,
 },
@@ -1380,17 +1430,19 @@ sellerDetails: {
 sellerName: {
   fontSize: 16,
   fontWeight: 'bold',
+  fontFamily: 'rigsans-bold',
   color: '#364a54',
 },
 sellerUsername: {
-  fontSize: 14,
-  color: '#9e3f19',
-  marginBottom: 5,
+  fontSize: 12,
+  color: '#6e6e6e',
+  marginBottom: 2,
+  fontFamily: 'basicsans-regular',
 },
 sellerRatingContainer: {
   flexDirection: 'row',
   alignItems: 'center',
-  marginBottom: 5,
+  marginBottom: 2,
 },
 sellerRatingStars: {
   fontSize: 14,
@@ -1405,7 +1457,24 @@ sellerRatingCount: {
 sellerStatus: {
   fontSize: 12,
   color: '#6e6e6e',
+  fontFamily: 'basicsans-regularit'
 },
+mapContainer: {
+  position: 'relative',
+  height: 350,
+  borderRadius: 8,
+  overflow: 'hidden',
+  marginBottom: 16,
+},
+
+locationText: {
+  fontSize: 14,
+  color: '#364a54',
+  textAlign: 'left',
+  marginTop: 8,
+  fontFamily: 'rigsans-bold',
+},
+
 });
 
 export default Item;

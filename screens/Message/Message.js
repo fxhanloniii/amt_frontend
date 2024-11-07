@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, Image, KeyboardAvoidingView, Platform } from 'react-native';
+import { Entypo } from '@expo/vector-icons';
 import { useAuth } from '../../AuthContext/AuthContext';
 import noProfilePhoto from '../../assets/images/noprofilephoto.png'; 
 const BASE_URL = 'http://127.0.0.1:8000/';
@@ -140,12 +141,12 @@ const Message = ({ route, navigation }) => {
         
         return (
             <View style={[styles.messageBubble, isCurrentUser ? styles.currentUserBubble : styles.otherUserBubble]}>
-                
+                <TouchableOpacity onPress={() => navigation.navigate('Profile', { userId: item.sender })}>
                     <Image
                         source={{ uri: profileImage || noProfilePhoto }}
                         style={styles.profileImage}
                     />
-                
+                </TouchableOpacity>
                 <View>
                 <View style={{ flex: 1 }}>
                 <View style={styles.messageContent}>
@@ -172,12 +173,14 @@ const Message = ({ route, navigation }) => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
             keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
         >
-            {/* Add the back button */}
+            
+            {/* Header with Back Button and Inbox Text */}
             <View style={styles.headerContainer}>
-            <Text style={styles.header}></Text>
+                <Text style={styles.headerText}>Inbox</Text>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Text style={styles.backButton}>{'< Back'}</Text>
                 </TouchableOpacity>
+                
             </View>
 
             {/* Item Details Section */}
@@ -201,8 +204,14 @@ const Message = ({ route, navigation }) => {
                     <Text style={styles.detailLabel}>Price:</Text>
                     <Text>${itemDetails.price}</Text>
                 </View>
-                <TouchableOpacity onPress={() => navigation.navigate('Item', { itemId: itemDetails.id })}>
-                    <Text style={styles.viewListingButton}>View Full Listing</Text>
+                <TouchableOpacity 
+                    style={styles.viewListingButton} 
+                    onPress={() => navigation.navigate('Item', { itemId: itemDetails.id })}
+                >
+                    <View style={styles.iconContainer}>
+                        <Entypo name="dots-three-horizontal" size={12} color="#293e48" />
+                    </View>
+                    <Text style={styles.buttonText}>View Full Listing</Text>
                 </TouchableOpacity>
                 </View>
                 </View>
@@ -236,7 +245,7 @@ export default Message;
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      paddingHorizontal: 5,
+      paddingHorizontal: 10,
       paddingBottom: 16,
       backgroundColor: '#f2efe9',
     },
@@ -252,6 +261,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontFamily: 'rigsans-bold',
         paddingRight: 10,
+    },
+    headerText: {
+        fontSize: 18,
+        fontFamily: 'rigsans-bold',
+        paddingLeft: 10,
     },
     itemDetails: {
         flexDirection: 'row',
@@ -387,5 +401,32 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
     },
-
+    viewListingButton: {
+        backgroundColor: '#293e48',
+        borderRadius: 25,
+        paddingVertical: 4,
+        paddingHorizontal: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 4,
+        overflow: 'hidden',
+        width: 185,
+    },
+    iconContainer: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 16, 
+        left: -12,
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 14,
+        fontFamily: 'basicsans-regular',
+        paddingRight: 16,
+    },
 });
